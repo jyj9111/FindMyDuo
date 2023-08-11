@@ -16,15 +16,19 @@ public class UserEntity {
     private Integer id;
 
     // 규해듀오 회원의 아이디
+    @Column(unique = true, nullable = false)
     private String accountId;
 
     // 이메일
+    @Column(unique = true, nullable = false)
     private String email;
 
     // 구해듀오 회원의 닉네임
+    @Column(unique = true, nullable = false)
     private String nickname;
 
     // 규해듀오 회원의 패스워드
+    @Column(nullable = false)
     private String password;
 
     // 구해듀오 가입 날짜
