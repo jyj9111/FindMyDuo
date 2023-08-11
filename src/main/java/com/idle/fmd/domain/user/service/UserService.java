@@ -5,12 +5,14 @@ import com.idle.fmd.domain.user.entity.CustomUserDetails;
 import com.idle.fmd.global.error.exception.BusinessException;
 import com.idle.fmd.global.error.exception.BusinessExceptionCode;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
 public class UserService {
     private final CustomUserDetailsManager manager;
+    private final PasswordEncoder passwordEncoder;
 
     // 회원가입 메서드
     public void signup(SignupDto dto){
@@ -27,7 +29,7 @@ public class UserService {
                 .accountId(dto.getAccountId())
                 .email(dto.getEmail())
                 .nickname(dto.getNickname())
-                .password(dto.getPassword())
+                .password(passwordEncoder.encode(dto.getPassword()))
                 .build()
         );
     }
