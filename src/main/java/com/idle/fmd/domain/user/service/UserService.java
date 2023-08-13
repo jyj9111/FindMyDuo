@@ -2,7 +2,7 @@ package com.idle.fmd.domain.user.service;
 
 import com.idle.fmd.domain.user.dto.UserLoginRequestDto;
 import com.idle.fmd.global.auth.JwtTokenDto;
-import com.idle.fmd.global.auth.JwtTokenUtils;
+import com.idle.fmd.global.auth.jwt.JwtTokenUtils;
 import com.idle.fmd.global.error.exception.BusinessException;
 import com.idle.fmd.global.error.exception.BusinessExceptionCode;
 import lombok.RequiredArgsConstructor;
