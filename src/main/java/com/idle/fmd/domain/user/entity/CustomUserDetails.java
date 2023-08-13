@@ -5,6 +5,8 @@ import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.time.LocalDateTime;
+
 import java.util.Collection;
 
 @Builder
@@ -50,4 +52,26 @@ public class CustomUserDetails implements UserDetails {
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return null;
     }
+
+    public static CustomUserDetails fromEntity(UserEntity entity) {
+
+        return CustomUserDetails.builder()
+                .accountId(entity.getAccountId())
+                .password(entity.getPassword())
+                .email(entity.getEmail())
+                .nickname(entity.getNickname())
+                .build();
+    }
+
+    public UserEntity newEntity() {
+        UserEntity entity = new UserEntity();
+        entity.setAccountId(accountId);
+        entity.setPassword(password);
+        entity.setEmail(email);
+        entity.setNickname(nickname);
+        entity.setCreatedAt(LocalDateTime.now());
+
+        return entity;
+    }
+
 }

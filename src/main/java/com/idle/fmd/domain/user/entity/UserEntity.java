@@ -1,6 +1,8 @@
 package com.idle.fmd.domain.user.entity;
 
+
 import com.idle.fmd.domain.lol.entity.LolEntity;
+
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -38,4 +40,5 @@ public class UserEntity {
     @OneToOne
     @JoinColumn(name = "lol_account")
     private LolEntity lolAccount;
+
 }
