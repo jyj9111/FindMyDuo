@@ -1,7 +1,7 @@
 package com.idle.fmd.domain.user.service;
 
 import com.idle.fmd.domain.user.dto.UserLoginRequestDto;
-import com.idle.fmd.global.auth.JwtTokenDto;
+import com.idle.fmd.domain.user.dto.UserLoginResponseDto;
 import com.idle.fmd.global.auth.jwt.JwtTokenUtils;
 import com.idle.fmd.global.error.exception.BusinessException;
 import com.idle.fmd.global.error.exception.BusinessExceptionCode;
@@ -20,7 +20,7 @@ public class UserService {
 
     private final JwtTokenUtils jwtTokenUtils;
 
-    public JwtTokenDto loginUser(UserLoginRequestDto dto) {
+    public UserLoginResponseDto loginUser(UserLoginRequestDto dto) {
 
         log.info("로그인 : " + manager.userExists(dto.getAccountId()));
 
@@ -34,8 +34,6 @@ public class UserService {
             throw new BusinessException(BusinessExceptionCode.LOGIN_PASSWORD_CHECK_ERROR);
         }
 
-        JwtTokenDto jwtResponse = new JwtTokenDto();
-        jwtResponse.setToken(jwtTokenUtils.generateToken(userDetails));
-        return jwtResponse;
+        return new UserLoginResponseDto(jwtTokenUtils.generateToken(userDetails));
     }
 }
