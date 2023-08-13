@@ -1,4 +1,4 @@
-package com.idle.fmd.global.auth;
+package com.idle.fmd.global.auth.jwt;
 
 import com.idle.fmd.domain.user.entity.CustomUserDetails;
 import jakarta.servlet.FilterChain;

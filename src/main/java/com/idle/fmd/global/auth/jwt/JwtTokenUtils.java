@@ -1,4 +1,4 @@
-package com.idle.fmd.global.auth;
+package com.idle.fmd.global.auth.jwt;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtParser;
