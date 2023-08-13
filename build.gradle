@@ -26,8 +26,6 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'org.springframework.boot:spring-boot-starter-security'
-    implementation 'net.thauvin.erik.httpstatus:httpstatus:1.0.5'
-	implementation 'net.thauvin.erik.httpstatus:httpstatus:1.0.5'
 
 	// mysql
 	runtimeOnly 'com.mysql:mysql-connector-j'
@@ -40,6 +38,12 @@ dependencies {
 	implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
 	runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.5'
 	runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.11.5'
+
+	// OAuth2
+	implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
+
+	// thymeleaf
+	implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6'
 
 	compileOnly 'org.projectlombok:lombok'
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
