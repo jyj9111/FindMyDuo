@@ -29,4 +29,5 @@ spring :
     resources:
       static-locations: classpath:/static
 
-jwt: ${SPRING_JWT_SECRETE}
+jwt:
+  secret: ${SPRING_JWT_SECRETE}
