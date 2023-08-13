@@ -1,5 +1,6 @@
 package com.idle.fmd.global.config;
 
+
 import com.idle.fmd.global.auth.jwt.JwtTokenFilter;
 import com.idle.fmd.global.auth.oauth2.OAuth2SuccessHandler;
 import com.idle.fmd.global.auth.oauth2.OAuth2UserServiceImpl;
@@ -46,7 +47,8 @@ public class WebSecurityConfig {
                                 .sessionCreationPolicy(
                                         SessionCreationPolicy.STATELESS)
                 )
-                .addFilterBefore(jwtTokenFilter, AuthorizationFilter.class);;
+                .addFilterBefore(jwtTokenFilter, AuthorizationFilter.class);
+
         return http.build();
     }
 }

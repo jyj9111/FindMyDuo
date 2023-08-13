@@ -1,5 +1,8 @@
 package com.idle.fmd.domain.user.entity;
 
+
+import com.idle.fmd.domain.lol.entity.LolEntity;
+
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -33,5 +36,9 @@ public class UserEntity {
     // 구해듀오 가입 날짜
     private LocalDateTime createdAt;
 
+    // 구해듀오 회원의 롤 계정정보
+    @OneToOne
+    @JoinColumn(name = "lol_account")
+    private LolEntity lolAccount;
 
 }

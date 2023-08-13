@@ -3,16 +3,20 @@ package com.idle.fmd.domain.user.service;
 import com.idle.fmd.domain.user.entity.CustomUserDetails;
 import com.idle.fmd.domain.user.entity.UserEntity;
 import com.idle.fmd.domain.user.repo.UserRepository;
+
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
+
+import com.idle.fmd.global.error.exception.BusinessException;
+import com.idle.fmd.global.error.exception.BusinessExceptionCode;
+
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.provisioning.UserDetailsManager;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
+
 
 @Service
 @RequiredArgsConstructor
@@ -40,7 +44,8 @@ public class CustomUserDetailsManager implements UserDetailsManager {
     public void createUser(UserDetails user) {
         // 이미 해당 아이디를 가진 유저가 존재하면 예외 발생
         if(userExists(user.getUsername()))
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+            throw new BusinessException(BusinessExceptionCode.DUPLICATED_USER_ERROR);
+
 
         // 새로운 엔티티를 생성해서 유저 정보를 DB 에 저장
         CustomUserDetails userInfo = (CustomUserDetails) user;
