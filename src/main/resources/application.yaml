@@ -1,4 +1,7 @@
 spring :
+  profiles:
+    include: oauth
+
   datasource:
     url: ${SPRING_DATASOURCE_URL}
     username: ${SPRING_DATASOURCE_USERNAME}
@@ -8,8 +11,8 @@ spring :
   jpa:
     database: mysql
     hibernate:
-       ddl-auto: create
-#      ddl-auto: update
+#       ddl-auto: create
+      ddl-auto: update
     database-platform: org.hibernate.dialect.MySQL8Dialect
     show-sql: true
     defer-datasource-initialization: true
@@ -29,4 +32,5 @@ spring :
     resources:
       static-locations: classpath:/static
 
-jwt: ${SPRING_JWT_SECRETE}
+jwt:
+  secret: ${SPRING_JWT_SECRETE}
