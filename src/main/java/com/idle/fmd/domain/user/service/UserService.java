@@ -90,7 +90,7 @@ public class UserService {
     }
 
     // 이메일 인증 메일을 보내는 메서드
-    public int sendEmail(EmailAuthRequestDto dto){
+    public void sendEmail(EmailAuthRequestDto dto){
         // 이메일 전송 시 내용 구성 설정객체 생성
         SimpleMailMessage simpleMailMessage = new SimpleMailMessage();
         // 어디로 보낼 것인지 설정
@@ -109,7 +109,5 @@ public class UserService {
         // 만약 해당 이메일에 대한 데이터가 있다면 인증코드와 만료시간을 갱신한다.
         ValueOperations<String, String> values = redisTemplate.opsForValue();
         values.set(dto.getEmail(), String.valueOf(authCode), Duration.ofSeconds(300));
-
-        return authCode;
     }
 }

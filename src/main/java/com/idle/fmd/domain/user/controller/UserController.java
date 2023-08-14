@@ -41,10 +41,9 @@ public class UserController {
 
     // 인증 메일 발송
     @PostMapping("/email-auth")
-    public EmailAuthResponseDto sendEmail(@RequestBody EmailAuthRequestDto dto){
+    public void sendEmail(@RequestBody EmailAuthRequestDto dto){
         // 인증 코드를 받아서 저장
-        int authCode = userService.sendEmail(dto);
-        return new EmailAuthResponseDto(authCode);
+        userService.sendEmail(dto);
     }
 
     // OAuth 인증 실패 시 리다이렉트 할 URL 요청
