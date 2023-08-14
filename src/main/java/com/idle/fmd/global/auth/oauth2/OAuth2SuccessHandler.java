@@ -1,6 +1,7 @@
 package com.idle.fmd.global.auth.oauth2;
 
 import com.idle.fmd.domain.user.entity.CustomUserDetails;
+import com.idle.fmd.domain.user.service.CustomUserDetailsManager;
 import com.idle.fmd.global.auth.jwt.JwtTokenUtils;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -10,7 +11,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.oauth2.core.user.OAuth2User;
-import org.springframework.security.provisioning.UserDetailsManager;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
 
@@ -21,7 +21,7 @@ import java.io.IOException;
 @RequiredArgsConstructor
 public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
     private final JwtTokenUtils tokenUtils;
-    private final UserDetailsManager userDetailsManager;
+    private final CustomUserDetailsManager manager;
 
     @Override
     // 인증 성공시 호출되는 메소드
@@ -38,12 +38,13 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         String providerId = oAuth2User.getAttribute("id").toString();
         String accountId = String.format("%s_%s", provider, providerId);
         String email = oAuth2User.getAttribute("email");
-        String nickname = oAuth2User.getAttribute("nickname").toString();
+        String name = oAuth2User.getAttribute("name").toString();
+        String nickname = name + "_" + providerId;
 
 
         // 처음으로 소셜 로그인한 사용자를 데이터베이스에 등록
-        if(!userDetailsManager.userExists(accountId)) {
-            userDetailsManager.createUser(CustomUserDetails.builder()
+        if(!manager.userExists(accountId)) {
+            manager.createUser(CustomUserDetails.builder()
                     .accountId(accountId)
                     .email(email)
                     .nickname(nickname)
@@ -53,7 +54,7 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 
         // 데이터베이스에서 사용자 회수
         UserDetails details
-                = userDetailsManager.loadUserByUsername(accountId);
+                = manager.loadUserByUsername(accountId);
         String jwt = tokenUtils.generateToken(details);
 
         // 목적지 URL 설정
