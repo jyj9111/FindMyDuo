@@ -18,6 +18,14 @@ public enum BusinessExceptionCode {
     // 회원가입 시 비밀번호와 비밀번호 확인 값이 다를 때 발생하는 예외의 예외코드
     PASSWORD_CHECK_ERROR(HttpStatus.BAD_REQUEST, "패스워드와 패스워드 확인이 일치 하지않습니다."),
 
+    // 회원가입 시 인증요청을 보내지 않고 회원가입을 시도했을 때의 예외코드
+    NO_EMAIL_AUTH_REQUEST_ERROR(HttpStatus.BAD_REQUEST, "이메일 인증요청을 보내지 않았습니다."),
+
+    // 회원가입 시 이메일 인증코드가 틀렸을 경우의 예외코드
+    NOT_VALID_EMAIL_AUTH_CODE_ERROR(HttpStatus.BAD_REQUEST, "올바른 인증코드가 아닙니다."),
+
+    // 회원가입 시 존재하는 이메일로 회원가입을 시도했을 때의 예외코드
+    DUPLICATED_EMAIL_ERROR(HttpStatus.BAD_REQUEST, "이미 존재하는 이메일입니다."),
 
     // 로그인 관련 예외
     // 로그인시 존재하지 않는 아이디를 입력할시 예외코드
