@@ -32,7 +32,11 @@ public enum BusinessExceptionCode {
     NOT_EXIST_USER_ERROR(HttpStatus.UNAUTHORIZED, "존재하지 않는 아이디입니다."),
 
     // 해당 아이디의 비밀번호를 틀리게 입력한 경우 예외코드
-    LOGIN_PASSWORD_CHECK_ERROR(HttpStatus.BAD_REQUEST, "해당하는 아이디의 비밀번호를 잘못입력하셨습니다.");
+    LOGIN_PASSWORD_CHECK_ERROR(HttpStatus.BAD_REQUEST, "해당하는 아이디의 비밀번호를 잘못입력하셨습니다."),
+
+    // OAuth 인증 시 이메일 중복으로 인해 존재하지 않는 유저를 찾게되는 상황에서 발생하는 예외의 예외코드
+    // OAuth2SuccessHandler 의 try ~ catch 구문에서 발생하는 예외처리
+    UNAVAILABLE_OAUTH_ACCOUNT_ERROR(HttpStatus.BAD_REQUEST, "사용할 수 없는 계정입니다.");
 
 
     private final HttpStatus status;

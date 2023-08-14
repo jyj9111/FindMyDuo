@@ -43,7 +43,7 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 
 
         // 처음으로 소셜 로그인한 사용자를 데이터베이스에 등록
-        if(!manager.userExists(accountId)) {
+        if(!manager.userExists(accountId) && !manager.existByEmail(email)) {
             manager.createUser(CustomUserDetails.builder()
                     .accountId(accountId)
                     .email(email)
@@ -52,15 +52,24 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
                     .build());
         }
 
-        // 데이터베이스에서 사용자 회수
-        UserDetails details
-                = manager.loadUserByUsername(accountId);
-        String jwt = tokenUtils.generateToken(details);
+        try{
+            // 데이터베이스에서 사용자 회수
+            UserDetails details
+                    = manager.loadUserByUsername(accountId);
 
-        // 목적지 URL 설정
-        // 우리 서비스의 Frontend 구성에 따라 유연하게 대처해야 한다.
-        String targetUrl = String.format("http://localhost:8080/users/oauth?token=%s", jwt);
-        // 실제 Redirect 응답 생성
-        getRedirectStrategy().sendRedirect(request, response, targetUrl);
+            String jwt = tokenUtils.generateToken(details);
+
+            // 목적지 URL 설정
+            // 우리 서비스의 Frontend 구성에 따라 유연하게 대처해야 한다.
+            String targetUrl = String.format("http://localhost:8080/users/oauth?token=%s", jwt);
+            // 실제 Redirect 응답 생성
+            getRedirectStrategy().sendRedirect(request, response, targetUrl);
+
+        }catch (Exception e){
+            log.error(e.getMessage());
+            // oauth 인증 실패 시 oauth-fail URL 로 리다이렉트
+            String targetUrl = String.format("http://localhost:8080/users/oauth-fail");
+            getRedirectStrategy().sendRedirect(request, response, targetUrl);
+        }
     }
 }
