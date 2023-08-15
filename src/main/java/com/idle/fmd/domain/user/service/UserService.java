@@ -5,6 +5,7 @@ import com.idle.fmd.domain.user.dto.EmailAuthRequestDto;
 import com.idle.fmd.domain.user.dto.UserLoginRequestDto;
 import com.idle.fmd.domain.user.dto.UserLoginResponseDto;
 import com.idle.fmd.global.auth.jwt.JwtTokenUtils;
+import com.idle.fmd.global.common.utils.RedisUtil;
 import com.idle.fmd.global.error.exception.BusinessException;
 import com.idle.fmd.global.error.exception.BusinessExceptionCode;
 import lombok.RequiredArgsConstructor;
@@ -31,6 +32,7 @@ public class UserService {
     private final JwtTokenUtils jwtTokenUtils;
     private final JavaMailSender mailSender;
     private final RedisTemplate redisTemplate;
+    private final RedisUtil redisUtil;
 
     // 회원가입 메서드
     public void signup(SignupDto dto){
@@ -109,5 +111,11 @@ public class UserService {
         // 만약 해당 이메일에 대한 데이터가 있다면 인증코드와 만료시간을 갱신한다.
         ValueOperations<String, String> values = redisTemplate.opsForValue();
         values.set(dto.getEmail(), String.valueOf(authCode), Duration.ofSeconds(300));
+    }
+
+    // 로그아웃 메서드
+    public void logout(String token){
+        // redisUtil 의 setBlackListToken() 메서드를 이용해서 해당 토큰을 블랙리스트로 등록
+        redisUtil.setBlackListToken(token);
     }
 }
