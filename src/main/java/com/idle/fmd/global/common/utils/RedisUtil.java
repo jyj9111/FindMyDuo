@@ -47,11 +47,13 @@ public class RedisUtil {
         values.set(key, String.valueOf(authCode), Duration.ofSeconds(300));
     }
 
+    // 이메일 인증이 완료되면 Redis 에 저장된 인증코드를 삭제하는 메서드
     public void delete(String email){
         String key = "authCode:" + email;
         redisTemplate.delete(key);
     }
 
+    // 해당하는 이메일로 보내진 인증코드를 반환하는 메서드
     public Object getAuthCode(String email){
         String key = "authCode:" + email;
         return redisTemplate.opsForValue().get(key);
