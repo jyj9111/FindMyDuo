@@ -1,12 +1,12 @@
 package com.idle.fmd.domain.user.controller;
 
-import com.idle.fmd.domain.user.dto.UserLoginRequestDto;
+import com.idle.fmd.domain.user.dto.*;
 import com.idle.fmd.domain.user.service.UserService;
-import com.idle.fmd.domain.user.dto.UserLoginResponseDto;
+import com.idle.fmd.global.error.exception.BusinessException;
+import com.idle.fmd.global.error.exception.BusinessExceptionCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
-import com.idle.fmd.domain.user.dto.SignupDto;
 import jakarta.validation.Valid;
 
 import org.springframework.web.bind.annotation.PostMapping;
@@ -37,5 +37,18 @@ public class UserController {
     public UserLoginResponseDto oauthLogin(@RequestParam("token") String token) {
         return new UserLoginResponseDto(token);
 
+    }
+
+    // 인증 메일 발송
+    @PostMapping("/email-auth")
+    public void sendEmail(@RequestBody EmailAuthRequestDto dto){
+        // 인증 코드를 받아서 저장
+        userService.sendEmail(dto);
+    }
+
+    // OAuth 인증 실패 시 리다이렉트 할 URL 요청
+    @GetMapping("/oauth-fail")
+    public void oauthFail(){
+        throw new BusinessException(BusinessExceptionCode.UNAVAILABLE_OAUTH_ACCOUNT_ERROR);
     }
 }

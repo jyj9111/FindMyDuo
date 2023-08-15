@@ -32,5 +32,30 @@ spring :
     resources:
       static-locations: classpath:/static
 
+  # 메일 관련설정 ( 이메일 인증에 사용 )
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${SPRING_MAIL_USERNAME}
+    password: ${SPRING_MAIL_PASSWORD}
+    properties:
+      mail:
+        smtp:
+          starttls:
+            enable: true
+            required: true
+          auth: true
+          connectiontimeout: 5000
+          timeout: 5000
+          writetimeout: 5000
+
+  # REDIS 관련 설정
+  cache:
+    type: redis
+    redis:
+      host: ${SPRING_CACHE_REDIS_HOST}
+      port: ${SPRING_CACHE_REDIS_PORT}
+      password: ${SPRING_CACHE_REDIS_PASSWORD}
+
 jwt:
   secret: ${SPRING_JWT_SECRETE}

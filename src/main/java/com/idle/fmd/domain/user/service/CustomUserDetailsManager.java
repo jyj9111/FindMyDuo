@@ -73,4 +73,9 @@ public class CustomUserDetailsManager implements UserDetailsManager {
     public void changePassword(String oldPassword, String newPassword) {
 
     }
+
+    // 해당 이메일의 존재여부를 반환하는 메서드
+    public boolean existByEmail(String email){
+        return userRepository.existsByEmail(email);
+    }
 }

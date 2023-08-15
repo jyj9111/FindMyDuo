@@ -30,7 +30,9 @@ public class WebSecurityConfig {
                                 .requestMatchers(
                                         "/users/login",     // 로그인 url
                                         "/users/signup",    // 회원가입 url
-                                        "/users/oauth"      // oauth 로그인시 토큰발급 url
+                                        "/users/oauth", // oauth 로그인시 토큰발급 url
+                                        "/users/email-auth", // 이메일 인증 요청 url
+                                        "/users/oauth-fail" // oauth 실패 시 리다이렉트 url
                                 )
                                 .anonymous()
                                 .anyRequest()

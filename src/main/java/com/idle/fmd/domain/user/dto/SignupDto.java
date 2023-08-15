@@ -25,4 +25,7 @@ public class SignupDto {
 
     @NotBlank(message = "패스워드를 확인해주세요.")
     private String passwordCheck;
+
+    @NotBlank(message = "이메일 인증코드를 입력해주세요.")
+    private String emailAuthCode;
 }
