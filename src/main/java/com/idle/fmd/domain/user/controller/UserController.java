@@ -4,7 +4,9 @@ import com.idle.fmd.domain.user.dto.*;
 import com.idle.fmd.domain.user.service.UserService;
 import com.idle.fmd.global.error.exception.BusinessException;
 import com.idle.fmd.global.error.exception.BusinessExceptionCode;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
 import org.springframework.web.bind.annotation.*;
 
 import jakarta.validation.Valid;
@@ -50,5 +52,14 @@ public class UserController {
     @GetMapping("/oauth-fail")
     public void oauthFail(){
         throw new BusinessException(BusinessExceptionCode.UNAVAILABLE_OAUTH_ACCOUNT_ERROR);
+    }
+
+    // 로그아웃
+    @PostMapping("/logout")
+    public void logout(HttpServletRequest request){
+        // 요청의 헤더정보를 가져와 토큰 내용을 추출
+        String token = request.getHeader(HttpHeaders.AUTHORIZATION).split(" ")[1];
+        // 토큰을 전달
+        userService.logout(token);
     }
 }
