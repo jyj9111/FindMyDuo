@@ -5,6 +5,7 @@ import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Component;
 
 import java.time.Duration;
@@ -36,5 +37,23 @@ public class RedisUtil {
 
         // 토큰의 남은 시간동안 해당 토큰을 블랙리스트로 처리하고 value 는 "logout" 으로 저장한다.
         redisTemplate.opsForValue().set(key, "logout", Duration.ofSeconds(expiration));
+    }
+
+    // Redis DB 에 ["authCode:이메일" : "인증코드"] 형태로 데이터를 저장하고 데이터 만료시간은 300초로 한다.
+    // 만약 해당 이메일에 대한 데이터가 있다면 인증코드와 만료시간을 갱신한다.
+    public void setEmailAuthCode(String email, int authCode){
+        ValueOperations<String, String> values = redisTemplate.opsForValue();
+        String key = "authCode:" + email;
+        values.set(key, String.valueOf(authCode), Duration.ofSeconds(300));
+    }
+
+    public void delete(String email){
+        String key = "authCode:" + email;
+        redisTemplate.delete(key);
+    }
+
+    public Object getAuthCode(String email){
+        String key = "authCode:" + email;
+        return redisTemplate.opsForValue().get(key);
     }
 }

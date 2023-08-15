@@ -10,8 +10,6 @@ import com.idle.fmd.global.error.exception.BusinessException;
 import com.idle.fmd.global.error.exception.BusinessExceptionCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -20,7 +18,6 @@ import org.springframework.stereotype.Service;
 import com.idle.fmd.domain.user.dto.SignupDto;
 import com.idle.fmd.domain.user.entity.CustomUserDetails;
 
-import java.time.Duration;
 import java.util.Random;
 
 @Slf4j
@@ -31,7 +28,6 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenUtils jwtTokenUtils;
     private final JavaMailSender mailSender;
-    private final RedisTemplate redisTemplate;
     private final RedisUtil redisUtil;
 
     // 회원가입 메서드
@@ -48,7 +44,7 @@ public class UserService {
             throw new BusinessException(BusinessExceptionCode.DUPLICATED_EMAIL_ERROR);
 
         // 등록하려는 이메일에 해당되는 인증코드를 가져온다.
-        Object emailAuthObject = redisTemplate.opsForValue().get(dto.getEmail());
+        Object emailAuthObject = redisUtil.getAuthCode(dto.getEmail());
 
         // 해당하는 이메일의 인증코드가 없다면 이메일 요청을 보내지 않았음을 알리는 예외발생
         if(emailAuthObject == null)
@@ -71,7 +67,7 @@ public class UserService {
                         .build()
         );
 
-        redisTemplate.delete((Object) dto.getEmail());
+        redisUtil.delete(dto.getEmail());
     }
 
     public UserLoginResponseDto loginUser(UserLoginRequestDto dto) {
@@ -107,10 +103,8 @@ public class UserService {
         // 이메일 전송
         mailSender.send(simpleMailMessage);
 
-        // Redis DB 에 [이메일 : 인증코드] 형태로 데이터를 저장하고 데이터 만료시간은 300초로 한다.
-        // 만약 해당 이메일에 대한 데이터가 있다면 인증코드와 만료시간을 갱신한다.
-        ValueOperations<String, String> values = redisTemplate.opsForValue();
-        values.set(dto.getEmail(), String.valueOf(authCode), Duration.ofSeconds(300));
+        // redisUtil 클래스의 setEmailAuthCode() 메서드를 이용해서 해당 이메일로 보내진 인증코드를 저장
+        redisUtil.setEmailAuthCode(dto.getEmail(), authCode);
     }
 
     // 로그아웃 메서드
