@@ -34,7 +34,7 @@ public class OAuth2UserServiceImpl extends DefaultOAuth2UserService {
             // 받은 사용자 데이터를 정리한다.
             Map<String, Object> responseMap = oAuth2User.getAttribute("response");
             attributes.put("id", responseMap.get("id"));
-            attributes.put("nickname", responseMap.get("name"));
+            attributes.put("name", responseMap.get("name"));
             attributes.put("email", responseMap.get("email"));
             attributes.put("phone", responseMap.get("mobile"));
             nameAttribute = "email";
@@ -47,7 +47,7 @@ public class OAuth2UserServiceImpl extends DefaultOAuth2UserService {
             // 받은 사용자 데이터를 정리한다.
             Map<String, Object> propMap = oAuth2User.getAttribute("properties");
             attributes.put("id", oAuth2User.getAttribute("id"));
-            attributes.put("nickname", propMap.get("nickname"));
+            attributes.put("name", propMap.get("nickname"));
             Map<String, Object> accountMap
                     = oAuth2User.getAttribute("kakao_account");
             attributes.put("email", accountMap.get("email"));
@@ -61,7 +61,7 @@ public class OAuth2UserServiceImpl extends DefaultOAuth2UserService {
             // 받은 사용자 데이터를 정리한다.
             Map<String, Object> responseMap = oAuth2User.getAttributes();
             attributes.put("id", responseMap.get("sub"));
-            attributes.put("nickname", responseMap.get("name"));
+            attributes.put("name", responseMap.get("name"));
             attributes.put("email", responseMap.get("email"));
             nameAttribute = "email";
         }
