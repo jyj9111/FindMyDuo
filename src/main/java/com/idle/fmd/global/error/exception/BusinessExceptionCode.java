@@ -40,7 +40,10 @@ public enum BusinessExceptionCode {
 
     // 마이페이지 관련 예외
     // 토큰의 계정 정보와 요청 데이터의 계정 정보가 불일치할 때 예외코드
-    TOKEN_ACCOUNT_MISMATCH_ERROR(HttpStatus.BAD_REQUEST, "토큰의 계정 정보와 요청 데이터의 계정 정보가 일치하지 않습니다.");
+    TOKEN_ACCOUNT_MISMATCH_ERROR(HttpStatus.BAD_REQUEST, "토큰의 계정 정보와 요청 데이터의 계정 정보가 일치하지 않습니다."),
+
+    // 프로필 이미지 저장 실패
+    CANNOT_SAVE_IMAGE_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "프로필 이미지를 저장할 수 없습니다.");
 
     private final HttpStatus status;
     private final String message;

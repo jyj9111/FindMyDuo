@@ -13,6 +13,7 @@ public class UserMyPageResponseDto {
     private String nickname;
     private LocalDateTime createdAt;
     private LolEntity lolAccount;
+    private String profileImage;
 
     public static UserMyPageResponseDto fromEntity(UserEntity entity) {
         UserMyPageResponseDto dto = new UserMyPageResponseDto();
@@ -21,6 +22,7 @@ public class UserMyPageResponseDto {
         dto.setNickname(entity.getNickname());
         dto.setCreatedAt(entity.getCreatedAt());
         dto.setLolAccount(entity.getLolAccount());
+        dto.setProfileImage(entity.getProfileImage());
         return dto;
     }
 }

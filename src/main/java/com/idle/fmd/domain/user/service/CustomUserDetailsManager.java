@@ -97,4 +97,16 @@ public class CustomUserDetailsManager implements UserDetailsManager {
     public boolean existByEmail(String email){
         return userRepository.existsByEmail(email);
     }
+
+    // 프로필 이미지 경로를 저장하는 메서드
+    public void updateProfileImage(String accountId, String imageUrl) {
+        Optional<UserEntity> entityList = userRepository.findByAccountId(accountId);
+        if (entityList.isPresent()) {
+            UserEntity userEntity = entityList.get();
+            userEntity.setProfileImage(imageUrl);
+            userRepository.save(userEntity);
+        } else {
+            throw new UsernameNotFoundException(accountId);
+        }
+    }
 }

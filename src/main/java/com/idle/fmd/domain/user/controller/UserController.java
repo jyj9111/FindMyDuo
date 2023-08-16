@@ -7,6 +7,7 @@ import com.idle.fmd.global.error.exception.BusinessExceptionCode;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 
 @RestController
@@ -86,5 +88,15 @@ public class UserController {
     public void UserDelete(Authentication authentication) {
         String accountId = authentication.getName();
         userService.delete(accountId);
+    }
+
+    // 마이페이지 프로필 이미지 등록 및 변경
+    @PutMapping(value = "/mypage/profile-image",
+            consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public void uploadProfileImage(
+            Authentication authentication,
+            @RequestParam("image") MultipartFile image) {
+        String accountId = authentication.getName();
+        userService.uploadProfileImage(accountId, image);
     }
 }

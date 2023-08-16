@@ -16,7 +16,10 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import com.idle.fmd.domain.user.entity.CustomUserDetails;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Optional;
 import java.util.Random;
 
@@ -159,5 +162,40 @@ public class UserService {
 
         // UserDetailsManager 의 deleteUser 메소드를 호출하여 유저 정보 삭제
         manager.deleteUser(accountId);
+    }
+
+    // 프로필 이미지 변경 메서드
+    public void uploadProfileImage(String accountId, MultipartFile image) {
+        // 유저 ID를 프로필 디렉토리명으로 설정
+        String profileDir = String.format("medias/profile/%s", accountId);
+
+        // 폴더 생성
+        log.info(profileDir);
+        try {
+            Files.createDirectories(Path.of(profileDir));
+        } catch (Exception e) {
+            log.error("프로필 이미지 디렉토리를 생성할 수 없음");
+            throw new BusinessException(BusinessExceptionCode.CANNOT_SAVE_IMAGE_ERROR);
+        }
+
+        // 이미지 이름 생성
+        String originalImageName = image.getOriginalFilename();
+        String extension = originalImageName.substring(originalImageName.lastIndexOf(".") + 1);
+        String profileFileName = "profile." + extension;
+        log.info(profileFileName);
+
+        // 폴더 + 파일 경로 이름
+        String profilePath = String.format("%s/%s", profileDir, profileFileName);
+
+        // 저장
+        try {
+            image.transferTo(Path.of(profilePath));
+        } catch (Exception e) {
+            log.error("이미지를 해당 경로에 저장할 수 없음");
+            throw new BusinessException(BusinessExceptionCode.CANNOT_SAVE_IMAGE_ERROR);
+        }
+
+        manager.updateProfileImage(accountId,
+                String.format("/static/%s", profilePath));
     }
 }
