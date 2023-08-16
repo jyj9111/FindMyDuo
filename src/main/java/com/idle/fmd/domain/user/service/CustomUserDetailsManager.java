@@ -64,9 +64,28 @@ public class CustomUserDetailsManager implements UserDetailsManager {
 
     }
 
+    // accountId를 매개변수로 받아서 회원 정보를 수정 (업데이트) 하는 메서드
+    public void updateUser(UserDetails user, String accountId) {
+        CustomUserDetails updatedUser = (CustomUserDetails) user;
+        Optional<UserEntity> entityList = userRepository.findByAccountId(accountId);
+        if (entityList.isPresent()) {
+            UserEntity entity = entityList.get();
+            entity.setPassword(updatedUser.getPassword());
+            entity.setEmail(updatedUser.getEmail());
+            entity.setNickname(updatedUser.getNickname());
+            userRepository.save(entity);
+        } else throw new UsernameNotFoundException(accountId);
+    }
+
+    // 유저 정보를 삭제하는 메서드
     @Override
     public void deleteUser(String username) {
-
+        Optional<UserEntity> entityList = userRepository.findByAccountId(username);
+        if(entityList.isPresent()) {
+            userRepository.delete(entityList.get());
+        } else {
+            throw new UsernameNotFoundException(username);
+        }
     }
 
     @Override
@@ -77,5 +96,17 @@ public class CustomUserDetailsManager implements UserDetailsManager {
     // 해당 이메일의 존재여부를 반환하는 메서드
     public boolean existByEmail(String email){
         return userRepository.existsByEmail(email);
+    }
+
+    // 프로필 이미지 경로를 저장하는 메서드
+    public void updateProfileImage(String accountId, String imageUrl) {
+        Optional<UserEntity> entityList = userRepository.findByAccountId(accountId);
+        if (entityList.isPresent()) {
+            UserEntity userEntity = entityList.get();
+            userEntity.setProfileImage(imageUrl);
+            userRepository.save(userEntity);
+        } else {
+            throw new UsernameNotFoundException(accountId);
+        }
     }
 }
