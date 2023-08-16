@@ -71,4 +71,13 @@ public class UserController {
         UserMyPageResponseDto user = userService.profile(accountId);
         return user;
     }
+
+    // 마이페이지 유저 정보 수정
+    @PutMapping("/mypage")
+    public UserMyPageRequestDto updateMyPage(
+            Authentication authentication,
+            @RequestBody UserMyPageRequestDto dto) {
+        String accountId = authentication.getName();
+        return userService.update(accountId, dto);
+    }
 }

@@ -36,8 +36,11 @@ public enum BusinessExceptionCode {
 
     // OAuth 인증 시 이메일 중복으로 인해 존재하지 않는 유저를 찾게되는 상황에서 발생하는 예외의 예외코드
     // OAuth2SuccessHandler 의 try ~ catch 구문에서 발생하는 예외처리
-    UNAVAILABLE_OAUTH_ACCOUNT_ERROR(HttpStatus.BAD_REQUEST, "사용할 수 없는 계정입니다.");
+    UNAVAILABLE_OAUTH_ACCOUNT_ERROR(HttpStatus.BAD_REQUEST, "사용할 수 없는 계정입니다."),
 
+    // 마이페이지 관련 예외
+    // 토큰의 계정 정보와 요청 데이터의 계정 정보가 불일치할 때 예외코드
+    TOKEN_ACCOUNT_MISMATCH_ERROR(HttpStatus.BAD_REQUEST, "토큰의 계정 정보와 요청 데이터의 계정 정보가 일치하지 않습니다.");
 
     private final HttpStatus status;
     private final String message;

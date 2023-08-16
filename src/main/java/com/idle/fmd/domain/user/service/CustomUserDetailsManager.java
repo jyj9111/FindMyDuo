@@ -64,6 +64,19 @@ public class CustomUserDetailsManager implements UserDetailsManager {
 
     }
 
+    // accountId를 매개변수로 받아서 회원 정보를 수정 (업데이트) 하는 메서드
+    public void updateUser(UserDetails user, String accountId) {
+        CustomUserDetails updatedUser = (CustomUserDetails) user;
+        Optional<UserEntity> entityList = userRepository.findByAccountId(accountId);
+        if (entityList.isPresent()) {
+            UserEntity entity = entityList.get();
+            entity.setPassword(updatedUser.getPassword());
+            entity.setEmail(updatedUser.getEmail());
+            entity.setNickname(updatedUser.getNickname());
+            userRepository.save(entity);
+        } else throw new UsernameNotFoundException(accountId);
+    }
+
     @Override
     public void deleteUser(String username) {
 

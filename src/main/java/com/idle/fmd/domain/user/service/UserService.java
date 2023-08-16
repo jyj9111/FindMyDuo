@@ -122,4 +122,31 @@ public class UserService {
             return UserMyPageResponseDto.fromEntity(entity.get());
         } else throw new BusinessException(BusinessExceptionCode.NOT_EXIST_USER_ERROR);
     }
+
+    // 유저 정보 수정 메서드
+    public UserMyPageRequestDto update(String accountId, UserMyPageRequestDto dto) {
+        String checkAccountId = dto.getAccountId();
+        String password = dto.getPassword();
+        String passwordCheck = dto.getPasswordCheck();
+
+        // 토큰에 있는 accountId 와 현재 바디에 담긴 accountId 정보가 다를 때 예외 발생
+        if(!accountId.equals(checkAccountId))
+            throw new BusinessException(BusinessExceptionCode.TOKEN_ACCOUNT_MISMATCH_ERROR);
+
+        // 비밀번호와 비밀번호 확인 데이터가 다르면 예외 발생 (회원가입에 사용한 에러 사용)
+        if(!password.equals(passwordCheck))
+            throw new BusinessException(BusinessExceptionCode.PASSWORD_CHECK_ERROR);
+
+        CustomUserDetails updateUserDetails =
+                CustomUserDetails.builder()
+                        .email(dto.getEmail())
+                        .nickname(dto.getNickname())
+                        .password(passwordEncoder.encode(dto.getPassword()))
+                        .build();
+
+        // CustomUserDetailsManager 의 updateUser 메서드를 호출해서 유저를 등록 (UserDetails 객체 전달 필요)
+        manager.updateUser(updateUserDetails, dto.getAccountId());
+
+        return dto;
+    }
 }
