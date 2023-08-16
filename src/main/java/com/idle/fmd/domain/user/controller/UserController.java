@@ -80,4 +80,11 @@ public class UserController {
         String accountId = authentication.getName();
         return userService.update(accountId, dto);
     }
+
+    // 마이페이지 회원 탈퇴 (유저 정보 삭제)
+    @DeleteMapping("/mypage")
+    public void UserDelete(Authentication authentication) {
+        String accountId = authentication.getName();
+        userService.delete(accountId);
+    }
 }

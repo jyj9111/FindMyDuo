@@ -77,9 +77,15 @@ public class CustomUserDetailsManager implements UserDetailsManager {
         } else throw new UsernameNotFoundException(accountId);
     }
 
+    // 유저 정보를 삭제하는 메서드
     @Override
     public void deleteUser(String username) {
-
+        Optional<UserEntity> entityList = userRepository.findByAccountId(username);
+        if(entityList.isPresent()) {
+            userRepository.delete(entityList.get());
+        } else {
+            throw new UsernameNotFoundException(username);
+        }
     }
 
     @Override

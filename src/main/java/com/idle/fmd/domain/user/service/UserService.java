@@ -149,4 +149,15 @@ public class UserService {
 
         return dto;
     }
+
+    // User 삭제 메서드
+    public void delete(String accountId) {
+        // 이미 탈퇴를 해서 없는 회원일 경우 존재하지 않는 아이디 예외 발생 (로그인에 처리한 예외 사용)
+        if(!manager.userExists(accountId)) {
+            throw new BusinessException(BusinessExceptionCode.NOT_EXIST_USER_ERROR);
+        }
+
+        // UserDetailsManager 의 deleteUser 메소드를 호출하여 유저 정보 삭제
+        manager.deleteUser(accountId);
+    }
 }
