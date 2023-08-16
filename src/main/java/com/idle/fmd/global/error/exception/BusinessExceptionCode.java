@@ -43,7 +43,10 @@ public enum BusinessExceptionCode {
     TOKEN_ACCOUNT_MISMATCH_ERROR(HttpStatus.BAD_REQUEST, "토큰의 계정 정보와 요청 데이터의 계정 정보가 일치하지 않습니다."),
 
     // 프로필 이미지 저장 실패
-    CANNOT_SAVE_IMAGE_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "프로필 이미지를 저장할 수 없습니다.");
+    CANNOT_SAVE_IMAGE_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "프로필 이미지를 저장할 수 없습니다."),
+
+    // 회원 탈퇴시 프로필 이미지 디렉토리 삭제하는 과정에서 예외 처리
+    CANNOT_DELETE_DIRECTORY_ERROR(HttpStatus.BAD_REQUEST, "프로필 이미지 디렉터리 삭제 중 오류가 발생했습니다.");
 
     private final HttpStatus status;
     private final String message;

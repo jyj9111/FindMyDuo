@@ -10,6 +10,7 @@ import com.idle.fmd.global.error.exception.BusinessException;
 import com.idle.fmd.global.error.exception.BusinessExceptionCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.tomcat.util.http.fileupload.FileUtils;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -18,6 +19,8 @@ import org.springframework.stereotype.Service;
 import com.idle.fmd.domain.user.entity.CustomUserDetails;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Optional;
@@ -162,6 +165,10 @@ public class UserService {
 
         // UserDetailsManager 의 deleteUser 메소드를 호출하여 유저 정보 삭제
         manager.deleteUser(accountId);
+
+        // 프로필 이미지 저장한 디렉토리 삭제
+        deleteProfileImageDirectory(accountId);
+
     }
 
     // 프로필 이미지 변경 메서드
@@ -197,5 +204,17 @@ public class UserService {
 
         manager.updateProfileImage(accountId,
                 String.format("/static/%s", profilePath));
+    }
+
+    // 회원 탈퇴 시 프로필 이미지 디렉토리 삭제 메서드
+    public void deleteProfileImageDirectory(String accountId) {
+        String profileDir = String.format("medias/profile/%s", accountId);
+        try {
+            FileUtils.deleteDirectory(new File(profileDir));
+        } catch (IOException e) {
+            // 프로필 이미지 디렉토리 삭제 하는 과정에서 예외 처리 (파일이 다른 곳에서 사용중일 때)
+            log.error("프로필 이미지 디렉토리 삭제 중 오류 발생");
+            throw new BusinessException(BusinessExceptionCode.CANNOT_DELETE_DIRECTORY_ERROR);
+        }
     }
 }
