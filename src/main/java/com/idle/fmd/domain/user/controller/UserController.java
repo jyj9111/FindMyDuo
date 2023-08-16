@@ -7,6 +7,8 @@ import com.idle.fmd.global.error.exception.BusinessExceptionCode;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import jakarta.validation.Valid;
@@ -15,6 +17,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 
 @RestController
@@ -61,5 +64,39 @@ public class UserController {
         String token = request.getHeader(HttpHeaders.AUTHORIZATION).split(" ")[1];
         // 토큰을 전달
         userService.logout(token);
+    }
+
+    // 마이페이지 유저 정보 조회
+    @GetMapping("/mypage")
+    public UserMyPageResponseDto myPage(Authentication authentication) {
+        String accountId = authentication.getName();
+        UserMyPageResponseDto user = userService.profile(accountId);
+        return user;
+    }
+
+    // 마이페이지 유저 정보 수정
+    @PutMapping("/mypage")
+    public UserMyPageRequestDto updateMyPage(
+            Authentication authentication,
+            @RequestBody UserMyPageRequestDto dto) {
+        String accountId = authentication.getName();
+        return userService.update(accountId, dto);
+    }
+
+    // 마이페이지 회원 탈퇴 (유저 정보 삭제)
+    @DeleteMapping("/mypage")
+    public void UserDelete(Authentication authentication) {
+        String accountId = authentication.getName();
+        userService.delete(accountId);
+    }
+
+    // 마이페이지 프로필 이미지 등록 및 변경
+    @PutMapping(value = "/mypage/profile-image",
+            consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public void uploadProfileImage(
+            Authentication authentication,
+            @RequestParam("image") MultipartFile image) {
+        String accountId = authentication.getName();
+        userService.uploadProfileImage(accountId, image);
     }
 }

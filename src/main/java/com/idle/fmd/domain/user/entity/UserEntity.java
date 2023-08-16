@@ -36,6 +36,9 @@ public class UserEntity {
     // 구해듀오 가입 날짜
     private LocalDateTime createdAt;
 
+    // 구해듀오 회원의 프로필 이미지 정보
+    private String profileImage;
+
     // 구해듀오 회원의 롤 계정정보
     @OneToOne
     @JoinColumn(name = "lol_account")
