@@ -1,9 +1,9 @@
 package com.idle.fmd.domain.user.service;
 
 
-import com.idle.fmd.domain.user.dto.EmailAuthRequestDto;
-import com.idle.fmd.domain.user.dto.UserLoginRequestDto;
-import com.idle.fmd.domain.user.dto.UserLoginResponseDto;
+import com.idle.fmd.domain.user.dto.*;
+import com.idle.fmd.domain.user.entity.UserEntity;
+import com.idle.fmd.domain.user.repo.UserRepository;
 import com.idle.fmd.global.auth.jwt.JwtTokenUtils;
 import com.idle.fmd.global.common.utils.RedisUtil;
 import com.idle.fmd.global.error.exception.BusinessException;
@@ -15,9 +15,9 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import com.idle.fmd.domain.user.dto.SignupDto;
 import com.idle.fmd.domain.user.entity.CustomUserDetails;
 
+import java.util.Optional;
 import java.util.Random;
 
 @Slf4j
@@ -29,6 +29,7 @@ public class UserService {
     private final JwtTokenUtils jwtTokenUtils;
     private final JavaMailSender mailSender;
     private final RedisUtil redisUtil;
+    private final UserRepository repository;
 
     // 회원가입 메서드
     public void signup(SignupDto dto){
@@ -111,5 +112,14 @@ public class UserService {
     public void logout(String token){
         // redisUtil 의 setBlackListToken() 메서드를 이용해서 해당 토큰을 블랙리스트로 등록
         redisUtil.setBlackListToken(token);
+    }
+
+    // 유저 조회 메서드
+    public UserMyPageResponseDto profile(String accountId) {
+        Optional<UserEntity> entity = repository.findByAccountId(accountId);
+
+        if(entity.isPresent()) {
+            return UserMyPageResponseDto.fromEntity(entity.get());
+        } else throw new BusinessException(BusinessExceptionCode.NOT_EXIST_USER_ERROR);
     }
 }
