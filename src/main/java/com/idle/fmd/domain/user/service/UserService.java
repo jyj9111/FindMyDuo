@@ -1,25 +1,29 @@
 package com.idle.fmd.domain.user.service;
 
 
-import com.idle.fmd.domain.user.dto.EmailAuthRequestDto;
-import com.idle.fmd.domain.user.dto.UserLoginRequestDto;
-import com.idle.fmd.domain.user.dto.UserLoginResponseDto;
+import com.idle.fmd.domain.user.dto.*;
+import com.idle.fmd.domain.user.entity.UserEntity;
+import com.idle.fmd.domain.user.repo.UserRepository;
 import com.idle.fmd.global.auth.jwt.JwtTokenUtils;
+import com.idle.fmd.global.common.utils.RedisUtil;
 import com.idle.fmd.global.error.exception.BusinessException;
 import com.idle.fmd.global.error.exception.BusinessExceptionCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.core.ValueOperations;
+import org.apache.tomcat.util.http.fileupload.FileUtils;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import com.idle.fmd.domain.user.dto.SignupDto;
 import com.idle.fmd.domain.user.entity.CustomUserDetails;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.time.Duration;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.Optional;
 import java.util.Random;
 
 @Slf4j
@@ -30,7 +34,8 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenUtils jwtTokenUtils;
     private final JavaMailSender mailSender;
-    private final RedisTemplate redisTemplate;
+    private final RedisUtil redisUtil;
+    private final UserRepository repository;
 
     // 회원가입 메서드
     public void signup(SignupDto dto){
@@ -46,7 +51,7 @@ public class UserService {
             throw new BusinessException(BusinessExceptionCode.DUPLICATED_EMAIL_ERROR);
 
         // 등록하려는 이메일에 해당되는 인증코드를 가져온다.
-        Object emailAuthObject = redisTemplate.opsForValue().get(dto.getEmail());
+        Object emailAuthObject = redisUtil.getAuthCode(dto.getEmail());
 
         // 해당하는 이메일의 인증코드가 없다면 이메일 요청을 보내지 않았음을 알리는 예외발생
         if(emailAuthObject == null)
@@ -69,7 +74,7 @@ public class UserService {
                         .build()
         );
 
-        redisTemplate.delete((Object) dto.getEmail());
+        redisUtil.delete(dto.getEmail());
     }
 
     public UserLoginResponseDto loginUser(UserLoginRequestDto dto) {
@@ -105,9 +110,111 @@ public class UserService {
         // 이메일 전송
         mailSender.send(simpleMailMessage);
 
-        // Redis DB 에 [이메일 : 인증코드] 형태로 데이터를 저장하고 데이터 만료시간은 300초로 한다.
-        // 만약 해당 이메일에 대한 데이터가 있다면 인증코드와 만료시간을 갱신한다.
-        ValueOperations<String, String> values = redisTemplate.opsForValue();
-        values.set(dto.getEmail(), String.valueOf(authCode), Duration.ofSeconds(300));
+        // redisUtil 클래스의 setEmailAuthCode() 메서드를 이용해서 해당 이메일로 보내진 인증코드를 저장
+        redisUtil.setEmailAuthCode(dto.getEmail(), authCode);
+    }
+
+    // 로그아웃 메서드
+    public void logout(String token){
+        // redisUtil 의 setBlackListToken() 메서드를 이용해서 해당 토큰을 블랙리스트로 등록
+        redisUtil.setBlackListToken(token);
+    }
+
+    // 유저 조회 메서드
+    public UserMyPageResponseDto profile(String accountId) {
+        Optional<UserEntity> entity = repository.findByAccountId(accountId);
+
+        if(entity.isPresent()) {
+            return UserMyPageResponseDto.fromEntity(entity.get());
+        } else throw new BusinessException(BusinessExceptionCode.NOT_EXIST_USER_ERROR);
+    }
+
+    // 유저 정보 수정 메서드
+    public UserMyPageRequestDto update(String accountId, UserMyPageRequestDto dto) {
+        String checkAccountId = dto.getAccountId();
+        String password = dto.getPassword();
+        String passwordCheck = dto.getPasswordCheck();
+
+        // 토큰에 있는 accountId 와 현재 바디에 담긴 accountId 정보가 다를 때 예외 발생
+        if(!accountId.equals(checkAccountId))
+            throw new BusinessException(BusinessExceptionCode.TOKEN_ACCOUNT_MISMATCH_ERROR);
+
+        // 비밀번호와 비밀번호 확인 데이터가 다르면 예외 발생 (회원가입에 사용한 에러 사용)
+        if(!password.equals(passwordCheck))
+            throw new BusinessException(BusinessExceptionCode.PASSWORD_CHECK_ERROR);
+
+        CustomUserDetails updateUserDetails =
+                CustomUserDetails.builder()
+                        .email(dto.getEmail())
+                        .nickname(dto.getNickname())
+                        .password(passwordEncoder.encode(dto.getPassword()))
+                        .build();
+
+        // CustomUserDetailsManager 의 updateUser 메서드를 호출해서 유저를 등록 (UserDetails 객체 전달 필요)
+        manager.updateUser(updateUserDetails, dto.getAccountId());
+
+        return dto;
+    }
+
+    // User 삭제 메서드
+    public void delete(String accountId) {
+        // 이미 탈퇴를 해서 없는 회원일 경우 존재하지 않는 아이디 예외 발생 (로그인에 처리한 예외 사용)
+        if(!manager.userExists(accountId)) {
+            throw new BusinessException(BusinessExceptionCode.NOT_EXIST_USER_ERROR);
+        }
+
+        // UserDetailsManager 의 deleteUser 메소드를 호출하여 유저 정보 삭제
+        manager.deleteUser(accountId);
+
+        // 프로필 이미지 저장한 디렉토리 삭제
+        deleteProfileImageDirectory(accountId);
+
+    }
+
+    // 프로필 이미지 변경 메서드
+    public void uploadProfileImage(String accountId, MultipartFile image) {
+        // 유저 ID를 프로필 디렉토리명으로 설정
+        String profileDir = String.format("medias/profile/%s", accountId);
+
+        // 폴더 생성
+        log.info(profileDir);
+        try {
+            Files.createDirectories(Path.of(profileDir));
+        } catch (Exception e) {
+            log.error("프로필 이미지 디렉토리를 생성할 수 없음");
+            throw new BusinessException(BusinessExceptionCode.CANNOT_SAVE_IMAGE_ERROR);
+        }
+
+        // 이미지 이름 생성
+        String originalImageName = image.getOriginalFilename();
+        String extension = originalImageName.substring(originalImageName.lastIndexOf(".") + 1);
+        String profileFileName = "profile." + extension;
+        log.info(profileFileName);
+
+        // 폴더 + 파일 경로 이름
+        String profilePath = String.format("%s/%s", profileDir, profileFileName);
+
+        // 저장
+        try {
+            image.transferTo(Path.of(profilePath));
+        } catch (Exception e) {
+            log.error("이미지를 해당 경로에 저장할 수 없음");
+            throw new BusinessException(BusinessExceptionCode.CANNOT_SAVE_IMAGE_ERROR);
+        }
+
+        manager.updateProfileImage(accountId,
+                String.format("/static/%s", profilePath));
+    }
+
+    // 회원 탈퇴 시 프로필 이미지 디렉토리 삭제 메서드
+    public void deleteProfileImageDirectory(String accountId) {
+        String profileDir = String.format("medias/profile/%s", accountId);
+        try {
+            FileUtils.deleteDirectory(new File(profileDir));
+        } catch (IOException e) {
+            // 프로필 이미지 디렉토리 삭제 하는 과정에서 예외 처리 (파일이 다른 곳에서 사용중일 때)
+            log.error("프로필 이미지 디렉토리 삭제 중 오류 발생");
+            throw new BusinessException(BusinessExceptionCode.CANNOT_DELETE_DIRECTORY_ERROR);
+        }
     }
 }
