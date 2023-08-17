@@ -1,5 +1,6 @@
 package com.idle.fmd.global.common.utils;
 
+import com.idle.fmd.domain.user.entity.CustomUserDetails;
 import com.idle.fmd.global.auth.jwt.JwtTokenUtils;
 import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
@@ -57,5 +58,46 @@ public class RedisUtil {
     public Object getAuthCode(String email){
         String key = "authCode:" + email;
         return redisTemplate.opsForValue().get(key);
+    }
+
+    // 리프레쉬 토큰을 발행해서 Redis 에 저장하는 메서드
+    // 리프레쉬 토큰의 유효기간은 6시간으로 설정
+    // ["refreshToken:액세스토큰" : "유저 아이디"] 형태로 저장
+    public void issueRefreshToken(String token){
+        String key = "refreshToken:" + token;
+        String accountId = jwtTokenUtils.parseClaims(token).getSubject();
+        redisTemplate.opsForValue().set(key, accountId, Duration.ofSeconds(3600 * 6));
+    }
+
+    // 해당 액세스 토큰에 대한 리프레쉬 토큰이 존재하는 지 확인하는 메서드
+    public boolean hasRefreshToken(String token){
+        String key = "refreshToken:" + token;
+        return redisTemplate.hasKey(key);
+    }
+
+    // 새로운 액세스 토큰을 만드는 메서드
+    public String issueNewAccessToken(String token){
+        // 기존 리프레쉬 토큰에 접근해서 유저 아이디를 알아낸다.
+        String key = "refreshToken:" + token;
+        String accountId = redisTemplate.opsForValue().get(key);
+
+        // 알아낸 유저 아이디로 새로운 액세스 토큰을 만든다.
+        String newAccessToken = jwtTokenUtils.generateToken(CustomUserDetails.builder().accountId(accountId).build());
+
+        // 리프레쉬 토큰의 키 값을 "refreshToken:새로운 액세스토큰" 형태로 바꿔서 저장한다.
+        String newKey = "refreshToken:" + newAccessToken;
+        redisTemplate.rename(key, newKey);
+
+        // 만약 리프레쉬 토큰의 유효기간이 30분 ( 1800 초 ) 이내이면 리프레쉬 토큰의 유효기간을 6시간으로 다시 갱신해준다.
+        if(redisTemplate.getExpire(newKey) <= 1800)
+            redisTemplate.expire(newKey, Duration.ofSeconds(3600 * 6));
+
+        return newAccessToken;
+    }
+
+    // 리프레쉬 토큰을 삭제하는 메서드 ( 로그아웃 시 사용 )
+    public void removeRefreshToken(String token){
+        String key = "refreshToken:" + token;
+        redisTemplate.delete(key);
     }
 }

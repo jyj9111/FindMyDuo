@@ -51,6 +51,9 @@ dependencies {
 	// Redis DB
 	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 
+	// WebClient
+	implementation 'org.springframework.boot:spring-boot-starter-webflux'
+
 	compileOnly 'org.projectlombok:lombok'
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
 	annotationProcessor 'org.projectlombok:lombok'
