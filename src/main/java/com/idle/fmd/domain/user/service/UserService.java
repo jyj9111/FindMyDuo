@@ -91,7 +91,11 @@ public class UserService {
             throw new BusinessException(BusinessExceptionCode.LOGIN_PASSWORD_CHECK_ERROR);
         }
 
-        return new UserLoginResponseDto(jwtTokenUtils.generateToken(userDetails));
+        // 새로운 액세스 토큰과 리프레쉬 토큰 생성
+        String token = jwtTokenUtils.generateToken(userDetails);
+        redisUtil.issueRefreshToken(token);
+
+        return new UserLoginResponseDto(token);
     }
 
     // 이메일 인증 메일을 보내는 메서드
@@ -118,6 +122,8 @@ public class UserService {
     public void logout(String token){
         // redisUtil 의 setBlackListToken() 메서드를 이용해서 해당 토큰을 블랙리스트로 등록
         redisUtil.setBlackListToken(token);
+        // 로그아웃을 하면 리프레쉬 토큰을 제거함
+        redisUtil.removeRefreshToken(token);
     }
 
     // 유저 조회 메서드
