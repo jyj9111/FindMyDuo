@@ -1,12 +1,15 @@
 package com.idle.fmd.domain.user.entity;
 
 
+import com.idle.fmd.domain.board.entity.BoardEntity;
 import com.idle.fmd.domain.lol.entity.LolEntity;
 
 import jakarta.persistence.*;
 import lombok.Data;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 // 유저 테이블 엔티티
 @Entity
@@ -44,4 +47,6 @@ public class UserEntity {
     @JoinColumn(name = "lol_account")
     private LolEntity lolAccount;
 
+    @OneToMany(mappedBy = "user")
+    private List<BoardEntity> boards = new ArrayList<>();
 }
