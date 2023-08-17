@@ -12,7 +12,6 @@ import org.springframework.web.reactive.function.client.WebClient;
 public class WebClientConfig {
     @Bean
     public WebClient webClient(){
-        // 프로젝트를 클라우드 서버를 통해 배포시 반드시 baseUrl 수정 필요!!
         return WebClient.builder().baseUrl("http://localhost:8080").defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE).build();
     }
 }
