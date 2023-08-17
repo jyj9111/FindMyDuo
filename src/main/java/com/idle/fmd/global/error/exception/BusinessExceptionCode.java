@@ -46,7 +46,12 @@ public enum BusinessExceptionCode {
     CANNOT_SAVE_IMAGE_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "프로필 이미지를 저장할 수 없습니다."),
 
     // 회원 탈퇴시 프로필 이미지 디렉토리 삭제하는 과정에서 예외 처리
-    CANNOT_DELETE_DIRECTORY_ERROR(HttpStatus.BAD_REQUEST, "프로필 이미지 디렉터리 삭제 중 오류가 발생했습니다.");
+    CANNOT_DELETE_DIRECTORY_ERROR(HttpStatus.BAD_REQUEST, "프로필 이미지 디렉터리 삭제 중 오류가 발생했습니다."),
+
+    // 자유게시글 관련 예외
+    NOT_EXISTS_BOARD_ERROR(HttpStatus.NOT_FOUND, "해당 게시글은 존재하지 않습니다."),
+
+    NOT_MATCHES_USER_ERROR(HttpStatus.BAD_REQUEST, "게시글의 작성자가 아닙니다.");
 
     private final HttpStatus status;
     private final String message;
