@@ -31,7 +31,7 @@ public class BoardService {
 
         UserEntity userEntity = userRepository.findByAccountId(accountId).get();
 
-        BoardEntity boardEntity = BoardEntity.saveBoard(dto, userEntity);
+        BoardEntity boardEntity = BoardEntity.ofBoard(dto, userEntity);
 
         boardRepository.save(boardEntity);
 

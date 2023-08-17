@@ -38,7 +38,7 @@ public class BoardEntity extends BaseTimeEntity {
     }
 
     // 게시판 저장
-    public static BoardEntity saveBoard(BoardCreateDto dto, UserEntity userEntity) {
+    public static BoardEntity ofBoard(BoardCreateDto dto, UserEntity userEntity) {
         BoardEntity boardEntity = new BoardEntity();
         boardEntity.setTitle(dto.getTitle());
         boardEntity.setContent(dto.getContent());
