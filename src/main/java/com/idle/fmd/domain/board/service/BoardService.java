@@ -5,8 +5,11 @@ import com.idle.fmd.domain.board.dto.BoardResponseDto;
 import com.idle.fmd.domain.board.dto.BoardUpdateDto;
 import com.idle.fmd.domain.board.entity.BoardEntity;
 import com.idle.fmd.domain.board.repo.BoardRepository;
+import com.idle.fmd.domain.file.entity.FileEntity;
+import com.idle.fmd.domain.file.repo.FileRepository;
 import com.idle.fmd.domain.user.entity.UserEntity;
 import com.idle.fmd.domain.user.repo.UserRepository;
+import com.idle.fmd.global.common.utils.FileHandler;
 import com.idle.fmd.global.error.exception.BusinessException;
 import com.idle.fmd.global.error.exception.BusinessExceptionCode;
 import lombok.RequiredArgsConstructor;
@@ -14,6 +17,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -22,7 +29,10 @@ public class BoardService {
 
     private final BoardRepository boardRepository;
     private final UserRepository userRepository;
-    public BoardResponseDto boardCreate(BoardCreateDto dto, String accountId) {
+    private final FileHandler fileHandler;
+    private final FileRepository fileRepository;
+
+    public BoardResponseDto boardCreate(BoardCreateDto dto, List<MultipartFile> images, String accountId) {
 
         if (!userRepository.existsByAccountId(accountId)) {
             log.info("글을 작성하실 수 없습니다.");
@@ -33,6 +43,17 @@ public class BoardService {
 
         BoardEntity boardEntity = BoardEntity.ofBoard(dto, userEntity);
 
+        boardRepository.save(boardEntity);
+
+        List<FileEntity> files = new ArrayList<>();
+        if (images.get(0).getContentType() != null) {
+            for (MultipartFile image : images) {
+                String imgUrl = fileHandler.getBoardFilePath(boardEntity.getId(), image);
+                files.add(fileRepository.save(FileEntity.ofEntity(boardEntity, imgUrl)));
+            }
+        }
+
+        boardEntity.setFiles(files);
         boardRepository.save(boardEntity);
 
         return BoardResponseDto.fromEntity(boardEntity);

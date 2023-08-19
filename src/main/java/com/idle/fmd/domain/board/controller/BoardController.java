@@ -11,7 +11,11 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.security.core.Authentication;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 @RequestMapping("/board")
 @RequiredArgsConstructor
@@ -22,8 +26,10 @@ public class BoardController {
 
     // 게시글 작성
     @PostMapping
-    public BoardResponseDto boardCreate(@Valid @RequestBody BoardCreateDto dto, Authentication authentication) {
-        return boardService.boardCreate(dto, authentication.getName());
+    public BoardResponseDto boardCreate(@RequestPart(value = "dto") @Validated BoardCreateDto dto,
+                                        @RequestPart(value = "file", required = false) List<MultipartFile> images,
+                                        Authentication authentication) {
+        return boardService.boardCreate(dto, images, authentication.getName());
     }
 
     // 게시글 단일조회
