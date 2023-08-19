@@ -1,6 +1,7 @@
 package com.idle.fmd.domain.board.entity;
 
 import com.idle.fmd.domain.board.dto.BoardCreateDto;
+import com.idle.fmd.domain.file.entity.FileEntity;
 import com.idle.fmd.domain.user.entity.UserEntity;
 import com.idle.fmd.global.common.entity.BaseTimeEntity;
 import jakarta.persistence.*;
@@ -8,6 +9,9 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -30,6 +34,10 @@ public class BoardEntity extends BaseTimeEntity {
     private String content;
 
     private boolean deleted = Boolean.FALSE;
+
+
+    @OneToMany(mappedBy = "board")
+    private List<FileEntity> files = new ArrayList<>();
 
     // Board와 User의 연관관계 편의 메소드
     public void addBoardUser(UserEntity user) {
