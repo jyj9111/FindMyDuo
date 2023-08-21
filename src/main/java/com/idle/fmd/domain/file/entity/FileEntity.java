@@ -2,13 +2,12 @@ package com.idle.fmd.domain.file.entity;
 
 import com.idle.fmd.domain.board.entity.BoardEntity;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
+@Builder
 @Getter
-@Setter
-@NoArgsConstructor
+@AllArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "file")
 @Entity
 public class FileEntity {
@@ -29,11 +28,10 @@ public class FileEntity {
         board.getFiles().add(this);
     }
 
-    public static FileEntity ofEntity(BoardEntity board, String imageUrl) {
-        FileEntity fileEntity = new FileEntity();
-        fileEntity.setImageUrl(imageUrl);
-        fileEntity.addFileBoard(board);
-
-        return fileEntity;
+    public static FileEntity createFile(BoardEntity board, String imageUrl) {
+        return FileEntity.builder()
+                .board(board)
+                .imageUrl(imageUrl)
+                .build();
     }
 }

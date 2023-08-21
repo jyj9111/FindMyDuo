@@ -5,16 +5,17 @@ import com.idle.fmd.domain.file.entity.FileEntity;
 import com.idle.fmd.domain.user.entity.UserEntity;
 import com.idle.fmd.global.common.entity.BaseTimeEntity;
 import jakarta.persistence.*;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
 
 import java.util.ArrayList;
 import java.util.List;
 
-@Data
-@NoArgsConstructor
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Getter
 @SQLDelete(sql = "UPDATE board SET deleted = true WHERE id = ?")
 @Where(clause = "deleted = false")
 @Entity
@@ -45,13 +46,16 @@ public class BoardEntity extends BaseTimeEntity {
         user.getBoards().add(this);
     }
 
-    public static BoardEntity ofBoard(BoardCreateDto dto, UserEntity userEntity) {
-        BoardEntity boardEntity = new BoardEntity();
-        boardEntity.setTitle(dto.getTitle());
-        boardEntity.setContent(dto.getContent());
-        boardEntity.addBoardUser(userEntity);
+    public static BoardEntity createBoard(BoardCreateDto dto, UserEntity user) {
+        return BoardEntity.builder()
+                .title(dto.getTitle())
+                .content(dto.getContent())
+                .user(user)
+                .build();
+    }
 
-        return boardEntity;
+    public void createImageBoard(List<FileEntity> files) {
+        this.files = files;
     }
 
     // 게시판 수정

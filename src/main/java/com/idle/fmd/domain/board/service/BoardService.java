@@ -41,7 +41,7 @@ public class BoardService {
 
         UserEntity userEntity = userRepository.findByAccountId(accountId).get();
 
-        BoardEntity boardEntity = BoardEntity.ofBoard(dto, userEntity);
+        BoardEntity boardEntity = BoardEntity.createBoard(dto, userEntity);
 
         boardRepository.save(boardEntity);
 
@@ -49,11 +49,11 @@ public class BoardService {
         if (images.get(0).getContentType() != null) {
             for (MultipartFile image : images) {
                 String imgUrl = fileHandler.getBoardFilePath(boardEntity.getId(), image);
-                files.add(fileRepository.save(FileEntity.ofEntity(boardEntity, imgUrl)));
+                files.add(fileRepository.save(FileEntity.createFile(boardEntity, imgUrl)));
             }
         }
 
-        boardEntity.setFiles(files);
+        boardEntity.createImageBoard(files);
         boardRepository.save(boardEntity);
 
         return BoardResponseDto.fromEntity(boardEntity);
