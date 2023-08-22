@@ -31,7 +31,7 @@ public class FileHandler {
             Files.createDirectories(Paths.get(imgDir));
         } catch (IOException e) {
             log.error(e.getMessage());
-            throw new BusinessException(BusinessExceptionCode.CANNOT_SAVE_IMAGE_ERROR);
+            throw new BusinessException(BusinessExceptionCode.CANNOT_SAVE_BOARD_IMAGE_ERROR);
         }
 
         File file = new File(Path.of(imgDir, filename).toUri());
@@ -40,7 +40,7 @@ public class FileHandler {
             outputStream.write(boardImage.getBytes());
         } catch (IOException e) {
             log.error(e.getMessage());
-            throw new BusinessException(BusinessExceptionCode.CANNOT_SAVE_IMAGE_ERROR);
+            throw new BusinessException(BusinessExceptionCode.CANNOT_SAVE_BOARD_IMAGE_ERROR);
         }
 
         log.debug("board_id: [{}], message: 게시글 이미지등록 성공", id);
