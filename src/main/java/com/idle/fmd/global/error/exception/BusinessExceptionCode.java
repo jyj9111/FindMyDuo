@@ -51,7 +51,10 @@ public enum BusinessExceptionCode {
     // 자유게시글 관련 예외
     NOT_EXISTS_BOARD_ERROR(HttpStatus.NOT_FOUND, "해당 게시글은 존재하지 않습니다."),
 
-    NOT_MATCHES_USER_ERROR(HttpStatus.BAD_REQUEST, "게시글의 작성자가 아닙니다.");
+    NOT_MATCHES_USER_ERROR(HttpStatus.BAD_REQUEST, "게시글의 작성자가 아닙니다."),
+
+    // 댓글을 작성할 때 작성자가 아닌 사람이 적을 때의 예외코드
+    UNAUTHORIZED_USER(HttpStatus.UNAUTHORIZED, "해당 요청에 대한 권한이 없는 사용자입니다.");
 
     private final HttpStatus status;
     private final String message;
