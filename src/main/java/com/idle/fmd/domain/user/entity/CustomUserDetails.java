@@ -54,24 +54,12 @@ public class CustomUserDetails implements UserDetails {
     }
 
     public static CustomUserDetails fromEntity(UserEntity entity) {
-
         return CustomUserDetails.builder()
                 .accountId(entity.getAccountId())
                 .password(entity.getPassword())
                 .email(entity.getEmail())
                 .nickname(entity.getNickname())
                 .build();
-    }
-
-    public UserEntity newEntity() {
-        UserEntity entity = new UserEntity();
-        entity.setAccountId(accountId);
-        entity.setPassword(password);
-        entity.setEmail(email);
-        entity.setNickname(nickname);
-        entity.setCreatedAt(LocalDateTime.now());
-
-        return entity;
     }
 
 }

@@ -66,6 +66,12 @@ public class UserController {
         userService.logout(token);
     }
 
+    // 액세스 토큰 만료 시 토큰을 재발급 받기 위한 URL 요청
+    @GetMapping("/reissue-token")
+    public UserLoginResponseDto issueNewToken(@RequestParam("token") String token) {
+        return new UserLoginResponseDto(token);
+    }
+
     // 마이페이지 유저 정보 조회
     @GetMapping("/mypage")
     public UserMyPageResponseDto myPage(Authentication authentication) {
