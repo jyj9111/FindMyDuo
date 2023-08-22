@@ -50,6 +50,7 @@ public class BoardEntity extends BaseTimeEntity {
         return BoardEntity.builder()
                 .title(dto.getTitle())
                 .content(dto.getContent())
+                .files(new ArrayList<>())
                 .user(user)
                 .build();
     }

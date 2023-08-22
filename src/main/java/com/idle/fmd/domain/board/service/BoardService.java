@@ -48,8 +48,9 @@ public class BoardService {
 
         boardRepository.save(boardEntity);
 
+        log.info("images : " + images);
         List<FileEntity> files = new ArrayList<>();
-        if (images.get(0).getContentType() != null) {
+        if (images != null) {
             for (MultipartFile image : images) {
                 String imgUrl = fileHandler.getBoardFilePath(boardEntity.getId(), image);
                 files.add(fileRepository.save(FileEntity.createFile(boardEntity, imgUrl)));
