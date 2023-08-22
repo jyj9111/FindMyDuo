@@ -60,8 +60,9 @@ public class BoardEntity extends BaseTimeEntity {
     }
 
     // 게시판 수정
-    public void updateBoard(String title, String content) {
+    public void updateBoard(String title, String content, List<FileEntity> files) {
         this.title = title;
         this.content = content;
+        this.files = files;
     }
 }

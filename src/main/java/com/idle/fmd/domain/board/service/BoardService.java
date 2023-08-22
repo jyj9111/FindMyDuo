@@ -14,14 +14,11 @@ import com.idle.fmd.global.error.exception.BusinessException;
 import com.idle.fmd.global.error.exception.BusinessExceptionCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.tomcat.util.http.fileupload.FileUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -75,7 +72,7 @@ public class BoardService {
         return BoardResponseDto.fromEntity(boardEntity);
     }
 
-    public BoardResponseDto boardUpdate(BoardUpdateDto dto, String accountId, Long boardId) {
+    public BoardResponseDto boardUpdate(BoardUpdateDto dto, List<MultipartFile> images, String accountId, Long boardId) {
 
         if (!boardRepository.existsById(boardId)) {
             log.info("해당 게시글은 존재하지 않습니다.");
@@ -90,7 +87,25 @@ public class BoardService {
             throw new BusinessException(BusinessExceptionCode.NOT_MATCHES_USER_ERROR);
         }
 
-        boardEntity.updateBoard(dto.getTitle(), dto.getContent());
+        log.info("이미지 있는가 :" + images);
+        // 이미지파일을 입력받을 경우 기존 이미지 삭제 후 입력받은 이미지를 추가해준다.
+        List<FileEntity> files = new ArrayList<>();
+        if (images != null) {
+
+            log.info("게시판 이미지 수정 전 삭제");
+            for (FileEntity file : boardEntity.getFiles()) {
+
+                if (file.isDeleted() == false) fileRepository.deleteById(file.getId());
+            }
+
+            log.info("게시판 이미지 수정 추가");
+            for (MultipartFile image : images) {
+                String imgUrl = fileHandler.getBoardFilePath(boardEntity.getId(), image);
+                files.add(fileRepository.save(FileEntity.createFile(boardEntity, imgUrl)));
+            }
+        }
+
+        boardEntity.updateBoard(dto.getTitle(), dto.getContent(), files);
         boardRepository.save(boardEntity);
 
         return BoardResponseDto.fromEntity(boardEntity);
@@ -115,19 +130,9 @@ public class BoardService {
             fileRepository.deleteById(file.getId());
         }
 
-        deleteBoardImageDirectory(boardId);
+
         log.info("게시글이 삭제되었습니다.");
         boardRepository.deleteById(boardId);
-    }
-
-    private void deleteBoardImageDirectory(Long boardId) {
-        String boardImgDir = String.format("./images/board/%s", boardId);
-        try {
-            FileUtils.deleteDirectory(new File(boardImgDir));
-        } catch (IOException e) {
-            log.error("게시판 이미지 디렉토리 삭제 중 오류 발생");
-            throw new BusinessException(BusinessExceptionCode.CANNOT_DELETE_DIRECTORY_ERROR);
-        }
     }
 
     public Page<BoardResponseDto> boardReadAll(Pageable pageable) {

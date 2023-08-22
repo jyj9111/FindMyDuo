@@ -15,6 +15,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RequestMapping("/board")
@@ -40,8 +41,12 @@ public class BoardController {
 
     // 게시글 수정
     @PutMapping("/{boardId}")
-    public BoardResponseDto boardUpdate(@Valid @RequestBody BoardUpdateDto dto, Authentication authentication, @PathVariable Long boardId) {
-       return boardService.boardUpdate(dto, authentication.getName(), boardId);
+    public BoardResponseDto boardUpdate(@RequestPart(value = "dto") @Validated BoardUpdateDto dto,
+                                        @RequestPart(value = "file", required = false) List<MultipartFile> images,
+                                        Authentication authentication,
+                                        @PathVariable Long boardId) {
+        if (images == null) images = new ArrayList<>();
+        return boardService.boardUpdate(dto, images, authentication.getName(), boardId);
     }
 
     // 게시글 soft delete
