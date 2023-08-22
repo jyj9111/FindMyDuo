@@ -10,6 +10,7 @@ import com.idle.fmd.domain.user.entity.UserEntity;
 import com.idle.fmd.domain.user.repo.UserRepository;
 import com.idle.fmd.global.error.exception.BusinessException;
 import com.idle.fmd.global.error.exception.BusinessExceptionCode;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
@@ -20,17 +21,12 @@ import java.util.Optional;
 
 
 @Slf4j
+@RequiredArgsConstructor
 @Service
 public class CommentService {
     private final BoardRepository boardRepository;
     private final CommentRepository commentRepository;
     private final UserRepository userRepository;
-
-    public CommentService(BoardRepository boardRepository, CommentRepository commentRepository, UserRepository userRepository) {
-        this.boardRepository = boardRepository;
-        this.commentRepository = commentRepository;
-        this.userRepository = userRepository;
-    }
 
         // 댓글 생성
         public CommentResponseDto createComment(Long boardId, Authentication authentication, CommentRequestDto dto){
