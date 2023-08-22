@@ -13,7 +13,7 @@ import java.util.List;
 
 @Slf4j
 @RestController
-@RequestMapping("/board/{boardId}/comment")
+@RequestMapping("/board/{board}/comment")
 public class CommentController {
     private final CommentService service;
 
@@ -24,42 +24,40 @@ public class CommentController {
 
     @PostMapping
     public CommentResponseDto createComment(
-            @PathVariable ("boardId") Long boardId,
+            @PathVariable ("board") Long board,
             Authentication authentication,
             @RequestBody CommentRequestDto dto
     ) {
-       return service.createComment(boardId, authentication, dto);
+       return service.createComment(board, authentication, dto);
     }
 
 
     @GetMapping
     public List<CommentResponseDto> readAllComment(
-            @PathVariable("boardId") Long boardId
+            @PathVariable("board") Long board
     ){
-        return service.readCommentAll(boardId);
+        return service.readCommentAll(board);
     }
 
 
     @PutMapping("/{commentId}")
     public CommentResponseDto updateComment(
-            @PathVariable("boardId") Long boardId,
+            @PathVariable("board") Long board,
             @PathVariable("commentId") Long commentId,
             Authentication authentication,
             @RequestBody CommentRequestDto dto
     ){
-        return service.updateComment(boardId, commentId, authentication, dto);
+        return service.updateComment(board, commentId, authentication, dto);
     }
 
 
     @DeleteMapping("/{commentId}")
     public void deleteComment(
-            @PathVariable("boardId") Long boardId,
+            @PathVariable("board") Long board,
             @PathVariable("commentId") Long commentId,
-            Authentication authentication,
-            LocalDateTime localDateTime
+            Authentication authentication
     ){
-        LocalDateTime time = localDateTime.now();
-        service.deleteComment(boardId, commentId, authentication, time);
+        service.deleteComment(board, commentId, authentication);
     }
 
 

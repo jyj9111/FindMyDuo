@@ -14,10 +14,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+
 
 @Slf4j
 @Service
@@ -35,11 +35,13 @@ public class CommentService {
         // 댓글 생성
         public CommentResponseDto createComment(Long boardId, Authentication authentication, CommentRequestDto dto){
             String accountId = authentication.getName();
+
             // 댓글을 달기 전 게시물이 있는지 확인
             Optional<BoardEntity> boardEntity = boardRepository.findById(boardId);
             if(!boardEntity.isPresent()){
                 throw new BusinessException(BusinessExceptionCode.NOT_EXISTS_BOARD_ERROR);
             }
+
 
             // 댓글 작성은 로그인 한 사람만 가능
             Optional<UserEntity> userEntity = userRepository.findByAccountId(accountId);
@@ -50,11 +52,12 @@ public class CommentService {
             }
             CommentEntity newComment = new CommentEntity();
             newComment.setUser(user);
-            newComment.setBoardId(boardId);
+            newComment.setBoard(boardEntity.get());
             newComment.setContent(dto.getContent());
             commentRepository.save(newComment);
             return CommentResponseDto.fromEntity(newComment);
         }
+
 
         // 게시물에 달린 댓글 전체 조회
         public List<CommentResponseDto> readCommentAll(Long boardId) {
@@ -66,6 +69,7 @@ public class CommentService {
             }
             return commentDtoList;
         }
+
 
         // 댓글 업데이트
         public CommentResponseDto updateComment(
@@ -87,7 +91,7 @@ public class CommentService {
             CommentEntity comment = optionalComment.get();
 
             // 해당 피드에 작성된 댓글을 수정하려고 하는 것인지 확인
-            if(!boardId.equals(comment.getBoardId())){
+            if(!boardId.equals(comment.getBoard().getId())){
                 log.info("해당 게시글이 존재하지 않습니다.");
                 throw new BusinessException(BusinessExceptionCode.NOT_EXISTS_BOARD_ERROR);
             }
@@ -103,11 +107,11 @@ public class CommentService {
         return CommentResponseDto.fromEntity(commentRepository.save(comment));
     }
 
+
         // 댓글 삭제
         public void deleteComment(Long boardId,
                                   Long commentId,
-                                  Authentication authentication,
-                                  LocalDateTime time){
+                                  Authentication authentication){
 
             String accountId = authentication.getName();
 
@@ -122,7 +126,7 @@ public class CommentService {
             CommentEntity comment = optionalComment.get();
 
             // 삭제하려고 하는 댓글이 해당 피드의 달린 댓글인지 확인
-            if(!boardId.equals(comment.getBoardId())){
+            if(!boardId.equals(comment.getBoard().getId())){
                 log.info("해당 게시글이 존재하지 않습니다.");
             throw new BusinessException(BusinessExceptionCode.NOT_EXISTS_BOARD_ERROR);
             }
@@ -130,7 +134,7 @@ public class CommentService {
             // 현재 사용자가 등록한 댓글인지 확인
             if(!comment.getUser().getAccountId().equals(accountId)){
                 log.info("게시글을 작성한 사용자가 아닙니다.");
-                throw new BusinessException(BusinessExceptionCode.NOT_EXIST_USER_ERROR);
+                throw new BusinessException(BusinessExceptionCode.UNAUTHORIZED_USER);
             }
 
             log.info("삭제되었습니다.");

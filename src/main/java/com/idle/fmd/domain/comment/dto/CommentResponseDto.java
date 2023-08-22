@@ -14,15 +14,17 @@ public class CommentResponseDto {
 
     private String nickname;
 
+
     private String content;
 
     private LocalDateTime modifiedAt;
 
-    public static CommentResponseDto fromEntity(CommentEntity entity){ //엔티티를 dto 로 변경해줌
+    public static CommentResponseDto fromEntity(CommentEntity entity){
         CommentResponseDto commentResponseDto = new CommentResponseDto();
         commentResponseDto.setId(entity.getId());
-        commentResponseDto.setBoardId(entity.getBoardId());
+        commentResponseDto.setBoardId(entity.getBoard().getId());
         commentResponseDto.setNickname(entity.getUser().getNickname());
+        commentResponseDto.setBoardId(entity.getBoard().getId());
         commentResponseDto.setContent(entity.getContent());
         commentResponseDto.setModifiedAt(entity.getModifiedAt());
         return commentResponseDto;
