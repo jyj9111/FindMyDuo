@@ -90,7 +90,7 @@ public class BoardService {
         log.info("이미지 있는가 :" + images);
         // 이미지파일을 입력받을 경우 기존 이미지 삭제 후 입력받은 이미지를 추가해준다.
         List<FileEntity> files = new ArrayList<>();
-        if (images != null) {
+        if (!images.isEmpty()) {
 
             log.info("게시판 이미지 수정 전 삭제");
             for (FileEntity file : boardEntity.getFiles()) {
