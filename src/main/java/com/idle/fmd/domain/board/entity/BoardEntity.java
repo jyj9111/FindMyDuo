@@ -55,14 +55,14 @@ public class BoardEntity extends BaseTimeEntity {
                 .build();
     }
 
-    public void createImageBoard(List<FileEntity> files) {
+    // 게시판 이미지 추가
+    public void changeImageBoard(List<FileEntity> files) {
         this.files = files;
     }
 
-    // 게시판 수정
-    public void updateBoard(String title, String content, List<FileEntity> files) {
+    // 게시판 제목, 내용 수정
+    public void updateBoard(String title, String content) {
         this.title = title;
         this.content = content;
-        this.files = files;
     }
 }

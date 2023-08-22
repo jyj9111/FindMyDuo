@@ -54,7 +54,7 @@ public class BoardService {
             }
         }
 
-        boardEntity.createImageBoard(files);
+        boardEntity.changeImageBoard(files);
         boardRepository.save(boardEntity);
 
         return BoardResponseDto.fromEntity(boardEntity);
@@ -103,9 +103,11 @@ public class BoardService {
                 String imgUrl = fileHandler.getBoardFilePath(boardEntity.getId(), image);
                 files.add(fileRepository.save(FileEntity.createFile(boardEntity, imgUrl)));
             }
+
+            boardEntity.changeImageBoard(files);
         }
 
-        boardEntity.updateBoard(dto.getTitle(), dto.getContent(), files);
+        boardEntity.updateBoard(dto.getTitle(), dto.getContent());
         boardRepository.save(boardEntity);
 
         return BoardResponseDto.fromEntity(boardEntity);
