@@ -5,9 +5,11 @@ import com.idle.fmd.domain.board.dto.BoardAllResponseDto;
 import com.idle.fmd.domain.board.dto.BoardResponseDto;
 import com.idle.fmd.domain.board.dto.BoardUpdateDto;
 import com.idle.fmd.domain.board.entity.BoardEntity;
+import com.idle.fmd.domain.board.entity.FavoriteEntity;
 import com.idle.fmd.domain.board.entity.LikeBoardEntity;
 import com.idle.fmd.domain.board.repo.BoardRepository;
 import com.idle.fmd.domain.board.entity.FileEntity;
+import com.idle.fmd.domain.board.repo.FavoriteRepository;
 import com.idle.fmd.domain.board.repo.FileRepository;
 import com.idle.fmd.domain.board.repo.LikeBoardRepository;
 import com.idle.fmd.domain.comment.entity.CommentEntity;
@@ -40,6 +42,7 @@ public class BoardService {
     private final FileHandler fileHandler;
     private final FileRepository fileRepository;
     private final LikeBoardRepository likeBoardRepository;
+    private final FavoriteRepository favoriteRepository;
 
     public void boardCreate(BoardCreateDto dto, List<MultipartFile> images, String accountId) {
 
@@ -190,5 +193,42 @@ public class BoardService {
 
     private boolean hasLikeBoard(final BoardEntity board, final UserEntity user) {
         return likeBoardRepository.findByBoardAndUser(board, user).isPresent();
+    }
+
+    @Transactional
+    public String updateOfFavoriteBoard(String accountId, Long boardId) {
+        if (!boardRepository.existsById(boardId)) {
+            log.info("해당 게시글은 존재하지 않습니다.");
+            throw new BusinessException(BusinessExceptionCode.NOT_EXISTS_BOARD_ERROR);
+        }
+
+        BoardEntity board = boardRepository.findById(boardId).get();
+        UserEntity user = userRepository.findByAccountId(accountId).get();
+
+        if (!hasFavoriteBoard(board, user)) {
+            board.increaseFavoriteCount();
+            return createFavorite(board, user);
+        }
+
+        board.decreaseFavoriteCount();
+        return removeFavorite(board, user);
+    }
+
+    private String removeFavorite(BoardEntity board, UserEntity user) {
+        FavoriteEntity favorite = favoriteRepository.findByBoardAndUser(board, user).get();
+
+        favoriteRepository.delete(favorite);
+
+        return "즐겨찾기 취소완료";
+    }
+
+    private String createFavorite(final BoardEntity board, final UserEntity user) {
+        FavoriteEntity favorite = new FavoriteEntity(board, user);
+        favoriteRepository.save(favorite);
+        return "즐겨찾기 처리완료";
+    }
+
+    private boolean hasFavoriteBoard(BoardEntity board, UserEntity user) {
+        return favoriteRepository.findByBoardAndUser(board, user).isPresent();
     }
 }

@@ -37,6 +37,9 @@ public class BoardEntity extends BaseTimeEntity {
     @Column(nullable = true)
     private Integer liked;
 
+    @Column(nullable = true)
+    private Integer favorited;
+
     private boolean deleted = Boolean.FALSE;
 
 
@@ -53,6 +56,7 @@ public class BoardEntity extends BaseTimeEntity {
                 .files(new ArrayList<>())
                 .user(user)
                 .liked(0)
+                .favorited(0)
                 .build();
     }
 
@@ -74,5 +78,14 @@ public class BoardEntity extends BaseTimeEntity {
 
     public void decreaseLikeCount() {
         this.liked -= 1;
+    }
+
+    // 즐겨찾기 + 1
+    public void increaseFavoriteCount() {
+        this.favorited += 1;
+    }
+
+    public void decreaseFavoriteCount() {
+        this.favorited -= 1;
     }
 }

@@ -69,4 +69,11 @@ public class BoardController {
         String message = boardService.updateLikeOfBoard(authentication.getName(), boardId);
         log.info(message);
     }
+
+    // 즐겨찾기 기능
+    @PostMapping("/{boardId}/favorite")
+    public void favoriteBoard(Authentication authentication, @PathVariable Long boardId) {
+        String message = boardService.updateOfFavoriteBoard(authentication.getName(), boardId);
+        log.info(message);
+    }
 }
