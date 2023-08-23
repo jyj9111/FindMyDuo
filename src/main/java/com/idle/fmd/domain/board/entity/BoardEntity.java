@@ -1,16 +1,21 @@
 package com.idle.fmd.domain.board.entity;
 
 import com.idle.fmd.domain.board.dto.BoardCreateDto;
+import com.idle.fmd.domain.file.entity.FileEntity;
 import com.idle.fmd.domain.user.entity.UserEntity;
 import com.idle.fmd.global.common.entity.BaseTimeEntity;
 import jakarta.persistence.*;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
 
-@Data
-@NoArgsConstructor
+import java.util.ArrayList;
+import java.util.List;
+
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Getter
 @SQLDelete(sql = "UPDATE board SET deleted = true WHERE id = ?")
 @Where(clause = "deleted = false")
 @Entity
@@ -31,22 +36,31 @@ public class BoardEntity extends BaseTimeEntity {
 
     private boolean deleted = Boolean.FALSE;
 
+
+    @OneToMany(mappedBy = "board")
+    private List<FileEntity> files = new ArrayList<>();
+
     // Board와 User의 연관관계 편의 메소드
     public void addBoardUser(UserEntity user) {
         this.user = user;
         user.getBoards().add(this);
     }
 
-    public static BoardEntity ofBoard(BoardCreateDto dto, UserEntity userEntity) {
-        BoardEntity boardEntity = new BoardEntity();
-        boardEntity.setTitle(dto.getTitle());
-        boardEntity.setContent(dto.getContent());
-        boardEntity.addBoardUser(userEntity);
-
-        return boardEntity;
+    public static BoardEntity createBoard(BoardCreateDto dto, UserEntity user) {
+        return BoardEntity.builder()
+                .title(dto.getTitle())
+                .content(dto.getContent())
+                .files(new ArrayList<>())
+                .user(user)
+                .build();
     }
 
-    // 게시판 수정
+    // 게시판 이미지 추가
+    public void changeImageBoard(List<FileEntity> files) {
+        this.files = files;
+    }
+
+    // 게시판 제목, 내용 수정
     public void updateBoard(String title, String content) {
         this.title = title;
         this.content = content;
