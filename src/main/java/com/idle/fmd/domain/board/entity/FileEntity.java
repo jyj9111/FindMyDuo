@@ -1,6 +1,5 @@
-package com.idle.fmd.domain.file.entity;
+package com.idle.fmd.domain.board.entity;
 
-import com.idle.fmd.domain.board.entity.BoardEntity;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.SQLDelete;
@@ -27,12 +26,6 @@ public class FileEntity {
     private String imageUrl;
 
     private boolean deleted = Boolean.FALSE;
-
-    // File과 Board의 연관관계 편의메소드
-    private void addFileBoard(BoardEntity board) {
-        this.board = board;
-        board.getFiles().add(this);
-    }
 
     public static FileEntity createFile(BoardEntity board, String imageUrl) {
         return FileEntity.builder()

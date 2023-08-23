@@ -1,17 +1,18 @@
 package com.idle.fmd.domain.board.service;
 
 import com.idle.fmd.domain.board.dto.BoardCreateDto;
+import com.idle.fmd.domain.board.dto.BoardAllResponseDto;
 import com.idle.fmd.domain.board.dto.BoardResponseDto;
 import com.idle.fmd.domain.board.dto.BoardUpdateDto;
 import com.idle.fmd.domain.board.entity.BoardEntity;
 import com.idle.fmd.domain.board.repo.BoardRepository;
-import com.idle.fmd.domain.file.entity.FileEntity;
-import com.idle.fmd.domain.file.repo.FileRepository;
+import com.idle.fmd.domain.board.entity.FileEntity;
+import com.idle.fmd.domain.board.repo.FileRepository;
 import com.idle.fmd.domain.comment.entity.CommentEntity;
 import com.idle.fmd.domain.comment.repo.CommentRepository;
 import com.idle.fmd.domain.user.entity.UserEntity;
 import com.idle.fmd.domain.user.repo.UserRepository;
-import com.idle.fmd.global.common.utils.FileHandler;
+import com.idle.fmd.global.utils.FileHandler;
 import com.idle.fmd.global.error.exception.BusinessException;
 import com.idle.fmd.global.error.exception.BusinessExceptionCode;
 import lombok.RequiredArgsConstructor;
@@ -36,7 +37,7 @@ public class BoardService {
     private final FileHandler fileHandler;
     private final FileRepository fileRepository;
 
-    public BoardResponseDto boardCreate(BoardCreateDto dto, List<MultipartFile> images, String accountId) {
+    public void boardCreate(BoardCreateDto dto, List<MultipartFile> images, String accountId) {
 
         if (!userRepository.existsByAccountId(accountId)) {
             log.info("글을 작성하실 수 없습니다.");
@@ -60,8 +61,6 @@ public class BoardService {
 
         boardEntity.changeImageBoard(files);
         boardRepository.save(boardEntity);
-
-        return BoardResponseDto.fromEntity(boardEntity);
     }
 
     public BoardResponseDto boardRead(Long boardId) {
@@ -76,7 +75,7 @@ public class BoardService {
         return BoardResponseDto.fromEntity(boardEntity);
     }
 
-    public BoardResponseDto boardUpdate(BoardUpdateDto dto, List<MultipartFile> images, String accountId, Long boardId) {
+    public void boardUpdate(BoardUpdateDto dto, List<MultipartFile> images, String accountId, Long boardId) {
 
         if (!boardRepository.existsById(boardId)) {
             log.info("해당 게시글은 존재하지 않습니다.");
@@ -114,7 +113,7 @@ public class BoardService {
         boardEntity.updateBoard(dto.getTitle(), dto.getContent());
         boardRepository.save(boardEntity);
 
-        return BoardResponseDto.fromEntity(boardEntity);
+        BoardAllResponseDto.fromEntity(boardEntity);
     }
 
     public void boardDelete(String accountId, Long boardId) {
@@ -145,9 +144,9 @@ public class BoardService {
         boardRepository.deleteById(boardId);
     }
 
-    public Page<BoardResponseDto> boardReadAll(Pageable pageable) {
+    public Page<BoardAllResponseDto> boardReadAll(Pageable pageable) {
         Page<BoardEntity> boardPage = boardRepository.findAll(pageable);
-        Page<BoardResponseDto> boardResponseDtoPage = boardPage.map(BoardResponseDto::fromEntity);
+        Page<BoardAllResponseDto> boardResponseDtoPage = boardPage.map(BoardAllResponseDto::fromEntity);
 
         return boardResponseDtoPage;
     }

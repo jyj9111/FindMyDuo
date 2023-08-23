@@ -1,4 +1,4 @@
-package com.idle.fmd.global.common.utils;
+package com.idle.fmd.global.utils;
 
 import com.idle.fmd.domain.user.entity.CustomUserDetails;
 import com.idle.fmd.global.auth.jwt.JwtTokenUtils;

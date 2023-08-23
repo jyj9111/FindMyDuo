@@ -1,7 +1,7 @@
 package com.idle.fmd.domain.board.entity;
 
 import com.idle.fmd.domain.board.dto.BoardCreateDto;
-import com.idle.fmd.domain.file.entity.FileEntity;
+import com.idle.fmd.domain.comment.entity.CommentEntity;
 import com.idle.fmd.domain.user.entity.UserEntity;
 import com.idle.fmd.global.common.entity.BaseTimeEntity;
 import jakarta.persistence.*;
@@ -40,11 +40,8 @@ public class BoardEntity extends BaseTimeEntity {
     @OneToMany(mappedBy = "board")
     private List<FileEntity> files = new ArrayList<>();
 
-    // Board와 User의 연관관계 편의 메소드
-    public void addBoardUser(UserEntity user) {
-        this.user = user;
-        user.getBoards().add(this);
-    }
+    @OneToMany(mappedBy = "board")
+    private List<CommentEntity> comments = new ArrayList<>();
 
     public static BoardEntity createBoard(BoardCreateDto dto, UserEntity user) {
         return BoardEntity.builder()
