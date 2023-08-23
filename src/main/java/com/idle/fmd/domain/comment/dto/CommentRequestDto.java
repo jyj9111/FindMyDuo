@@ -6,7 +6,7 @@ import lombok.Data;
 
 @Data
 public class CommentRequestDto {
-    @NotEmpty(message = "댓글은 100자 이내로 작성하셔야 합니다.")
+    @NotEmpty(message = "댓글은 1자 이상 100자 이내로 작성해주세요.")
     @Column(length = 100)
     private String content;
 }

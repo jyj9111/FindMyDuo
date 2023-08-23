@@ -4,11 +4,15 @@ import com.idle.fmd.domain.board.entity.BoardEntity;
 import com.idle.fmd.domain.user.entity.UserEntity;
 import com.idle.fmd.global.common.entity.BaseTimeEntity;
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.*;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
 
-@Data
+
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Getter
 @SQLDelete(sql = "UPDATE comment SET deleted = true WHERE id = ?")
 @Where(clause = "deleted = false")
 @Entity

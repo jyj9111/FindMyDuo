@@ -28,7 +28,7 @@ public class CommentService {
     private final CommentRepository commentRepository;
     private final UserRepository userRepository;
 
-        // 댓글 생성
+        //댓글 생성
         public CommentResponseDto createComment(Long boardId, Authentication authentication, CommentRequestDto dto){
             String accountId = authentication.getName();
 
@@ -46,10 +46,14 @@ public class CommentService {
                 log.info("댓글을 작성하시려면 로그인 하십시오.");
                 throw new BusinessException(BusinessExceptionCode.UNAUTHORIZED_USER);
             }
-            CommentEntity newComment = new CommentEntity();
-            newComment.setUser(user);
-            newComment.setBoard(boardEntity.get());
-            newComment.setContent(dto.getContent());
+            BoardEntity newboardEntity = boardEntity.get();
+
+            CommentEntity newComment = CommentEntity.builder()
+                    .user(user)
+                    .board(newboardEntity)
+                    .content(dto.getContent())
+                    .build();
+
             commentRepository.save(newComment);
             return CommentResponseDto.fromEntity(newComment);
         }
@@ -92,16 +96,24 @@ public class CommentService {
                 throw new BusinessException(BusinessExceptionCode.NOT_EXISTS_BOARD_ERROR);
             }
 
-        // 수정하려는 댓글의 사용자와 일치하는지 확인
-        if(!comment.getUser().getAccountId().equals(username)){
-            log.info("사용자와 일치하지 않습니다.");
-            throw new BusinessException(BusinessExceptionCode.NOT_MATCHES_USER_ERROR);
-        }
+            // 수정하려는 댓글의 사용자와 일치하는지 확인
+            if(!comment.getUser().getAccountId().equals(username)){
+                log.info("사용자와 일치하지 않습니다.");
+                throw new BusinessException(BusinessExceptionCode.NOT_MATCHES_USER_ERROR);
+            }
 
-        // 댓글 수정
-        comment.setContent(dto.getContent());
-        return CommentResponseDto.fromEntity(commentRepository.save(comment));
-    }
+            // 댓글 수정
+            CommentEntity updatedComment = CommentEntity.builder()
+                    .id(comment.getId())
+                    .content(dto.getContent())
+                    .user(comment.getUser())
+                    .board(comment.getBoard())
+                    .build();
+
+            CommentEntity savedComment = commentRepository.save(updatedComment);
+
+            return CommentResponseDto.fromEntity(savedComment);
+        }
 
 
         // 댓글 삭제

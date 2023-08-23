@@ -6,6 +6,7 @@ import com.idle.fmd.domain.comment.dto.CommentResponseDto;
 import com.idle.fmd.domain.comment.service.CommentService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -25,7 +26,7 @@ public class CommentController {
     public CommentResponseDto createComment(
             @PathVariable ("board") Long board,
             Authentication authentication,
-            @RequestBody CommentRequestDto dto
+            @Validated @RequestBody CommentRequestDto dto
     ) {
        return service.createComment(board, authentication, dto);
     }
@@ -44,7 +45,7 @@ public class CommentController {
             @PathVariable("board") Long board,
             @PathVariable("commentId") Long commentId,
             Authentication authentication,
-            @RequestBody CommentRequestDto dto
+            @Validated @RequestBody CommentRequestDto dto
     ){
         return service.updateComment(board, commentId, authentication, dto);
     }
