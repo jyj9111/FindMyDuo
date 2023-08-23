@@ -57,7 +57,6 @@ public enum BusinessExceptionCode {
 
     // 게시판 이미지 저장 실패
     CANNOT_SAVE_BOARD_IMAGE_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "게시판 이미지를 저장할 수 없습니다."),
-    NOT_MATCHES_USER_ERROR(HttpStatus.BAD_REQUEST, "게시글의 작성자가 아닙니다."),
 
     // 댓글을 작성할 때 작성자가 아닌 사람이 적을 때의 예외코드
     UNAUTHORIZED_USER(HttpStatus.UNAUTHORIZED, "해당 요청에 대한 권한이 없는 사용자입니다.");
