@@ -6,6 +6,7 @@ import com.idle.fmd.domain.board.dto.BoardResponseDto;
 import com.idle.fmd.domain.board.dto.BoardUpdateDto;
 import com.idle.fmd.domain.board.service.BoardService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -18,6 +19,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.ArrayList;
 import java.util.List;
 
+@Slf4j
 @RequestMapping("/board")
 @RequiredArgsConstructor
 @RestController
@@ -59,5 +61,12 @@ public class BoardController {
     @GetMapping()
     public Page<BoardAllResponseDto> boardReadAll(@PageableDefault(size = 20, sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
         return boardService.boardReadAll(pageable);
+    }
+
+    // 좋아요 기능
+    @PostMapping("/{boardId}/like")
+    public void likeBoard(Authentication authentication, @PathVariable Long boardId) {
+        String message = boardService.updateLikeOfBoard(authentication.getName(), boardId);
+        log.info(message);
     }
 }

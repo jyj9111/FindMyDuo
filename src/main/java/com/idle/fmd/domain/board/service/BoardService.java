@@ -5,9 +5,11 @@ import com.idle.fmd.domain.board.dto.BoardAllResponseDto;
 import com.idle.fmd.domain.board.dto.BoardResponseDto;
 import com.idle.fmd.domain.board.dto.BoardUpdateDto;
 import com.idle.fmd.domain.board.entity.BoardEntity;
+import com.idle.fmd.domain.board.entity.LikeBoardEntity;
 import com.idle.fmd.domain.board.repo.BoardRepository;
 import com.idle.fmd.domain.board.entity.FileEntity;
 import com.idle.fmd.domain.board.repo.FileRepository;
+import com.idle.fmd.domain.board.repo.LikeBoardRepository;
 import com.idle.fmd.domain.comment.entity.CommentEntity;
 import com.idle.fmd.domain.comment.repo.CommentRepository;
 import com.idle.fmd.domain.user.entity.UserEntity;
@@ -15,6 +17,7 @@ import com.idle.fmd.domain.user.repo.UserRepository;
 import com.idle.fmd.global.utils.FileHandler;
 import com.idle.fmd.global.error.exception.BusinessException;
 import com.idle.fmd.global.error.exception.BusinessExceptionCode;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -36,6 +39,7 @@ public class BoardService {
     private final CommentRepository commentRepository;
     private final FileHandler fileHandler;
     private final FileRepository fileRepository;
+    private final LikeBoardRepository likeBoardRepository;
 
     public void boardCreate(BoardCreateDto dto, List<MultipartFile> images, String accountId) {
 
@@ -149,5 +153,42 @@ public class BoardService {
         Page<BoardAllResponseDto> boardResponseDtoPage = boardPage.map(BoardAllResponseDto::fromEntity);
 
         return boardResponseDtoPage;
+    }
+
+    @Transactional
+    public String updateLikeOfBoard(String accountId, Long boardId) {
+        if (!boardRepository.existsById(boardId)) {
+            log.info("해당 게시글은 존재하지 않습니다.");
+            throw new BusinessException(BusinessExceptionCode.NOT_EXISTS_BOARD_ERROR);
+        }
+
+        BoardEntity board = boardRepository.findById(boardId).get();
+        UserEntity user = userRepository.findByAccountId(accountId).get();
+
+        if (!hasLikeBoard(board, user)) {
+            board.increaseLikeCount();
+            return createLikeBoard(board, user);
+        }
+
+        board.decreaseLikeCount();
+        return removeLikeBoard(board, user);
+    }
+
+    private String removeLikeBoard(final BoardEntity board, final UserEntity user) {
+        LikeBoardEntity likeBoard = likeBoardRepository.findByBoardAndUser(board, user).get();
+
+        likeBoardRepository.delete(likeBoard);
+
+        return "좋아요 취소 완료";
+    }
+
+    private String createLikeBoard(final BoardEntity board, final UserEntity user) {
+        LikeBoardEntity likeBoard = new LikeBoardEntity(board, user);
+        likeBoardRepository.save(likeBoard);
+        return "좋아요 처리 완료";
+    }
+
+    private boolean hasLikeBoard(final BoardEntity board, final UserEntity user) {
+        return likeBoardRepository.findByBoardAndUser(board, user).isPresent();
     }
 }

@@ -34,6 +34,9 @@ public class BoardEntity extends BaseTimeEntity {
 
     private String content;
 
+    @Column(nullable = true)
+    private Integer liked;
+
     private boolean deleted = Boolean.FALSE;
 
 
@@ -49,6 +52,7 @@ public class BoardEntity extends BaseTimeEntity {
                 .content(dto.getContent())
                 .files(new ArrayList<>())
                 .user(user)
+                .liked(0)
                 .build();
     }
 
@@ -61,5 +65,14 @@ public class BoardEntity extends BaseTimeEntity {
     public void updateBoard(String title, String content) {
         this.title = title;
         this.content = content;
+    }
+
+    // 좋아요 + 1
+    public void increaseLikeCount() {
+        this.liked += 1;
+    }
+
+    public void decreaseLikeCount() {
+        this.liked -= 1;
     }
 }
