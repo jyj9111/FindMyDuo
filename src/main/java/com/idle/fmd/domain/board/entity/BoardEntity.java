@@ -43,12 +43,6 @@ public class BoardEntity extends BaseTimeEntity {
     @OneToMany(mappedBy = "board")
     private List<CommentEntity> comments = new ArrayList<>();
 
-    // Board와 User의 연관관계 편의 메소드
-    public void addBoardUser(UserEntity user) {
-        this.user = user;
-        user.getBoards().add(this);
-    }
-
     public static BoardEntity createBoard(BoardCreateDto dto, UserEntity user) {
         return BoardEntity.builder()
                 .title(dto.getTitle())

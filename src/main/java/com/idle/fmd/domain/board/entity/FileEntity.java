@@ -27,12 +27,6 @@ public class FileEntity {
 
     private boolean deleted = Boolean.FALSE;
 
-    // File과 Board의 연관관계 편의메소드
-    private void addFileBoard(BoardEntity board) {
-        this.board = board;
-        board.getFiles().add(this);
-    }
-
     public static FileEntity createFile(BoardEntity board, String imageUrl) {
         return FileEntity.builder()
                 .board(board)
