@@ -1,6 +1,5 @@
-package com.idle.fmd.domain.file.entity;
+package com.idle.fmd.domain.board.entity;
 
-import com.idle.fmd.domain.board.entity.BoardEntity;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.SQLDelete;

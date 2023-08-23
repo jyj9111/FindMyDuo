@@ -5,7 +5,7 @@ import com.idle.fmd.domain.user.dto.*;
 import com.idle.fmd.domain.user.entity.UserEntity;
 import com.idle.fmd.domain.user.repo.UserRepository;
 import com.idle.fmd.global.auth.jwt.JwtTokenUtils;
-import com.idle.fmd.global.common.utils.RedisUtil;
+import com.idle.fmd.global.utils.RedisUtil;
 import com.idle.fmd.global.error.exception.BusinessException;
 import com.idle.fmd.global.error.exception.BusinessExceptionCode;
 import lombok.RequiredArgsConstructor;

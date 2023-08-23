@@ -1,7 +1,7 @@
 package com.idle.fmd.domain.board.dto;
 
 import com.idle.fmd.domain.board.entity.BoardEntity;
-import com.idle.fmd.domain.file.entity.FileEntity;
+import com.idle.fmd.domain.board.entity.FileEntity;
 import lombok.Data;
 
 import java.time.LocalDateTime;

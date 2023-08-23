@@ -1,4 +1,4 @@
-package com.idle.fmd.global.common.utils;
+package com.idle.fmd.global.utils;
 
 import com.idle.fmd.global.error.exception.BusinessException;
 import com.idle.fmd.global.error.exception.BusinessExceptionCode;
