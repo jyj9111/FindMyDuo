@@ -7,6 +7,8 @@ import com.idle.fmd.domain.board.entity.BoardEntity;
 import com.idle.fmd.domain.board.repo.BoardRepository;
 import com.idle.fmd.domain.file.entity.FileEntity;
 import com.idle.fmd.domain.file.repo.FileRepository;
+import com.idle.fmd.domain.comment.entity.CommentEntity;
+import com.idle.fmd.domain.comment.repo.CommentRepository;
 import com.idle.fmd.domain.user.entity.UserEntity;
 import com.idle.fmd.domain.user.repo.UserRepository;
 import com.idle.fmd.global.common.utils.FileHandler;
@@ -22,6 +24,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.ArrayList;
 import java.util.List;
 
+
 @Slf4j
 @RequiredArgsConstructor
 @Service
@@ -29,6 +32,7 @@ public class BoardService {
 
     private final BoardRepository boardRepository;
     private final UserRepository userRepository;
+    private final CommentRepository commentRepository;
     private final FileHandler fileHandler;
     private final FileRepository fileRepository;
 
@@ -132,6 +136,10 @@ public class BoardService {
             fileRepository.deleteById(file.getId());
         }
 
+
+        // 게시글 삭제 전에 해당 게시글의 댓글들을 삭제
+        List<CommentEntity> commentsToDelete = commentRepository.findAllByBoardId(boardId);
+        commentRepository.deleteAll(commentsToDelete);
 
         log.info("게시글이 삭제되었습니다.");
         boardRepository.deleteById(boardId);
