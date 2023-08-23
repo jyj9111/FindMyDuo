@@ -2,6 +2,7 @@ package com.idle.fmd.domain.board.dto;
 
 import com.idle.fmd.domain.board.entity.BoardEntity;
 import com.idle.fmd.domain.board.entity.FileEntity;
+import com.idle.fmd.domain.comment.dto.CommentResponseDto;
 import lombok.Data;
 
 import java.time.LocalDateTime;
@@ -10,7 +11,6 @@ import java.util.List;
 
 @Data
 public class BoardResponseDto {
-
     private Long id;
 
     private String nickName;
@@ -20,6 +20,8 @@ public class BoardResponseDto {
     private String content;
 
     private List<String> images;
+
+    private List<CommentResponseDto> comments;
 
     private LocalDateTime modifiedAt;
 
@@ -35,7 +37,7 @@ public class BoardResponseDto {
             images.add(entity.getImageUrl());
         }
         boardResponseDto.setImages(images);
-
+        boardResponseDto.setComments(board.getComments().stream().map(CommentResponseDto::fromEntity).toList());
         boardResponseDto.setModifiedAt(board.getModifiedAt());
 
         return boardResponseDto;
