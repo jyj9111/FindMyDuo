@@ -7,6 +7,7 @@ import com.idle.fmd.domain.board.dto.BoardUpdateDto;
 import com.idle.fmd.domain.board.service.BoardService;
 import com.idle.fmd.domain.board.service.BookmarkService;
 import com.idle.fmd.domain.board.service.LikeBoardService;
+import com.idle.fmd.domain.board.service.ReportService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -30,6 +31,7 @@ public class BoardController {
     private final BoardService boardService;
     private final LikeBoardService likeBoardService;
     private final BookmarkService bookmarkService;
+    private final ReportService reportService;
 
     // 게시글 작성
     @PostMapping
@@ -78,6 +80,13 @@ public class BoardController {
     @PostMapping("/{boardId}/bookmark")
     public void bookmarkBoard(Authentication authentication, @PathVariable Long boardId) {
         String message = bookmarkService.updateOfBookmarkBoard(authentication.getName(), boardId);
+        log.info(message);
+    }
+
+    // 신고 기능
+    @PostMapping("/{boardId}/report")
+    public void reportBoard(Authentication authentication, @PathVariable Long boardId) {
+        String message = reportService.updateOfReportBoard(authentication.getName(), boardId);
         log.info(message);
     }
 }

@@ -40,6 +40,8 @@ public class BoardEntity extends BaseTimeEntity {
     @Column(nullable = true)
     private Integer bookmarked;
 
+    private Integer reported;
+
     private boolean deleted = Boolean.FALSE;
 
 
@@ -57,6 +59,7 @@ public class BoardEntity extends BaseTimeEntity {
                 .user(user)
                 .liked(0)
                 .bookmarked(0)
+                .reported(0)
                 .build();
     }
 
@@ -97,5 +100,19 @@ public class BoardEntity extends BaseTimeEntity {
     // 게시글 삭제시 즐겨찾기 0
     public void clearBookmarkCount() {
         this.bookmarked = 0;
+    }
+
+    // 신고 + 1
+    public void increaseReportCount() {
+        this.reported += 1;
+    }
+
+    public void decreaseReportCount() {
+        this.reported -= 1;
+    }
+
+    // 게시글 삭제시 신고 0
+    public void clearReportCount() {
+        this.reported = 0;
     }
 }
