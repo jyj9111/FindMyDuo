@@ -14,6 +14,8 @@ public class BoardAllResponseDto {
 
     private String title;
 
+    private Integer liked;
+
     private LocalDateTime modifiedAt;
 
     public static BoardAllResponseDto fromEntity(BoardEntity board) {
@@ -21,6 +23,7 @@ public class BoardAllResponseDto {
         boardAllResponseDto.setId(board.getId());
         boardAllResponseDto.setNickName(board.getUser().getNickname());
         boardAllResponseDto.setTitle(board.getTitle());
+        boardAllResponseDto.setLiked(board.getLiked());
         boardAllResponseDto.setModifiedAt(board.getModifiedAt());
 
         return boardAllResponseDto;
