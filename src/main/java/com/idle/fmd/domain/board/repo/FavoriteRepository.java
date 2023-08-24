@@ -13,4 +13,6 @@ public interface FavoriteRepository extends JpaRepository<FavoriteEntity, Long> 
     Optional<FavoriteEntity> findByBoardAndUser(BoardEntity board, UserEntity user);
 
     List<FavoriteEntity> findAllByUser(UserEntity user);
+
+    List<FavoriteEntity> findAllByBoardId(Long boardId);
 }

@@ -80,6 +80,11 @@ public class BoardEntity extends BaseTimeEntity {
         this.liked -= 1;
     }
 
+    // 게시글 삭제시 좋아요 0
+    public void clearLikeCount() {
+        this.liked = 0;
+    }
+
     // 즐겨찾기 + 1
     public void increaseFavoriteCount() {
         this.favorited += 1;
@@ -87,5 +92,10 @@ public class BoardEntity extends BaseTimeEntity {
 
     public void decreaseFavoriteCount() {
         this.favorited -= 1;
+    }
+
+    // 게시글 삭제시 즐겨찾기 0
+    public void clearFavoriteCount() {
+        this.favorited = 0;
     }
 }

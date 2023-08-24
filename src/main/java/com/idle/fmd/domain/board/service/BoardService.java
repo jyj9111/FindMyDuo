@@ -147,6 +147,16 @@ public class BoardService {
         List<CommentEntity> commentsToDelete = commentRepository.findAllByBoardId(boardId);
         commentRepository.deleteAll(commentsToDelete);
 
+        // 게시글 삭제 전에 해당 좋아요 삭제
+        List<LikeBoardEntity> likeBoard = likeBoardRepository.findAllByBoardId(boardId);
+        likeBoardRepository.deleteAll(likeBoard);
+        boardEntity.clearLikeCount();
+
+        // 게시글 삭제 전에 해당 즐겨찾기 삭제
+        List<FavoriteEntity> favoriteBoard = favoriteRepository.findAllByBoardId(boardId);
+        favoriteRepository.deleteAll(favoriteBoard);
+        boardEntity.clearFavoriteCount();
+
         log.info("게시글이 삭제되었습니다.");
         boardRepository.deleteById(boardId);
     }
