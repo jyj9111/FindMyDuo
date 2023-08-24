@@ -33,7 +33,7 @@ public class BoardAllResponseDto {
     public static BoardAllResponseDto fromEntity(BookmarkEntity bookmark) {
         BoardAllResponseDto boardAllResponseDto = new BoardAllResponseDto();
         boardAllResponseDto.setId(bookmark.getBoard().getId());
-        boardAllResponseDto.setNickName(bookmark.getBoard().getUser().getNickname());
+        boardAllResponseDto.setNickName(bookmark.getUser().getNickname());
         boardAllResponseDto.setTitle(bookmark.getBoard().getTitle());
         boardAllResponseDto.setLiked(bookmark.getBoard().getLiked());
         boardAllResponseDto.setModifiedAt(bookmark.getBoard().getModifiedAt());
