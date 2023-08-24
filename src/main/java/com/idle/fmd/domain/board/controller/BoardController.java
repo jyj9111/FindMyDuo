@@ -5,6 +5,8 @@ import com.idle.fmd.domain.board.dto.BoardAllResponseDto;
 import com.idle.fmd.domain.board.dto.BoardResponseDto;
 import com.idle.fmd.domain.board.dto.BoardUpdateDto;
 import com.idle.fmd.domain.board.service.BoardService;
+import com.idle.fmd.domain.board.service.BookmarkService;
+import com.idle.fmd.domain.board.service.LikeBoardService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -26,6 +28,8 @@ import java.util.List;
 public class BoardController {
 
     private final BoardService boardService;
+    private final LikeBoardService likeBoardService;
+    private final BookmarkService bookmarkService;
 
     // 게시글 작성
     @PostMapping
@@ -66,14 +70,14 @@ public class BoardController {
     // 좋아요 기능
     @PostMapping("/{boardId}/like")
     public void likeBoard(Authentication authentication, @PathVariable Long boardId) {
-        String message = boardService.updateLikeOfBoard(authentication.getName(), boardId);
+        String message = likeBoardService.updateLikeOfBoard(authentication.getName(), boardId);
         log.info(message);
     }
 
     // 즐겨찾기 기능
     @PostMapping("/{boardId}/bookmark")
     public void bookmarkBoard(Authentication authentication, @PathVariable Long boardId) {
-        String message = boardService.updateOfBookmarkBoard(authentication.getName(), boardId);
+        String message = bookmarkService.updateOfBookmarkBoard(authentication.getName(), boardId);
         log.info(message);
     }
 }
