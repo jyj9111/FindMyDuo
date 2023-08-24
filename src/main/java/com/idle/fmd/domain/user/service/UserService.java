@@ -235,7 +235,7 @@ public class UserService {
         UserEntity user = repository.findByAccountId(accountId).get();
 
         Page<BookmarkEntity> board = bookmarkRepository.findAllByUser(user, pageable);
-        Page<BoardAllResponseDto> boardDto = board.map(BoardAllResponseDto::fromEntity);
+        Page<BoardAllResponseDto> boardDto = board.map(BoardAllResponseDto::fromBookmarkEntity);
 
         return boardDto;
     }

@@ -120,7 +120,7 @@ public class BoardService {
         boardEntity.updateBoard(dto.getTitle(), dto.getContent());
         boardRepository.save(boardEntity);
 
-        BoardAllResponseDto.fromEntity(boardEntity);
+        BoardAllResponseDto.fromBoardEntity(boardEntity);
     }
 
     public void boardDelete(String accountId, Long boardId) {
@@ -163,7 +163,7 @@ public class BoardService {
 
     public Page<BoardAllResponseDto> boardReadAll(Pageable pageable) {
         Page<BoardEntity> boardPage = boardRepository.findAll(pageable);
-        Page<BoardAllResponseDto> boardResponseDtoPage = boardPage.map(BoardAllResponseDto::fromEntity);
+        Page<BoardAllResponseDto> boardResponseDtoPage = boardPage.map(BoardAllResponseDto::fromBoardEntity);
 
         return boardResponseDtoPage;
     }

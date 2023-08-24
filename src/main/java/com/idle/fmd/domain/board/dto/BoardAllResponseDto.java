@@ -19,7 +19,7 @@ public class BoardAllResponseDto {
 
     private LocalDateTime modifiedAt;
 
-    public static BoardAllResponseDto fromEntity(BoardEntity board) {
+    public static BoardAllResponseDto fromBoardEntity(BoardEntity board) {
         BoardAllResponseDto boardAllResponseDto = new BoardAllResponseDto();
         boardAllResponseDto.setId(board.getId());
         boardAllResponseDto.setNickName(board.getUser().getNickname());
@@ -30,7 +30,7 @@ public class BoardAllResponseDto {
         return boardAllResponseDto;
     }
 
-    public static BoardAllResponseDto fromEntity(BookmarkEntity bookmark) {
+    public static BoardAllResponseDto fromBookmarkEntity(BookmarkEntity bookmark) {
         BoardAllResponseDto boardAllResponseDto = new BoardAllResponseDto();
         boardAllResponseDto.setId(bookmark.getBoard().getId());
         boardAllResponseDto.setNickName(bookmark.getUser().getNickname());
