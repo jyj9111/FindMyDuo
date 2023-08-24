@@ -5,11 +5,11 @@ import com.idle.fmd.domain.board.dto.BoardAllResponseDto;
 import com.idle.fmd.domain.board.dto.BoardResponseDto;
 import com.idle.fmd.domain.board.dto.BoardUpdateDto;
 import com.idle.fmd.domain.board.entity.BoardEntity;
-import com.idle.fmd.domain.board.entity.FavoriteEntity;
+import com.idle.fmd.domain.board.entity.BookmarkEntity;
 import com.idle.fmd.domain.board.entity.LikeBoardEntity;
 import com.idle.fmd.domain.board.repo.BoardRepository;
 import com.idle.fmd.domain.board.entity.FileEntity;
-import com.idle.fmd.domain.board.repo.FavoriteRepository;
+import com.idle.fmd.domain.board.repo.BookmarkRepository;
 import com.idle.fmd.domain.board.repo.FileRepository;
 import com.idle.fmd.domain.board.repo.LikeBoardRepository;
 import com.idle.fmd.domain.comment.entity.CommentEntity;
@@ -42,7 +42,7 @@ public class BoardService {
     private final FileHandler fileHandler;
     private final FileRepository fileRepository;
     private final LikeBoardRepository likeBoardRepository;
-    private final FavoriteRepository favoriteRepository;
+    private final BookmarkRepository bookmarkRepository;
 
     public void boardCreate(BoardCreateDto dto, List<MultipartFile> images, String accountId) {
 
@@ -153,9 +153,9 @@ public class BoardService {
         boardEntity.clearLikeCount();
 
         // 게시글 삭제 전에 해당 즐겨찾기 삭제
-        List<FavoriteEntity> favoriteBoard = favoriteRepository.findAllByBoardId(boardId);
-        favoriteRepository.deleteAll(favoriteBoard);
-        boardEntity.clearFavoriteCount();
+        List<BookmarkEntity> bookmarkBoard = bookmarkRepository.findAllByBoardId(boardId);
+        bookmarkRepository.deleteAll(bookmarkBoard);
+        boardEntity.clearBookmarkCount();
 
         log.info("게시글이 삭제되었습니다.");
         boardRepository.deleteById(boardId);
@@ -206,7 +206,7 @@ public class BoardService {
     }
 
     @Transactional
-    public String updateOfFavoriteBoard(String accountId, Long boardId) {
+    public String updateOfBookmarkBoard(String accountId, Long boardId) {
         if (!boardRepository.existsById(boardId)) {
             log.info("해당 게시글은 존재하지 않습니다.");
             throw new BusinessException(BusinessExceptionCode.NOT_EXISTS_BOARD_ERROR);
@@ -215,30 +215,30 @@ public class BoardService {
         BoardEntity board = boardRepository.findById(boardId).get();
         UserEntity user = userRepository.findByAccountId(accountId).get();
 
-        if (!hasFavoriteBoard(board, user)) {
-            board.increaseFavoriteCount();
-            return createFavorite(board, user);
+        if (!hasBookmarkBoard(board, user)) {
+            board.increaseBookmarkCount();
+            return createBookmark(board, user);
         }
 
-        board.decreaseFavoriteCount();
-        return removeFavorite(board, user);
+        board.decreaseBookmarkCount();
+        return removeBookmark(board, user);
     }
 
-    private String removeFavorite(BoardEntity board, UserEntity user) {
-        FavoriteEntity favorite = favoriteRepository.findByBoardAndUser(board, user).get();
+    private String removeBookmark(BoardEntity board, UserEntity user) {
+        BookmarkEntity bookmark = bookmarkRepository.findByBoardAndUser(board, user).get();
 
-        favoriteRepository.delete(favorite);
+        bookmarkRepository.delete(bookmark);
 
         return "즐겨찾기 취소완료";
     }
 
-    private String createFavorite(final BoardEntity board, final UserEntity user) {
-        FavoriteEntity favorite = new FavoriteEntity(board, user);
-        favoriteRepository.save(favorite);
+    private String createBookmark(final BoardEntity board, final UserEntity user) {
+        BookmarkEntity bookmark = new BookmarkEntity(board, user);
+        bookmarkRepository.save(bookmark);
         return "즐겨찾기 처리완료";
     }
 
-    private boolean hasFavoriteBoard(BoardEntity board, UserEntity user) {
-        return favoriteRepository.findByBoardAndUser(board, user).isPresent();
+    private boolean hasBookmarkBoard(BoardEntity board, UserEntity user) {
+        return bookmarkRepository.findByBoardAndUser(board, user).isPresent();
     }
 }

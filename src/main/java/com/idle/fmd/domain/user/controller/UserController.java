@@ -24,9 +24,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.List;
-
-
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/users")
@@ -114,8 +111,8 @@ public class UserController {
     }
 
     // 즐겨찾기 한 글 조회
-    @GetMapping("/favorites")
-    public Page<BoardAllResponseDto> findFavorities(Authentication authentication, @PageableDefault(size = 20, sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
-        return userService.findFavorites(authentication.getName(), pageable);
+    @GetMapping("/bookmark")
+    public Page<BoardAllResponseDto> findBookmark(Authentication authentication, @PageableDefault(size = 20, sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
+        return userService.findBookmark(authentication.getName(), pageable);
     }
 }

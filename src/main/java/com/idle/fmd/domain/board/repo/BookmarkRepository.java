@@ -1,7 +1,7 @@
 package com.idle.fmd.domain.board.repo;
 
 import com.idle.fmd.domain.board.entity.BoardEntity;
-import com.idle.fmd.domain.board.entity.FavoriteEntity;
+import com.idle.fmd.domain.board.entity.BookmarkEntity;
 import com.idle.fmd.domain.user.entity.UserEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -10,11 +10,11 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 import java.util.Optional;
 
-public interface FavoriteRepository extends JpaRepository<FavoriteEntity, Long> {
+public interface BookmarkRepository extends JpaRepository<BookmarkEntity, Long> {
 
-    Optional<FavoriteEntity> findByBoardAndUser(BoardEntity board, UserEntity user);
+    Optional<BookmarkEntity> findByBoardAndUser(BoardEntity board, UserEntity user);
 
-    Page<FavoriteEntity> findAllByUser(UserEntity user, Pageable pageable);
+    Page<BookmarkEntity> findAllByUser(UserEntity user, Pageable pageable);
 
-    List<FavoriteEntity> findAllByBoardId(Long boardId);
+    List<BookmarkEntity> findAllByBoardId(Long boardId);
 }

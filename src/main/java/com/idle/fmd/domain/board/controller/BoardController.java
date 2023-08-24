@@ -71,9 +71,9 @@ public class BoardController {
     }
 
     // 즐겨찾기 기능
-    @PostMapping("/{boardId}/favorite")
-    public void favoriteBoard(Authentication authentication, @PathVariable Long boardId) {
-        String message = boardService.updateOfFavoriteBoard(authentication.getName(), boardId);
+    @PostMapping("/{boardId}/bookmark")
+    public void bookmarkBoard(Authentication authentication, @PathVariable Long boardId) {
+        String message = boardService.updateOfBookmarkBoard(authentication.getName(), boardId);
         log.info(message);
     }
 }

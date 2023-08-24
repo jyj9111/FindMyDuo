@@ -1,7 +1,7 @@
 package com.idle.fmd.domain.board.dto;
 
 import com.idle.fmd.domain.board.entity.BoardEntity;
-import com.idle.fmd.domain.board.entity.FavoriteEntity;
+import com.idle.fmd.domain.board.entity.BookmarkEntity;
 import lombok.Data;
 
 import java.time.LocalDateTime;
@@ -30,13 +30,13 @@ public class BoardAllResponseDto {
         return boardAllResponseDto;
     }
 
-    public static BoardAllResponseDto fromEntity(FavoriteEntity favorite) {
+    public static BoardAllResponseDto fromEntity(BookmarkEntity bookmark) {
         BoardAllResponseDto boardAllResponseDto = new BoardAllResponseDto();
-        boardAllResponseDto.setId(favorite.getBoard().getId());
-        boardAllResponseDto.setNickName(favorite.getBoard().getUser().getNickname());
-        boardAllResponseDto.setTitle(favorite.getBoard().getTitle());
-        boardAllResponseDto.setLiked(favorite.getBoard().getLiked());
-        boardAllResponseDto.setModifiedAt(favorite.getBoard().getModifiedAt());
+        boardAllResponseDto.setId(bookmark.getBoard().getId());
+        boardAllResponseDto.setNickName(bookmark.getBoard().getUser().getNickname());
+        boardAllResponseDto.setTitle(bookmark.getBoard().getTitle());
+        boardAllResponseDto.setLiked(bookmark.getBoard().getLiked());
+        boardAllResponseDto.setModifiedAt(bookmark.getBoard().getModifiedAt());
 
         return boardAllResponseDto;
     }

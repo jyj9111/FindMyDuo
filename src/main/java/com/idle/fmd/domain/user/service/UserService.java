@@ -2,9 +2,8 @@ package com.idle.fmd.domain.user.service;
 
 
 import com.idle.fmd.domain.board.dto.BoardAllResponseDto;
-import com.idle.fmd.domain.board.entity.FavoriteEntity;
-import com.idle.fmd.domain.board.repo.BoardRepository;
-import com.idle.fmd.domain.board.repo.FavoriteRepository;
+import com.idle.fmd.domain.board.entity.BookmarkEntity;
+import com.idle.fmd.domain.board.repo.BookmarkRepository;
 import com.idle.fmd.domain.user.dto.*;
 import com.idle.fmd.domain.user.entity.UserEntity;
 import com.idle.fmd.domain.user.repo.UserRepository;
@@ -42,7 +41,7 @@ public class UserService {
     private final JavaMailSender mailSender;
     private final RedisUtil redisUtil;
     private final UserRepository repository;
-    private final FavoriteRepository favoriteRepository;
+    private final BookmarkRepository bookmarkRepository;
 
     // 회원가입 메서드
     public void signup(SignupDto dto){
@@ -231,11 +230,11 @@ public class UserService {
         }
     }
 
-    public Page<BoardAllResponseDto> findFavorites(String accountId, Pageable pageable) {
+    public Page<BoardAllResponseDto> findBookmark(String accountId, Pageable pageable) {
 
         UserEntity user = repository.findByAccountId(accountId).get();
 
-        Page<FavoriteEntity> board = favoriteRepository.findAllByUser(user, pageable);
+        Page<BookmarkEntity> board = bookmarkRepository.findAllByUser(user, pageable);
         Page<BoardAllResponseDto> boardDto = board.map(BoardAllResponseDto::fromEntity);
 
         return boardDto;

@@ -38,7 +38,7 @@ public class BoardEntity extends BaseTimeEntity {
     private Integer liked;
 
     @Column(nullable = true)
-    private Integer favorited;
+    private Integer bookmarked;
 
     private boolean deleted = Boolean.FALSE;
 
@@ -56,7 +56,7 @@ public class BoardEntity extends BaseTimeEntity {
                 .files(new ArrayList<>())
                 .user(user)
                 .liked(0)
-                .favorited(0)
+                .bookmarked(0)
                 .build();
     }
 
@@ -86,16 +86,16 @@ public class BoardEntity extends BaseTimeEntity {
     }
 
     // 즐겨찾기 + 1
-    public void increaseFavoriteCount() {
-        this.favorited += 1;
+    public void increaseBookmarkCount() {
+        this.bookmarked += 1;
     }
 
-    public void decreaseFavoriteCount() {
-        this.favorited -= 1;
+    public void decreaseBookmarkCount() {
+        this.bookmarked -= 1;
     }
 
     // 게시글 삭제시 즐겨찾기 0
-    public void clearFavoriteCount() {
-        this.favorited = 0;
+    public void clearBookmarkCount() {
+        this.bookmarked = 0;
     }
 }

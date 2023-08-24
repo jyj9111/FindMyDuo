@@ -12,8 +12,8 @@ import org.hibernate.annotations.OnDeleteAction;
 @Setter
 @Builder
 @Entity
-@Table(name = "favorite")
-public class FavoriteEntity {
+@Table(name = "bookmark")
+public class BookmarkEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -33,7 +33,7 @@ public class FavoriteEntity {
     @Column(nullable = false)
     private boolean status;
 
-    public FavoriteEntity(BoardEntity board, UserEntity user) {
+    public BookmarkEntity(BoardEntity board, UserEntity user) {
         this.board = board;
         this.user = user;
         this.status = true;
