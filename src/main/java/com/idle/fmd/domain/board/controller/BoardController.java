@@ -1,13 +1,11 @@
 package com.idle.fmd.domain.board.controller;
 
-import com.idle.fmd.domain.board.dto.BoardCreateDto;
-import com.idle.fmd.domain.board.dto.BoardAllResponseDto;
-import com.idle.fmd.domain.board.dto.BoardResponseDto;
-import com.idle.fmd.domain.board.dto.BoardUpdateDto;
+import com.idle.fmd.domain.board.dto.*;
 import com.idle.fmd.domain.board.service.BoardService;
 import com.idle.fmd.domain.board.service.BookmarkService;
 import com.idle.fmd.domain.board.service.LikeBoardService;
 import com.idle.fmd.domain.board.service.ReportService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -85,8 +83,7 @@ public class BoardController {
 
     // 신고 기능
     @PostMapping("/{boardId}/report")
-    public void reportBoard(Authentication authentication, @PathVariable Long boardId) {
-        String message = reportService.updateOfReportBoard(authentication.getName(), boardId);
-        log.info(message);
+    public void reportBoard(Authentication authentication, @PathVariable Long boardId, @RequestBody @Valid ReportDto dto) {
+        reportService.updateOfReportBoard(authentication.getName(), boardId, dto);
     }
 }

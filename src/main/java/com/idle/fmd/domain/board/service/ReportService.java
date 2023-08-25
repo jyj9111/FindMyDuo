@@ -1,5 +1,6 @@
 package com.idle.fmd.domain.board.service;
 
+import com.idle.fmd.domain.board.dto.ReportDto;
 import com.idle.fmd.domain.board.entity.BoardEntity;
 import com.idle.fmd.domain.board.entity.ReportEntity;
 import com.idle.fmd.domain.board.repo.BoardRepository;
@@ -23,7 +24,7 @@ public class ReportService {
     private final ReportRepository reportRepository;
 
     @Transactional
-    public String updateOfReportBoard(String accountId, Long boardId) {
+    public void updateOfReportBoard(String accountId, Long boardId, ReportDto dto) {
         if (!boardRepository.existsById(boardId)) {
             log.info("해당 게시글은 존재하지 않습니다.");
             throw new BusinessException(BusinessExceptionCode.NOT_EXISTS_BOARD_ERROR);
@@ -34,25 +35,29 @@ public class ReportService {
 
         if (!hasReportBoard(board, user)) {
             board.increaseReportCount();
-            return createReport(board, user);
+            createReport(board, user, dto);
+        } else {
+            board.decreaseReportCount();
+            removeReport(board, user);
         }
 
-        board.decreaseReportCount();
-        return removeReport(board, user);
+        if (board.getReported() > 1) {
+            boardRepository.deleteById(boardId);
+        }
     }
 
-    private String removeReport(BoardEntity board, UserEntity user) {
+    private void removeReport(BoardEntity board, UserEntity user) {
         ReportEntity report = reportRepository.findByBoardAndUser(board, user).get();
 
         reportRepository.delete(report);
 
-        return "신고 취소완료";
+        log.info("신고 취소완료");
     }
 
-    private String createReport(BoardEntity board, UserEntity user) {
-        ReportEntity report = new ReportEntity(board, user);
+    private void createReport(BoardEntity board, UserEntity user, ReportDto dto) {
+        ReportEntity report = new ReportEntity(board, user, dto.getContent());
         reportRepository.save(report);
-        return "신고 완료";
+        log.info("신고 완료");
     }
 
     private boolean hasReportBoard(BoardEntity board, UserEntity user) {

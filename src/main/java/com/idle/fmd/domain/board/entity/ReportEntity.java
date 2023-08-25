@@ -27,8 +27,11 @@ public class ReportEntity {
     @OnDelete(action = OnDeleteAction.CASCADE)
     private UserEntity user;
 
-    public ReportEntity(BoardEntity board, UserEntity user) {
+    private String content;
+
+    public ReportEntity(BoardEntity board, UserEntity user, String content) {
         this.board = board;
         this.user = user;
+        this.content = content;
     }
 }
