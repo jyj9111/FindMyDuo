@@ -5,16 +5,11 @@ import com.idle.fmd.domain.user.entity.UserEntity;
 import com.idle.fmd.global.common.entity.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.SQLDelete;
-import org.hibernate.annotations.Where;
-
 
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-@SQLDelete(sql = "UPDATE comment SET deleted = true WHERE id = ?")
-@Where(clause = "deleted = false")
 @Entity
 @Table(name = "comment")
 public class CommentEntity extends BaseTimeEntity {
@@ -24,8 +19,6 @@ public class CommentEntity extends BaseTimeEntity {
 
     private String content;
 
-    private boolean deleted = Boolean.FALSE;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private UserEntity user;
@@ -33,7 +26,4 @@ public class CommentEntity extends BaseTimeEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "board_id")
     private BoardEntity board;
-
-
-
 }

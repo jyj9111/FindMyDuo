@@ -6,8 +6,6 @@ import com.idle.fmd.domain.user.entity.UserEntity;
 import com.idle.fmd.global.common.entity.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.SQLDelete;
-import org.hibernate.annotations.Where;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,8 +14,6 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-@SQLDelete(sql = "UPDATE board SET deleted = true WHERE id = ?")
-@Where(clause = "deleted = false")
 @Entity
 @Table(name = "board")
 public class BoardEntity extends BaseTimeEntity {
@@ -41,9 +37,6 @@ public class BoardEntity extends BaseTimeEntity {
     private Integer bookmarked;
 
     private Integer reported;
-
-    private boolean deleted = Boolean.FALSE;
-
 
     @OneToMany(mappedBy = "board")
     private List<FileEntity> files = new ArrayList<>();
