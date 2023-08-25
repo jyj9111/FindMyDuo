@@ -15,11 +15,14 @@ import com.idle.fmd.global.error.exception.BusinessException;
 import com.idle.fmd.global.error.exception.BusinessExceptionCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.tomcat.util.http.fileupload.FileUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -101,6 +104,9 @@ public class BoardService {
                     fileRepository.deleteById(file.getId());
             }
 
+            // 경로에 있는 파일 삭제
+            deleteBoardImageDirectory(boardId);
+
             log.info("게시판 이미지 수정 추가");
             for (MultipartFile image : images) {
                 String imgUrl = fileHandler.getBoardFilePath(boardEntity.getId(), image);
@@ -150,6 +156,8 @@ public class BoardService {
         List<ReportEntity> reports = reportRepository.findAllByBoardId(boardId);
         reportRepository.deleteAll(reports);
 
+        // 경로에 있는 파일 삭제
+        deleteBoardImageDirectory(boardId);
         log.info("게시글이 삭제되었습니다.");
         boardRepository.deleteById(boardId);
     }
@@ -159,5 +167,15 @@ public class BoardService {
         Page<BoardAllResponseDto> boardResponseDtoPage = boardPage.map(BoardAllResponseDto::fromBoardEntity);
 
         return boardResponseDtoPage;
+    }
+
+    private void deleteBoardImageDirectory(Long boardId) {
+        String boardImgDir = String.format("./images/board/%s", boardId);
+        try {
+            FileUtils.deleteDirectory(new File(boardImgDir));
+        } catch (IOException e) {
+            log.error("게시판 이미지 디렉토리 삭제 중 오류 발생");
+            throw new BusinessException(BusinessExceptionCode.CANNOT_DELETE_DIRECTORY_ERROR);
+        }
     }
 }

@@ -12,8 +12,11 @@ import com.idle.fmd.global.error.exception.BusinessExceptionCode;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.tomcat.util.http.fileupload.FileUtils;
 import org.springframework.stereotype.Service;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.List;
 
 @Slf4j
@@ -38,6 +41,13 @@ public class ReportService {
 
         BoardEntity board = boardRepository.findById(boardId).get();
         UserEntity user = userRepository.findByAccountId(accountId).get();
+
+        String dbId = board.getUser().getAccountId();
+
+        if (dbId.equals(accountId)) {
+            log.info("본인글을 본인이 신고할 수 없어요.");
+            throw new BusinessException(BusinessExceptionCode.NOT_SELF_REPORT_ERROR);
+        }
 
         if (!hasReportBoard(board, user)) {
             board.increaseReportCount();
@@ -71,7 +81,21 @@ public class ReportService {
             List<ReportEntity> reports = reportRepository.findAllByBoardId(boardId);
             reportRepository.deleteAll(reports);
 
+            // 경로에 저장되어 있는 이미지도 삭제
+            deleteBoardImageDirectory(boardId);
+
             boardRepository.deleteById(boardId);
+        }
+    }
+
+    //  경로에 저장되어 있는 이미지 삭제
+    private void deleteBoardImageDirectory(Long boardId) {
+        String boardImgDir = String.format("./images/board/%s", boardId);
+        try {
+            FileUtils.deleteDirectory(new File(boardImgDir));
+        } catch (IOException e) {
+            log.error("게시판 이미지 디렉토리 삭제 중 오류 발생");
+            throw new BusinessException(BusinessExceptionCode.CANNOT_DELETE_DIRECTORY_ERROR);
         }
     }
 
