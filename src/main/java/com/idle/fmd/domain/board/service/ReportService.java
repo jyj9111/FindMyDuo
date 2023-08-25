@@ -47,6 +47,7 @@ public class ReportService {
             removeReport(board, user);
         }
 
+        // 테스트를 위하여 신고횟수가 2회이상일시 게시글 삭제로 설정함
         if (board.getReported() > 1) {
 
             List<FileEntity> files = fileRepository.findAllByBoardId(boardId);
