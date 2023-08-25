@@ -98,8 +98,7 @@ public class BoardService {
 
             log.info("게시판 이미지 수정 전 삭제");
             for (FileEntity file : boardEntity.getFiles()) {
-
-                if (file.isDeleted() == false) fileRepository.deleteById(file.getId());
+                    fileRepository.deleteById(file.getId());
             }
 
             log.info("게시판 이미지 수정 추가");
