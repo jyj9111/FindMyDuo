@@ -59,17 +59,17 @@ public class ReportService {
             // 게시글 삭제 전에 해당 좋아요 삭제
             List<LikeBoardEntity> likeBoard = likeBoardRepository.findAllByBoardId(boardId);
             likeBoardRepository.deleteAll(likeBoard);
-            board.clearLikeCount();
+
 
             // 게시글 삭제 전에 해당 즐겨찾기 삭제
             List<BookmarkEntity> bookmarkBoard = bookmarkRepository.findAllByBoardId(boardId);
             bookmarkRepository.deleteAll(bookmarkBoard);
-            board.clearBookmarkCount();
+
 
             // 게시글 삭제 전에 신고 삭제
             List<ReportEntity> reports = reportRepository.findAllByBoardId(boardId);
             reportRepository.deleteAll(reports);
-            board.clearReportCount();
+
             boardRepository.deleteById(boardId);
         }
     }

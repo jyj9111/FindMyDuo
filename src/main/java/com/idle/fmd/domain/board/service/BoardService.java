@@ -141,17 +141,14 @@ public class BoardService {
         // 게시글 삭제 전에 해당 좋아요 삭제
         List<LikeBoardEntity> likeBoard = likeBoardRepository.findAllByBoardId(boardId);
         likeBoardRepository.deleteAll(likeBoard);
-        boardEntity.clearLikeCount();
 
         // 게시글 삭제 전에 해당 즐겨찾기 삭제
         List<BookmarkEntity> bookmarkBoard = bookmarkRepository.findAllByBoardId(boardId);
         bookmarkRepository.deleteAll(bookmarkBoard);
-        boardEntity.clearBookmarkCount();
 
         // 게시글 삭제 전에 신고 삭제
         List<ReportEntity> reports = reportRepository.findAllByBoardId(boardId);
         reportRepository.deleteAll(reports);
-        boardEntity.clearReportCount();
 
         log.info("게시글이 삭제되었습니다.");
         boardRepository.deleteById(boardId);
