@@ -1,10 +1,10 @@
 package com.idle.fmd.domain.board.service;
 
 import com.idle.fmd.domain.board.dto.ReportDto;
-import com.idle.fmd.domain.board.entity.BoardEntity;
-import com.idle.fmd.domain.board.entity.ReportEntity;
-import com.idle.fmd.domain.board.repo.BoardRepository;
-import com.idle.fmd.domain.board.repo.ReportRepository;
+import com.idle.fmd.domain.board.entity.*;
+import com.idle.fmd.domain.board.repo.*;
+import com.idle.fmd.domain.comment.entity.CommentEntity;
+import com.idle.fmd.domain.comment.repo.CommentRepository;
 import com.idle.fmd.domain.user.entity.UserEntity;
 import com.idle.fmd.domain.user.repo.UserRepository;
 import com.idle.fmd.global.error.exception.BusinessException;
@@ -14,6 +14,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Slf4j
 @RequiredArgsConstructor
 @Service
@@ -22,6 +24,10 @@ public class ReportService {
     private final BoardRepository boardRepository;
     private final UserRepository userRepository;
     private final ReportRepository reportRepository;
+    private final FileRepository fileRepository;
+    private final CommentRepository commentRepository;
+    private final LikeBoardRepository likeBoardRepository;
+    private final BookmarkRepository bookmarkRepository;
 
     @Transactional
     public void updateOfReportBoard(String accountId, Long boardId, ReportDto dto) {
@@ -42,6 +48,28 @@ public class ReportService {
         }
 
         if (board.getReported() > 1) {
+
+            List<FileEntity> files = fileRepository.findAllByBoardId(boardId);
+            fileRepository.deleteAll(files);
+
+            // 게시글 삭제 전에 해당 게시글의 댓글들을 삭제
+            List<CommentEntity> commentsToDelete = commentRepository.findAllByBoardId(boardId);
+            commentRepository.deleteAll(commentsToDelete);
+
+            // 게시글 삭제 전에 해당 좋아요 삭제
+            List<LikeBoardEntity> likeBoard = likeBoardRepository.findAllByBoardId(boardId);
+            likeBoardRepository.deleteAll(likeBoard);
+            board.clearLikeCount();
+
+            // 게시글 삭제 전에 해당 즐겨찾기 삭제
+            List<BookmarkEntity> bookmarkBoard = bookmarkRepository.findAllByBoardId(boardId);
+            bookmarkRepository.deleteAll(bookmarkBoard);
+            board.clearBookmarkCount();
+
+            // 게시글 삭제 전에 신고 삭제
+            List<ReportEntity> reports = reportRepository.findAllByBoardId(boardId);
+            reportRepository.deleteAll(reports);
+            board.clearReportCount();
             boardRepository.deleteById(boardId);
         }
     }
