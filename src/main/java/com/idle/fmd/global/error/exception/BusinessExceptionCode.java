@@ -59,7 +59,13 @@ public enum BusinessExceptionCode {
     CANNOT_SAVE_BOARD_IMAGE_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "게시판 이미지를 저장할 수 없습니다."),
 
     // 댓글을 작성할 때 작성자가 아닌 사람이 적을 때의 예외코드
-    UNAUTHORIZED_USER(HttpStatus.UNAUTHORIZED, "해당 요청에 대한 권한이 없는 사용자입니다.");
+    UNAUTHORIZED_USER(HttpStatus.UNAUTHORIZED, "해당 요청에 대한 권한이 없는 사용자입니다."),
+
+    // 검색 기준이 user, content, title 이 아닐 때 발생하는 예외코드
+    SEARCH_STANDARD_ERROR(HttpStatus.BAD_REQUEST, "해당 기준으로 검색할 수 없습니다."),
+
+    // 검색할 값이 입력되지 않았을 때
+    NO_SEARCH_QUERY_PARAMETER(HttpStatus.BAD_REQUEST, "검색할 값을 확인해 주세요");
 
     private final HttpStatus status;
     private final String message;

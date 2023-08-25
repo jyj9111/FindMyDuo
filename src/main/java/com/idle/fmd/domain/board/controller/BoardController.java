@@ -5,6 +5,8 @@ import com.idle.fmd.domain.board.dto.BoardAllResponseDto;
 import com.idle.fmd.domain.board.dto.BoardResponseDto;
 import com.idle.fmd.domain.board.dto.BoardUpdateDto;
 import com.idle.fmd.domain.board.service.BoardService;
+import com.idle.fmd.global.error.exception.BusinessException;
+import com.idle.fmd.global.error.exception.BusinessExceptionCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -55,9 +57,50 @@ public class BoardController {
         boardService.boardDelete(authentication.getName(), boardId);
     }
 
-    // 전체조회 (페이징 처리)
+//    // 전체조회 (페이징 처리)
+//    @GetMapping()
+//    public Page<BoardAllResponseDto> boardReadAll(@PageableDefault(size = 20, sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
+//        return boardService.boardReadAll(pageable);
+//    }
     @GetMapping()
-    public Page<BoardAllResponseDto> boardReadAll(@PageableDefault(size = 20, sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
-        return boardService.boardReadAll(pageable);
+    public Page<BoardAllResponseDto> boardReadAll(
+//        @RequestParam(required = false) String query,
+//        @RequestParam(required = false) String searchBy,
+        @PageableDefault(size = 20, sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
+
+//        if (query != null) {
+//            if ("user".equals(searchBy)) {
+//                return boardService.searchBoardsUser(query, pageable);
+//            } else if ("content".equals(searchBy)) {
+//                return boardService.searchBoardsContent(query, pageable);
+//            } else {
+//                return boardService.searchBoards(query, pageable);
+//            }
+//        } else {
+            return boardService.boardReadAll(pageable);
+//        }
     }
+
+    @GetMapping("search")
+    public Page<BoardAllResponseDto> boardSearch(
+        @RequestParam(required = false) String query,
+        @RequestParam(required = false) String searchBy,
+        @PageableDefault(size = 20, sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
+
+        if (query != null && !query.isBlank()) {
+            if ("user".equals(searchBy)) {
+                return boardService.searchBoardsUser(query, pageable);
+            } else if ("content".equals(searchBy)) {
+                return boardService.searchBoardsContent(query, pageable);
+            } else if("title".equals(searchBy)){
+                return boardService.searchBoardsTitle(query, pageable);
+            } else{
+                throw new BusinessException(BusinessExceptionCode.SEARCH_STANDARD_ERROR);
+            }
+        } else {
+            throw new BusinessException(BusinessExceptionCode.NO_SEARCH_QUERY_PARAMETER);
+        }
+    }
+
+
 }

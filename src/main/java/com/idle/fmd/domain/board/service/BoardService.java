@@ -150,4 +150,29 @@ public class BoardService {
 
         return boardResponseDtoPage;
     }
+
+
+    // 검색 기능
+    // 제목으로 검색
+    public Page<BoardAllResponseDto> searchBoardsTitle(String query, Pageable pageable) {
+        Page<BoardEntity> searchResult = boardRepository.findByTitleContainingIgnoreCase(query, pageable);
+        return searchResult.map(BoardAllResponseDto::fromEntity);
+    }
+
+    // 작성자로 검색
+    public Page<BoardAllResponseDto> searchBoardsUser(String nickname, Pageable pageable){
+        UserEntity user = userRepository.findByNickname(nickname);
+        if (user == null) {
+            log.info("존재 하지 않는 사용자 입니다.");
+            throw new BusinessException(BusinessExceptionCode.NOT_EXIST_USER_ERROR);
+        }
+        Page<BoardEntity> searchUserResult = boardRepository.findByUser(user, pageable);
+        return searchUserResult.map(BoardAllResponseDto::fromEntity);
+    }
+
+    // 내용으로 검색
+    public Page<BoardAllResponseDto> searchBoardsContent(String query, Pageable pageable){
+        Page<BoardEntity> searchContentResult = boardRepository.findByContentContainingIgnoreCase(query, pageable);
+        return searchContentResult.map(BoardAllResponseDto::fromEntity);
+    }
 }
