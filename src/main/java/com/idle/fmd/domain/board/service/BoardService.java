@@ -4,14 +4,8 @@ import com.idle.fmd.domain.board.dto.BoardCreateDto;
 import com.idle.fmd.domain.board.dto.BoardAllResponseDto;
 import com.idle.fmd.domain.board.dto.BoardResponseDto;
 import com.idle.fmd.domain.board.dto.BoardUpdateDto;
-import com.idle.fmd.domain.board.entity.BoardEntity;
-import com.idle.fmd.domain.board.entity.BookmarkEntity;
-import com.idle.fmd.domain.board.entity.LikeBoardEntity;
-import com.idle.fmd.domain.board.repo.BoardRepository;
-import com.idle.fmd.domain.board.entity.FileEntity;
-import com.idle.fmd.domain.board.repo.BookmarkRepository;
-import com.idle.fmd.domain.board.repo.FileRepository;
-import com.idle.fmd.domain.board.repo.LikeBoardRepository;
+import com.idle.fmd.domain.board.entity.*;
+import com.idle.fmd.domain.board.repo.*;
 import com.idle.fmd.domain.comment.entity.CommentEntity;
 import com.idle.fmd.domain.comment.repo.CommentRepository;
 import com.idle.fmd.domain.user.entity.UserEntity;
@@ -42,6 +36,7 @@ public class BoardService {
     private final FileRepository fileRepository;
     private final LikeBoardRepository likeBoardRepository;
     private final BookmarkRepository bookmarkRepository;
+    private final ReportRepository reportRepository;
 
     public void boardCreate(BoardCreateDto dto, List<MultipartFile> images, String accountId) {
 
@@ -137,10 +132,8 @@ public class BoardService {
             throw new BusinessException(BusinessExceptionCode.NOT_MATCHES_USER_ERROR);
         }
 
-        for (FileEntity file : boardEntity.getFiles()) {
-            fileRepository.deleteById(file.getId());
-        }
-
+        List<FileEntity> files = fileRepository.findAllByBoardId(boardId);
+        fileRepository.deleteAll(files);
 
         // 게시글 삭제 전에 해당 게시글의 댓글들을 삭제
         List<CommentEntity> commentsToDelete = commentRepository.findAllByBoardId(boardId);
@@ -155,6 +148,11 @@ public class BoardService {
         List<BookmarkEntity> bookmarkBoard = bookmarkRepository.findAllByBoardId(boardId);
         bookmarkRepository.deleteAll(bookmarkBoard);
         boardEntity.clearBookmarkCount();
+
+        // 게시글 삭제 전에 신고 삭제
+        List<ReportEntity> reports = reportRepository.findAllByBoardId(boardId);
+        reportRepository.deleteAll(reports);
+        boardEntity.clearReportCount();
 
         log.info("게시글이 삭제되었습니다.");
         boardRepository.deleteById(boardId);
