@@ -1,6 +1,7 @@
 package com.idle.fmd.domain.lol.service;
 
 import com.idle.fmd.domain.lol.dto.LolAccountResponseDto;
+import com.idle.fmd.domain.lol.dto.LolInfoDto;
 import com.idle.fmd.domain.lol.entity.LolAccountEntity;
 import com.idle.fmd.domain.lol.repo.LolAccountRepository;
 import com.idle.fmd.domain.user.entity.UserEntity;
@@ -15,6 +16,7 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.BasicResponseHandler;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.springframework.beans.factory.annotation.Value;
@@ -130,5 +132,58 @@ public class LolApiService {
 
         // 해당되는 정보가 없을 경우 null 반환
         return null;
+    }
+
+    // 각종 데이터를 가져와서 LolDto 로 합치는 메서드
+    public LolInfoDto getLolInfo(String summonerId) {
+        LolInfoDto dto = new LolInfoDto();
+        dto.setSummonerId(summonerId);
+
+        // 티어 정보를 가져오는 API URL 호출
+        String tierRequestUrl = riotUrl + "/lol/league/v4/entries/by-summoner/" + summonerId + "?api_key=" + myKey;
+        JSONArray tierEntries = (JSONArray) executeHttpGet(tierRequestUrl);
+        log.info(tierRequestUrl);
+
+        // 티어정보를 dto에 저장
+        if(tierEntries != null) {
+            for (Object entryObject : tierEntries) {
+                JSONObject entry = (JSONObject) entryObject;
+                String queueType = (String) entry.get("queueType");
+
+                if("RANKED_SOLO_5x5".equals(queueType)) {
+                    // LolDto 에 데이터를 매핑하여 반환
+                    dto.setSoloTier((String) entry.get("tier"));
+                    dto.setSoloRank((String) entry.get("rank"));
+                    dto.setSoloWins((Long) entry.get("wins"));
+                    dto.setSoloLosses((Long) entry.get("losses"));
+                } else if("RANKED_FLEX_SR".equals(queueType)) {
+                    // LolDto 에 데이터를 매핑하여 반환
+                    dto.setFlexTier((String) entry.get("tier"));
+                    dto.setFlexRank((String) entry.get("rank"));
+                    dto.setFlexWins((Long) entry.get("wins"));
+                    dto.setFlexLosses((Long) entry.get("losses"));
+                }
+            }
+        }
+
+        // 모스트 챔프 3개를 가져오는 API URL 호출
+        String champRequestUrl = riotUrl + "/lol/champion-mastery/v4/champion-masteries/by-summoner/" + summonerId + "?api_key=" + myKey;
+        JSONArray mostChampion = (JSONArray) executeHttpGet(champRequestUrl);
+        log.info(champRequestUrl);
+
+        // 모스트 챔프 3개를 Dto에 저장
+        if(mostChampion != null) {
+            for(int i = 0; i < 3 && i < mostChampion.size(); i++) {
+                JSONObject champ = (JSONObject) mostChampion.get(i);
+                if (i == 0) {
+                    dto.setMostOneChamp((Long) champ.get("championId"));
+                } else if (i == 1) {
+                    dto.setMostTwoChamp((Long) champ.get("championId"));
+                } else if (i == 2) {
+                    dto.setMostThreeChamp((Long) champ.get("championId"));
+                }
+            }
+        }
+        return dto;
     }
 }
