@@ -75,9 +75,8 @@ public class BoardController {
 
     // 즐겨찾기 기능
     @PostMapping("/{boardId}/bookmark")
-    public void bookmarkBoard(Authentication authentication, @PathVariable Long boardId) {
-        String message = bookmarkService.updateOfBookmarkBoard(authentication.getName(), boardId);
-        log.info(message);
+    public BookmarkResponseDto bookmarkBoard(Authentication authentication, @PathVariable Long boardId) {
+        return bookmarkService.updateOfBookmarkBoard(authentication.getName(), boardId);
     }
 
     // 신고 기능 현재는 2회 이상 신고이면 게시글 삭제로 해놓음(테스트 용이)

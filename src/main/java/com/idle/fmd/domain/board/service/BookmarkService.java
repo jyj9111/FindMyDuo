@@ -1,5 +1,6 @@
 package com.idle.fmd.domain.board.service;
 
+import com.idle.fmd.domain.board.dto.BookmarkResponseDto;
 import com.idle.fmd.domain.board.entity.BoardEntity;
 import com.idle.fmd.domain.board.entity.BookmarkEntity;
 import com.idle.fmd.domain.board.repo.BoardRepository;
@@ -23,7 +24,7 @@ public class BookmarkService {
     private final BookmarkRepository bookmarkRepository;
 
     @Transactional
-    public String updateOfBookmarkBoard(String accountId, Long boardId) {
+    public BookmarkResponseDto updateOfBookmarkBoard(String accountId, Long boardId) {
         if (!boardRepository.existsById(boardId)) {
             log.info("해당 게시글은 존재하지 않습니다.");
             throw new BusinessException(BusinessExceptionCode.NOT_EXISTS_BOARD_ERROR);
@@ -34,25 +35,26 @@ public class BookmarkService {
 
         if (!hasBookmarkBoard(board, user)) {
             board.increaseBookmarkCount();
-            return createBookmark(board, user);
+            createBookmark(board, user);
+        } else {
+            board.decreaseBookmarkCount();
+            removeBookmark(board, user);
         }
 
-        board.decreaseBookmarkCount();
-        return removeBookmark(board, user);
+        return BookmarkResponseDto.fromEntity(board);
     }
 
-    private String removeBookmark(BoardEntity board, UserEntity user) {
+    private void removeBookmark(BoardEntity board, UserEntity user) {
         BookmarkEntity bookmark = bookmarkRepository.findByBoardAndUser(board, user).get();
 
         bookmarkRepository.delete(bookmark);
-
-        return "즐겨찾기 취소완료";
+        log.info("즐겨찾기 취소완료");
     }
 
-    private String createBookmark(final BoardEntity board, final UserEntity user) {
+    private void createBookmark(final BoardEntity board, final UserEntity user) {
         BookmarkEntity bookmark = new BookmarkEntity(board, user);
         bookmarkRepository.save(bookmark);
-        return "즐겨찾기 처리완료";
+        log.info("즐겨찾기 처리완료");
     }
 
     private boolean hasBookmarkBoard(BoardEntity board, UserEntity user) {
