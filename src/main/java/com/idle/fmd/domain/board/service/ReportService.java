@@ -1,6 +1,7 @@
 package com.idle.fmd.domain.board.service;
 
 import com.idle.fmd.domain.board.dto.ReportDto;
+import com.idle.fmd.domain.board.dto.ReportResponseDto;
 import com.idle.fmd.domain.board.entity.*;
 import com.idle.fmd.domain.board.repo.*;
 import com.idle.fmd.domain.comment.entity.CommentEntity;
@@ -33,7 +34,7 @@ public class ReportService {
     private final BookmarkRepository bookmarkRepository;
 
     @Transactional
-    public void updateOfReportBoard(String accountId, Long boardId, ReportDto dto) {
+    public ReportResponseDto updateOfReportBoard(String accountId, Long boardId, ReportDto dto) {
         if (!boardRepository.existsById(boardId)) {
             log.info("해당 게시글은 존재하지 않습니다.");
             throw new BusinessException(BusinessExceptionCode.NOT_EXISTS_BOARD_ERROR);
@@ -49,12 +50,13 @@ public class ReportService {
             throw new BusinessException(BusinessExceptionCode.NOT_SELF_REPORT_ERROR);
         }
 
+        String message = "";
         if (!hasReportBoard(board, user)) {
             board.increaseReportCount();
-            createReport(board, user, dto);
+            message = createReport(board, user, dto);
         } else {
             board.decreaseReportCount();
-            removeReport(board, user);
+            message = removeReport(board, user);
         }
 
         // 테스트를 위하여 신고횟수가 2회이상일시 게시글 삭제로 설정함
@@ -85,7 +87,11 @@ public class ReportService {
             deleteBoardImageDirectory(boardId);
 
             boardRepository.deleteById(boardId);
+
+            message = "신고회수 초과로 인해 게시글이 삭제되었습니다.";
         }
+
+        return ReportResponseDto.fromEntity(board, message);
     }
 
     //  경로에 저장되어 있는 이미지 삭제
@@ -99,18 +105,23 @@ public class ReportService {
         }
     }
 
-    private void removeReport(BoardEntity board, UserEntity user) {
+    private String removeReport(BoardEntity board, UserEntity user) {
         ReportEntity report = reportRepository.findByBoardAndUser(board, user).get();
 
         reportRepository.delete(report);
 
         log.info("신고 취소완료");
+        String message = "신고 취소완료";
+        return message;
     }
 
-    private void createReport(BoardEntity board, UserEntity user, ReportDto dto) {
+    private String createReport(BoardEntity board, UserEntity user, ReportDto dto) {
         ReportEntity report = new ReportEntity(board, user, dto.getContent());
         reportRepository.save(report);
         log.info("신고 완료");
+        
+        String message = "신고 완료";
+        return message;
     }
 
     private boolean hasReportBoard(BoardEntity board, UserEntity user) {
