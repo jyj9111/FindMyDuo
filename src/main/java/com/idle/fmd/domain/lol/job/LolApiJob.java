@@ -1,7 +1,9 @@
 package com.idle.fmd.domain.lol.job;
 
 import com.idle.fmd.domain.lol.dto.LolAccountResponseDto;
+import com.idle.fmd.domain.lol.dto.LolInfoDto;
 import com.idle.fmd.domain.lol.entity.LolAccountEntity;
+import com.idle.fmd.domain.lol.entity.LolInfoEntity;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.*;
@@ -26,9 +28,14 @@ public class LolApiJob {
     private final PlatformTransactionManager transactionManager;
     private final JobLauncher jobLauncher;
     private final JobRepository jobRepository;
-    private final LolItemReader itemReader;
-    private final LolItemProcessor itemProcessor;
-    private final LolItemWriter itemWriter;
+
+    private final LolAccountItemReader accountItemReader;
+    private final LolAccountItemProcessor accountItemProcessor;
+    private final LolAccountItemWriter accountItemWriter;
+
+    private final LolInfoItemReader infoItemReader;
+    private final LolInfoItemProcessor infoItemProcessor;
+    private final LolInfoItemWriter infoItemWriter;
 
     // 주기적으로 잡을 실행하기 위한 스케줄러 설정
     // 나중에 예외처리 할 것
@@ -50,6 +57,8 @@ public class LolApiJob {
                 .incrementer(new RunIdIncrementer())
                 // 라이엇 API 를 이용하여 DB에 동기화하는 step 실행
                 .start(lolAccountStep())
+                // 게임 정보를 DB에 동기화하는 step 실행
+                .next(lolInfoStep())
                 .build();
     }
 
@@ -57,10 +66,23 @@ public class LolApiJob {
     public Step lolAccountStep() {
         return new StepBuilder("lolAccountStep", jobRepository)
                 .<LolAccountResponseDto, LolAccountEntity>chunk(1)
-                .reader(itemReader)
-                .processor(itemProcessor)
-                .writer(itemWriter)
+                .reader(accountItemReader)
+                .processor(accountItemProcessor)
+                .writer(accountItemWriter)
                 // 트랜잭션 매니저 설정
+                .transactionManager(transactionManager)
+                // 이미 완료된 스텝을 다시 시작할 수 있도록 설정
+                .allowStartIfComplete(true)
+                .build();
+    }
+
+    @Bean
+    public Step lolInfoStep() {
+        return new StepBuilder("testStep2", jobRepository)
+                .<LolInfoDto, LolInfoEntity>chunk(10)
+                .reader(infoItemReader)
+                .processor(infoItemProcessor)
+                .writer(infoItemWriter)
                 .transactionManager(transactionManager)
                 // 이미 완료된 스텝을 다시 시작할 수 있도록 설정
                 .allowStartIfComplete(true)
