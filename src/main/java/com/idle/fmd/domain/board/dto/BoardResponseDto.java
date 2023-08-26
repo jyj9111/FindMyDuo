@@ -19,6 +19,8 @@ public class BoardResponseDto {
 
     private String content;
 
+    private Integer liked;
+
     private List<String> images;
 
     private List<CommentResponseDto> comments;
@@ -30,6 +32,7 @@ public class BoardResponseDto {
         boardResponseDto.setId(board.getId());
         boardResponseDto.setNickName(board.getUser().getNickname());
         boardResponseDto.setTitle(board.getTitle());
+        boardResponseDto.setLiked(board.getLiked());
         boardResponseDto.setContent(board.getContent());
 
         List<String> images = new ArrayList<>();

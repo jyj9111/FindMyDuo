@@ -1,11 +1,13 @@
 package com.idle.fmd.domain.board.controller;
 
-import com.idle.fmd.domain.board.dto.BoardCreateDto;
-import com.idle.fmd.domain.board.dto.BoardAllResponseDto;
-import com.idle.fmd.domain.board.dto.BoardResponseDto;
-import com.idle.fmd.domain.board.dto.BoardUpdateDto;
+import com.idle.fmd.domain.board.dto.*;
 import com.idle.fmd.domain.board.service.BoardService;
+import com.idle.fmd.domain.board.service.BookmarkService;
+import com.idle.fmd.domain.board.service.LikeBoardService;
+import com.idle.fmd.domain.board.service.ReportService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -18,12 +20,16 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.ArrayList;
 import java.util.List;
 
+@Slf4j
 @RequestMapping("/board")
 @RequiredArgsConstructor
 @RestController
 public class BoardController {
 
     private final BoardService boardService;
+    private final LikeBoardService likeBoardService;
+    private final BookmarkService bookmarkService;
+    private final ReportService reportService;
 
     // 게시글 작성
     @PostMapping
@@ -59,5 +65,23 @@ public class BoardController {
     @GetMapping()
     public Page<BoardAllResponseDto> boardReadAll(@PageableDefault(size = 20, sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
         return boardService.boardReadAll(pageable);
+    }
+
+    // 좋아요 기능
+    @PostMapping("/{boardId}/like")
+    public LikeBoardResponseDto likeBoard(Authentication authentication, @PathVariable Long boardId) {
+        return likeBoardService.updateLikeOfBoard(authentication.getName(), boardId);
+    }
+
+    // 즐겨찾기 기능
+    @PostMapping("/{boardId}/bookmark")
+    public BookmarkResponseDto bookmarkBoard(Authentication authentication, @PathVariable Long boardId) {
+        return bookmarkService.updateOfBookmarkBoard(authentication.getName(), boardId);
+    }
+
+    // 신고 기능 현재는 2회 이상 신고이면 게시글 삭제로 해놓음(테스트 용이)
+    @PostMapping("/{boardId}/report")
+    public ReportResponseDto reportBoard(Authentication authentication, @PathVariable Long boardId, @RequestBody @Valid ReportDto dto) {
+        return reportService.updateOfReportBoard(authentication.getName(), boardId, dto);
     }
 }

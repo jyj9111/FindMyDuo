@@ -1,11 +1,16 @@
 package com.idle.fmd.domain.user.controller;
 
+import com.idle.fmd.domain.board.dto.BoardAllResponseDto;
 import com.idle.fmd.domain.user.dto.*;
 import com.idle.fmd.domain.user.service.UserService;
 import com.idle.fmd.global.error.exception.BusinessException;
 import com.idle.fmd.global.error.exception.BusinessExceptionCode;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.Authentication;
@@ -18,7 +23,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
-
 
 @RestController
 @RequiredArgsConstructor
@@ -104,5 +108,11 @@ public class UserController {
             @RequestParam("image") MultipartFile image) {
         String accountId = authentication.getName();
         userService.uploadProfileImage(accountId, image);
+    }
+
+    // 즐겨찾기 한 글 조회
+    @GetMapping("/bookmark")
+    public Page<BoardAllResponseDto> findBookmark(Authentication authentication, @PageableDefault(size = 20, sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
+        return userService.findBookmark(authentication.getName(), pageable);
     }
 }
