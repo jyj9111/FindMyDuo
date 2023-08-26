@@ -48,6 +48,11 @@ public class LolAccountEntity {
     // 소환사 레벨
     private Long summonerLevel;
 
+    // 롤 계정 정보와 롤 게임 정보 연관관계, 부모가 지워지면 자식도 지워지도록 설정
+    @OneToOne(fetch = FetchType.LAZY, mappedBy = "lolAccount", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    @Setter
+    private LolInfoEntity lolInfo;
+
     // Lol 과 User 의 연관관게 편의 메소드
     public void addLolAccountUser(UserEntity user) {
         this.user = user;
