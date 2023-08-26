@@ -34,11 +34,11 @@ public class LolAccountEntity {
 
     @Setter
     // 아이콘 id
-    private long profileIconId;
+    private Long profileIconId;
 
     @Setter
     // 계정 날짜 (업데이트 날짜)
-    private long revisionDate;
+    private Long revisionDate;
 
     @Setter
     // 소환사 이름(닉네임)
@@ -46,7 +46,7 @@ public class LolAccountEntity {
 
     @Setter
     // 소환사 레벨
-    private long summonerLevel;
+    private Long summonerLevel;
 
     // Lol 과 User 의 연관관게 편의 메소드
     public void addLolAccountUser(UserEntity user) {
