@@ -10,11 +10,11 @@ import org.springframework.stereotype.Component;
 
 @Slf4j
 @Component
-public class LolItemWriter implements ItemWriter<LolAccountEntity> {
+public class LolAccountItemWriter implements ItemWriter<LolAccountEntity> {
     private final LolAccountRepository lolAccountRepository;
 
     @Autowired
-    public LolItemWriter(LolAccountRepository lolAccountRepository) {
+    public LolAccountItemWriter(LolAccountRepository lolAccountRepository) {
         this.lolAccountRepository = lolAccountRepository;
     }
 

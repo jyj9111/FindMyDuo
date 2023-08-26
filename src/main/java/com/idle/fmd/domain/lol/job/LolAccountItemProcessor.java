@@ -12,11 +12,11 @@ import java.util.Optional;
 
 @Slf4j
 @Component
-public class LolItemProcessor implements ItemProcessor<LolAccountResponseDto, LolAccountEntity> {
+public class LolAccountItemProcessor implements ItemProcessor<LolAccountResponseDto, LolAccountEntity> {
     private final LolAccountRepository lolAccountRepository;
 
     @Autowired
-    public LolItemProcessor(LolAccountRepository lolAccountRepository) {
+    public LolAccountItemProcessor(LolAccountRepository lolAccountRepository) {
         this.lolAccountRepository = lolAccountRepository;
     }
 

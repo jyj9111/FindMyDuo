@@ -18,7 +18,7 @@ import java.util.List;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class LolItemReader implements ItemReader<LolAccountResponseDto> {
+public class LolAccountItemReader implements ItemReader<LolAccountResponseDto> {
     private final LolApiService lolApiService;
     private final LolAccountRepository lolAccountRepository;
 
