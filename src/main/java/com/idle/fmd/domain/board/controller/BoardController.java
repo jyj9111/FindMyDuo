@@ -69,9 +69,8 @@ public class BoardController {
 
     // 좋아요 기능
     @PostMapping("/{boardId}/like")
-    public void likeBoard(Authentication authentication, @PathVariable Long boardId) {
-        String message = likeBoardService.updateLikeOfBoard(authentication.getName(), boardId);
-        log.info(message);
+    public LikeBoardResponseDto likeBoard(Authentication authentication, @PathVariable Long boardId) {
+        return likeBoardService.updateLikeOfBoard(authentication.getName(), boardId);
     }
 
     // 즐겨찾기 기능

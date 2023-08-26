@@ -1,5 +1,6 @@
 package com.idle.fmd.domain.board.service;
 
+import com.idle.fmd.domain.board.dto.LikeBoardResponseDto;
 import com.idle.fmd.domain.board.entity.BoardEntity;
 import com.idle.fmd.domain.board.entity.LikeBoardEntity;
 import com.idle.fmd.domain.board.repo.BoardRepository;
@@ -23,7 +24,7 @@ public class LikeBoardService {
     private final LikeBoardRepository likeBoardRepository;
 
     @Transactional
-    public String updateLikeOfBoard(String accountId, Long boardId) {
+    public LikeBoardResponseDto updateLikeOfBoard(String accountId, Long boardId) {
         if (!boardRepository.existsById(boardId)) {
             log.info("해당 게시글은 존재하지 않습니다.");
             throw new BusinessException(BusinessExceptionCode.NOT_EXISTS_BOARD_ERROR);
@@ -34,25 +35,26 @@ public class LikeBoardService {
 
         if (!hasLikeBoard(board, user)) {
             board.increaseLikeCount();
-            return createLikeBoard(board, user);
+            createLikeBoard(board, user);
+        } else {
+            board.decreaseLikeCount();
+            removeLikeBoard(board, user);
         }
 
-        board.decreaseLikeCount();
-        return removeLikeBoard(board, user);
+        return LikeBoardResponseDto.fromEntity(board);
     }
 
-    private String removeLikeBoard(final BoardEntity board, final UserEntity user) {
+    private void removeLikeBoard(final BoardEntity board, final UserEntity user) {
         LikeBoardEntity likeBoard = likeBoardRepository.findByBoardAndUser(board, user).get();
 
         likeBoardRepository.delete(likeBoard);
-
-        return "좋아요 취소 완료";
+        log.info("좋아요 취소 완료");
     }
 
-    private String createLikeBoard(final BoardEntity board, final UserEntity user) {
+    private void createLikeBoard(final BoardEntity board, final UserEntity user) {
         LikeBoardEntity likeBoard = new LikeBoardEntity(board, user);
         likeBoardRepository.save(likeBoard);
-        return "좋아요 처리 완료";
+        log.info("좋아요 처리 완료");
     }
 
     private boolean hasLikeBoard(final BoardEntity board, final UserEntity user) {
