@@ -36,6 +36,9 @@ public class BoardEntity extends BaseTimeEntity {
 
     private boolean deleted = Boolean.FALSE;
 
+    @Column(columnDefinition = "integer default 0", nullable = false)
+    private Integer view;
+
 
     @OneToMany(mappedBy = "board")
     private List<FileEntity> files = new ArrayList<>();
@@ -62,4 +65,5 @@ public class BoardEntity extends BaseTimeEntity {
         this.title = title;
         this.content = content;
     }
+
 }

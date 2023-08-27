@@ -20,6 +20,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
@@ -144,23 +145,20 @@ public class BoardService {
         boardRepository.deleteById(boardId);
     }
 
-    public Page<BoardAllResponseDto> boardReadAll(Pageable pageable) {
-        Page<BoardEntity> boardPage = boardRepository.findAll(pageable);
-        Page<BoardAllResponseDto> boardResponseDtoPage = boardPage.map(BoardAllResponseDto::fromEntity);
-
-        return boardResponseDtoPage;
-    }
-
-
     // 검색 기능
     // 제목으로 검색
     public Page<BoardAllResponseDto> searchBoardsTitle(String query, Pageable pageable) {
+        if (query == null || query.isBlank()) {
+            throw new BusinessException(BusinessExceptionCode.NO_SEARCH_QUERY_PARAMETER);
+        }
         Page<BoardEntity> searchResult = boardRepository.findByTitleContainingIgnoreCase(query, pageable);
         return searchResult.map(BoardAllResponseDto::fromEntity);
     }
-
     // 작성자로 검색
     public Page<BoardAllResponseDto> searchBoardsUser(String nickname, Pageable pageable){
+        if (nickname == null || nickname.isBlank()) {
+            throw new BusinessException(BusinessExceptionCode.NO_SEARCH_QUERY_PARAMETER);
+        }
         UserEntity user = userRepository.findByNickname(nickname);
         if (user == null) {
             log.info("존재 하지 않는 사용자 입니다.");
@@ -169,10 +167,47 @@ public class BoardService {
         Page<BoardEntity> searchUserResult = boardRepository.findByUser(user, pageable);
         return searchUserResult.map(BoardAllResponseDto::fromEntity);
     }
-
     // 내용으로 검색
     public Page<BoardAllResponseDto> searchBoardsContent(String query, Pageable pageable){
+        if (query == null || query.isBlank()) {
+            throw new BusinessException(BusinessExceptionCode.NO_SEARCH_QUERY_PARAMETER);
+        }
         Page<BoardEntity> searchContentResult = boardRepository.findByContentContainingIgnoreCase(query, pageable);
         return searchContentResult.map(BoardAllResponseDto::fromEntity);
     }
+
+    // 검색 기능 통합
+    public Page<BoardAllResponseDto> searchBoardAll(String query, String searchBy, Pageable pageable) {
+        if ("user".equals(searchBy)) {
+            return searchBoardsUser(query, pageable);
+        } else if ("content".equals(searchBy)) {
+            return searchBoardsContent(query, pageable);
+        } else if ("title".equals(searchBy)) {
+            return searchBoardsTitle(query, pageable);
+        }
+        else {
+            throw new BusinessException(BusinessExceptionCode.SEARCH_STANDARD_ERROR);
+        }
+    }
+
+
+
+
+
+
+    // 게시글 전체 조회
+    public Page<BoardAllResponseDto> boardReadAll(Pageable pageable) {
+        Page<BoardEntity> boardPage = boardRepository.findAll(pageable);
+        return boardPage.map(BoardAllResponseDto::fromEntity);
+    }
+
+    // 조회수 카운팅
+    public BoardEntity boardView(Long id) {
+        BoardEntity boardEntity = boardRepository.findById(id).get();
+        boardRepository.updateViewCount(boardEntity.getView() + 1, boardEntity.getId());
+        return boardEntity;
+    }
+
+
+
 }
