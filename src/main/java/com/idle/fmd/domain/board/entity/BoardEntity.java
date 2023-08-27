@@ -6,8 +6,6 @@ import com.idle.fmd.domain.user.entity.UserEntity;
 import com.idle.fmd.global.common.entity.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.SQLDelete;
-import org.hibernate.annotations.Where;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,8 +14,6 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-@SQLDelete(sql = "UPDATE board SET deleted = true WHERE id = ?")
-@Where(clause = "deleted = false")
 @Entity
 @Table(name = "board")
 public class BoardEntity extends BaseTimeEntity {
@@ -34,7 +30,13 @@ public class BoardEntity extends BaseTimeEntity {
 
     private String content;
 
-    private boolean deleted = Boolean.FALSE;
+    @Column(nullable = true)
+    private Integer liked;
+
+    @Column(nullable = true)
+    private Integer bookmarked;
+
+    private Integer reported;
 
     @Column(columnDefinition = "integer default 0", nullable = false)
     private Integer view;
@@ -52,6 +54,9 @@ public class BoardEntity extends BaseTimeEntity {
                 .content(dto.getContent())
                 .files(new ArrayList<>())
                 .user(user)
+                .liked(0)
+                .bookmarked(0)
+                .reported(0)
                 .build();
     }
 
@@ -64,6 +69,33 @@ public class BoardEntity extends BaseTimeEntity {
     public void updateBoard(String title, String content) {
         this.title = title;
         this.content = content;
+    }
+
+    // 좋아요 + 1
+    public void increaseLikeCount() {
+        this.liked += 1;
+    }
+
+    public void decreaseLikeCount() {
+        this.liked -= 1;
+    }
+
+    // 즐겨찾기 + 1
+    public void increaseBookmarkCount() {
+        this.bookmarked += 1;
+    }
+
+    public void decreaseBookmarkCount() {
+        this.bookmarked -= 1;
+    }
+
+    // 신고 + 1
+    public void increaseReportCount() {
+        this.reported += 1;
+    }
+
+    public void decreaseReportCount() {
+        this.reported -= 1;
     }
 
 }

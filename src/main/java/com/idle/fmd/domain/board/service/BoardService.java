@@ -4,10 +4,8 @@ import com.idle.fmd.domain.board.dto.BoardCreateDto;
 import com.idle.fmd.domain.board.dto.BoardAllResponseDto;
 import com.idle.fmd.domain.board.dto.BoardResponseDto;
 import com.idle.fmd.domain.board.dto.BoardUpdateDto;
-import com.idle.fmd.domain.board.entity.BoardEntity;
-import com.idle.fmd.domain.board.repo.BoardRepository;
-import com.idle.fmd.domain.board.entity.FileEntity;
-import com.idle.fmd.domain.board.repo.FileRepository;
+import com.idle.fmd.domain.board.entity.*;
+import com.idle.fmd.domain.board.repo.*;
 import com.idle.fmd.domain.comment.entity.CommentEntity;
 import com.idle.fmd.domain.comment.repo.CommentRepository;
 import com.idle.fmd.domain.user.entity.UserEntity;
@@ -17,12 +15,15 @@ import com.idle.fmd.global.error.exception.BusinessException;
 import com.idle.fmd.global.error.exception.BusinessExceptionCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.tomcat.util.http.fileupload.FileUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,6 +38,9 @@ public class BoardService {
     private final CommentRepository commentRepository;
     private final FileHandler fileHandler;
     private final FileRepository fileRepository;
+    private final LikeBoardRepository likeBoardRepository;
+    private final BookmarkRepository bookmarkRepository;
+    private final ReportRepository reportRepository;
 
     public void boardCreate(BoardCreateDto dto, List<MultipartFile> images, String accountId) {
 
@@ -98,9 +102,11 @@ public class BoardService {
 
             log.info("게시판 이미지 수정 전 삭제");
             for (FileEntity file : boardEntity.getFiles()) {
-
-                if (file.isDeleted() == false) fileRepository.deleteById(file.getId());
+                    fileRepository.deleteById(file.getId());
             }
+
+            // 경로에 있는 파일 삭제
+            deleteBoardImageDirectory(boardId);
 
             log.info("게시판 이미지 수정 추가");
             for (MultipartFile image : images) {
@@ -114,7 +120,7 @@ public class BoardService {
         boardEntity.updateBoard(dto.getTitle(), dto.getContent());
         boardRepository.save(boardEntity);
 
-        BoardAllResponseDto.fromEntity(boardEntity);
+        BoardAllResponseDto.fromBoardEntity(boardEntity);
     }
 
     public void boardDelete(String accountId, Long boardId) {
@@ -132,15 +138,27 @@ public class BoardService {
             throw new BusinessException(BusinessExceptionCode.NOT_MATCHES_USER_ERROR);
         }
 
-        for (FileEntity file : boardEntity.getFiles()) {
-            fileRepository.deleteById(file.getId());
-        }
-
+        List<FileEntity> files = fileRepository.findAllByBoardId(boardId);
+        fileRepository.deleteAll(files);
 
         // 게시글 삭제 전에 해당 게시글의 댓글들을 삭제
         List<CommentEntity> commentsToDelete = commentRepository.findAllByBoardId(boardId);
         commentRepository.deleteAll(commentsToDelete);
 
+        // 게시글 삭제 전에 해당 좋아요 삭제
+        List<LikeBoardEntity> likeBoard = likeBoardRepository.findAllByBoardId(boardId);
+        likeBoardRepository.deleteAll(likeBoard);
+
+        // 게시글 삭제 전에 해당 즐겨찾기 삭제
+        List<BookmarkEntity> bookmarkBoard = bookmarkRepository.findAllByBoardId(boardId);
+        bookmarkRepository.deleteAll(bookmarkBoard);
+
+        // 게시글 삭제 전에 신고 삭제
+        List<ReportEntity> reports = reportRepository.findAllByBoardId(boardId);
+        reportRepository.deleteAll(reports);
+
+        // 경로에 있는 파일 삭제
+        deleteBoardImageDirectory(boardId);
         log.info("게시글이 삭제되었습니다.");
         boardRepository.deleteById(boardId);
     }
@@ -198,8 +216,7 @@ public class BoardService {
     // 게시글 전체 조회
     public Page<BoardAllResponseDto> boardReadAll(Pageable pageable) {
         Page<BoardEntity> boardPage = boardRepository.findAll(pageable);
-        return boardPage.map(BoardAllResponseDto::fromEntity);
-    }
+        Page<BoardAllResponseDto> boardResponseDtoPage = boardPage.map(BoardAllResponseDto::fromBoardEntity);
 
     // 조회수 카운팅
     public BoardEntity boardView(Long id) {
@@ -208,6 +225,13 @@ public class BoardService {
         return boardEntity;
     }
 
-
-
+    private void deleteBoardImageDirectory(Long boardId) {
+        String boardImgDir = String.format("./images/board/%s", boardId);
+        try {
+            FileUtils.deleteDirectory(new File(boardImgDir));
+        } catch (IOException e) {
+            log.error("게시판 이미지 디렉토리 삭제 중 오류 발생");
+            throw new BusinessException(BusinessExceptionCode.CANNOT_DELETE_DIRECTORY_ERROR);
+        }
+    }
 }
