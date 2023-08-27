@@ -1,6 +1,6 @@
 package com.idle.fmd.domain.lol.job;
 
-import com.idle.fmd.domain.lol.dto.LolAccountResponseDto;
+import com.idle.fmd.domain.lol.dto.LolAccountDto;
 import com.idle.fmd.domain.lol.entity.LolAccountEntity;
 import com.idle.fmd.domain.lol.repo.LolAccountRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -12,7 +12,7 @@ import java.util.Optional;
 
 @Slf4j
 @Component
-public class LolAccountItemProcessor implements ItemProcessor<LolAccountResponseDto, LolAccountEntity> {
+public class LolAccountItemProcessor implements ItemProcessor<LolAccountDto, LolAccountEntity> {
     private final LolAccountRepository lolAccountRepository;
 
     @Autowired
@@ -21,7 +21,7 @@ public class LolAccountItemProcessor implements ItemProcessor<LolAccountResponse
     }
 
     @Override
-    public LolAccountEntity process(LolAccountResponseDto lolAccountDto) throws Exception {
+    public LolAccountEntity process(LolAccountDto lolAccountDto) throws Exception {
         // DB 에서 이미 저장된 롤 계정 정보를 가져오기
         Optional<LolAccountEntity> existingEntity = lolAccountRepository.findBySummonerId(lolAccountDto.getSummonerId());
 

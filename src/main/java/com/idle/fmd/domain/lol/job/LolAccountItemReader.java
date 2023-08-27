@@ -1,6 +1,6 @@
 package com.idle.fmd.domain.lol.job;
 
-import com.idle.fmd.domain.lol.dto.LolAccountResponseDto;
+import com.idle.fmd.domain.lol.dto.LolAccountDto;
 import com.idle.fmd.domain.lol.entity.LolAccountEntity;
 import com.idle.fmd.domain.lol.repo.LolAccountRepository;
 import com.idle.fmd.domain.lol.service.LolApiService;
@@ -18,7 +18,7 @@ import java.util.List;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class LolAccountItemReader implements ItemReader<LolAccountResponseDto> {
+public class LolAccountItemReader implements ItemReader<LolAccountDto> {
     private final LolApiService lolApiService;
     private final LolAccountRepository lolAccountRepository;
 
@@ -27,7 +27,7 @@ public class LolAccountItemReader implements ItemReader<LolAccountResponseDto> {
 
     // 나중에 예외 처리 추가할 것
     @Override
-    public LolAccountResponseDto read() throws Exception, UnexpectedInputException, ParseException, NonTransientResourceException {
+    public LolAccountDto read() throws Exception, UnexpectedInputException, ParseException, NonTransientResourceException {
         // 데이터를 아직 읽기 전이면 Iterator 가 null 이다.
         if(accountIterator == null) {
             // LolApiEntity의 닉네임들을 읽어온다.
