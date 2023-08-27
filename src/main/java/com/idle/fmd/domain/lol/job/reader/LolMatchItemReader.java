@@ -1,4 +1,4 @@
-package com.idle.fmd.domain.lol.job;
+package com.idle.fmd.domain.lol.job.reader;
 
 import com.idle.fmd.domain.lol.dto.LolMatchDto;
 import com.idle.fmd.domain.lol.entity.LolAccountEntity;

@@ -1,4 +1,4 @@
-package com.idle.fmd.domain.lol.job;
+package com.idle.fmd.domain.lol.job.processor;
 
 import com.idle.fmd.domain.lol.dto.LolInfoDto;
 import com.idle.fmd.domain.lol.entity.LolAccountEntity;

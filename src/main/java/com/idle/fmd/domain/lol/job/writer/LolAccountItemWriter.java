@@ -1,4 +1,4 @@
-package com.idle.fmd.domain.lol.job;
+package com.idle.fmd.domain.lol.job.writer;
 
 import com.idle.fmd.domain.lol.entity.LolAccountEntity;
 import com.idle.fmd.domain.lol.repo.LolAccountRepository;
