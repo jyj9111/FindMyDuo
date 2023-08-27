@@ -1,9 +1,11 @@
 package com.idle.fmd.domain.lol.job;
 
-import com.idle.fmd.domain.lol.dto.LolAccountResponseDto;
+import com.idle.fmd.domain.lol.dto.LolAccountDto;
 import com.idle.fmd.domain.lol.dto.LolInfoDto;
+import com.idle.fmd.domain.lol.dto.LolMatchDto;
 import com.idle.fmd.domain.lol.entity.LolAccountEntity;
 import com.idle.fmd.domain.lol.entity.LolInfoEntity;
+import com.idle.fmd.domain.lol.entity.LolMatchEntity;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.*;
@@ -18,6 +20,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.transaction.PlatformTransactionManager;
+
+import java.util.List;
 
 @Slf4j
 @Configuration
@@ -65,7 +69,7 @@ public class LolApiJob {
     @Bean
     public Step lolAccountStep() {
         return new StepBuilder("lolAccountStep", jobRepository)
-                .<LolAccountResponseDto, LolAccountEntity>chunk(1)
+                .<LolAccountDto, LolAccountEntity>chunk(10)
                 .reader(accountItemReader)
                 .processor(accountItemProcessor)
                 .writer(accountItemWriter)
@@ -78,7 +82,7 @@ public class LolApiJob {
 
     @Bean
     public Step lolInfoStep() {
-        return new StepBuilder("testStep2", jobRepository)
+        return new StepBuilder("lolInfoStep", jobRepository)
                 .<LolInfoDto, LolInfoEntity>chunk(10)
                 .reader(infoItemReader)
                 .processor(infoItemProcessor)
