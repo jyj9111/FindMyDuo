@@ -1,6 +1,5 @@
 package com.idle.fmd.domain.lol.controller;
 
-import com.idle.fmd.domain.lol.dto.LolAccountResponseDto;
 import com.idle.fmd.domain.lol.repo.LolAccountRepository;
 import com.idle.fmd.domain.lol.service.LolApiService;
 import lombok.RequiredArgsConstructor;
@@ -24,7 +23,7 @@ public class LolApiController {
             Authentication authentication,
             @RequestParam String lolNickname) {
         String accountId = authentication.getName();
-        LolAccountResponseDto dto = lolApiService.save(accountId, lolNickname);
+        lolApiService.save(accountId, lolNickname);
         return ResponseEntity.ok("유저 정보 저장 완료");
     }
 }
