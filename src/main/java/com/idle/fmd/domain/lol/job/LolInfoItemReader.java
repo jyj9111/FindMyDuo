@@ -38,7 +38,7 @@ public class LolInfoItemReader implements ItemReader<LolInfoDto> {
         if (lolAccountIterator.hasNext()) {
             String summonerId = lolAccountIterator.next().getSummonerId();
             log.info("소환사의 암호화 된 계정 : " + summonerId);
-            Thread.sleep(1000);
+            Thread.sleep(500);
             return lolApiService.getLolInfo(summonerId);
         }
 
