@@ -1,7 +1,8 @@
 package com.idle.fmd.domain.lol.service;
 
-import com.idle.fmd.domain.lol.dto.LolAccountResponseDto;
+import com.idle.fmd.domain.lol.dto.LolAccountDto;
 import com.idle.fmd.domain.lol.dto.LolInfoDto;
+import com.idle.fmd.domain.lol.dto.LolMatchDto;
 import com.idle.fmd.domain.lol.entity.LolAccountEntity;
 import com.idle.fmd.domain.lol.repo.LolAccountRepository;
 import com.idle.fmd.domain.user.entity.UserEntity;
@@ -23,6 +24,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.List;
 
 @Slf4j
 @Service
@@ -81,7 +84,7 @@ public class LolApiService {
     }
 
     // 회원이 소환사 닉네임과 함께 처음 연동 버튼을 눌렀을 때 계정 정보 저장
-    public LolAccountResponseDto save(String accountId, String summonerName) {
+    public LolAccountDto save(String accountId, String summonerName) {
         // 토큰에 있는 유저 정보가 없는 정보일 때 예외 발생
         if(!userRepository.existsByAccountId(accountId)) {
             throw new BusinessException(BusinessExceptionCode.NOT_EXIST_USER_ERROR);
@@ -91,7 +94,7 @@ public class LolApiService {
         UserEntity user = userRepository.findByAccountId(accountId).get();
 
         // 롤 계정 정보를 가져오는 메서드 호출해서 dto 에 저장
-        LolAccountResponseDto dto = getSummoner(summonerName);
+        LolAccountDto dto = getSummoner(summonerName);
 
         // 이미 연동되어 있는 롤 계정이 있다면 연동되어 있던 기존 롤 계정을 지워줌
         if(user.getLolAccount() != null) {
@@ -108,7 +111,7 @@ public class LolApiService {
     }
 
     // 소환사 계정 정보를 가져오는 메서드
-    public LolAccountResponseDto getSummoner(String summonerName) {
+    public LolAccountDto getSummoner(String summonerName) {
         // 닉네임 Encoding
         summonerName = UrlEncode(summonerName);
         String reqeustUrl = riotUrl + "/lol/summoner/v4/summoners/by-name/" + summonerName;
@@ -118,7 +121,7 @@ public class LolApiService {
 
         if(jsonObject != null) {
             // SummonerDto 에 데이터를 매핑하여 반환
-            LolAccountResponseDto dto = new LolAccountResponseDto();
+            LolAccountDto dto = new LolAccountDto();
             dto.setAccountId((String) jsonObject.get("accountId"));
             dto.setProfileIconId((Long) jsonObject.get("profileIconId"));
             dto.setRevisionDate((Long) jsonObject.get("revisionDate"));
@@ -140,7 +143,7 @@ public class LolApiService {
         dto.setSummonerId(summonerId);
 
         // 티어 정보를 가져오는 API URL 호출
-        String tierRequestUrl = riotUrl + "/lol/league/v4/entries/by-summoner/" + summonerId + "?api_key=" + myKey;
+        String tierRequestUrl = riotUrl + "/lol/league/v4/entries/by-summoner/" + summonerId;
         JSONArray tierEntries = (JSONArray) executeHttpGet(tierRequestUrl);
         log.info(tierRequestUrl);
 
@@ -167,7 +170,7 @@ public class LolApiService {
         }
 
         // 모스트 챔프 3개를 가져오는 API URL 호출
-        String champRequestUrl = riotUrl + "/lol/champion-mastery/v4/champion-masteries/by-summoner/" + summonerId + "?api_key=" + myKey;
+        String champRequestUrl = riotUrl + "/lol/champion-mastery/v4/champion-masteries/by-summoner/" + summonerId;
         JSONArray mostChampion = (JSONArray) executeHttpGet(champRequestUrl);
         log.info(champRequestUrl);
 
@@ -185,5 +188,73 @@ public class LolApiService {
             }
         }
         return dto;
+    }
+
+    // 소환사의 매치 기록 ID를 가져오는 메서드
+    public List<String> getUserLolMatchId(String puuid) {
+        List<String> matchIdList = new ArrayList<>();
+
+        // 매치 Id 정보를 가져오는 API URL 호출
+        String matchIdRequestUrl = "https://asia.api.riotgames.com/lol/match/v5/matches/by-puuid/" + puuid + "/ids/?type=ranked&start=0&count=30";
+        JSONArray matchIdEntries = (JSONArray) executeHttpGet(matchIdRequestUrl);
+        log.info(matchIdRequestUrl);
+
+        // 매치 ID 정보를 List 에 저장
+        if(matchIdEntries != null) {
+            for (Object entryObject : matchIdEntries) {
+                String matchId = (String) entryObject;
+                matchIdList.add(matchId);
+            }
+            return matchIdList;
+        }
+
+        return null;
+    }
+
+    // 매치 기록 ID로 전적 정보를 가져오는 메서드
+    public LolMatchDto getLolMatchInfo(String puuid, String matchId) {
+        LolMatchDto dto = new LolMatchDto();
+        dto.setPuuid(puuid);
+        dto.setMatchId(matchId);
+
+        // 전적 정보를 가져오는 API URL 호출
+        String matchRequestUrl = "https://asia.api.riotgames.com/lol/match/v5/matches/" + matchId;
+//        log.info(matchRequestUrl);
+        JSONObject matchResponse = (JSONObject) executeHttpGet(matchRequestUrl);
+
+        // 게임 정보 (모드, 시간) 를 dto 에 저장
+        JSONObject matchInfo = (JSONObject) matchResponse.get("info");
+
+        dto.setGameDuration((Long) matchInfo.get("gameDuration"));
+        dto.setGameCreation((Long) matchInfo.get("gameCreation"));
+
+
+        // QueueId 가 420 이면 솔로 랭크, QueueId 가 440 이면 자유 랭크
+        Long queueId = (Long) matchInfo.get("queueId");
+        if(queueId == 420) {
+            dto.setGameMode("SOLO");
+        } else if (queueId == 440) {
+            dto.setGameMode("FLEX");
+        }
+
+        JSONArray matchDetails = (JSONArray) matchInfo.get("participants");
+
+        // 주어진 소환사의 puuid 가 같다면 전적 정보를 dto 에 저장
+        for (Object entryObject : matchDetails) {
+            JSONObject entry = (JSONObject) entryObject;
+
+            if(entry.get("puuid").equals(puuid)) {
+                dto.setChampion((String) entry.get("championName"));
+                dto.setChampionId((Long) entry.get("championId"));
+                dto.setKills((Long) entry.get("kills"));
+                dto.setDeaths((Long) entry.get("deaths"));
+                dto.setAssists((Long) entry.get("assists"));
+                dto.setTeamPosition((String) entry.get("teamPosition"));
+                dto.setWin((Boolean) entry.get("win"));
+
+                return dto;
+            }
+        }
+        return null;
     }
 }
