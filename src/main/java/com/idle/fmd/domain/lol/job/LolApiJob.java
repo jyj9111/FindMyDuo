@@ -41,8 +41,11 @@ public class LolApiJob {
     private final LolInfoItemProcessor infoItemProcessor;
     private final LolInfoItemWriter infoItemWriter;
 
+    private final LolMatchItemReader matchItemReader;
+    private final LolMatchItemProcessor matchItemProcessor;
+    private final LolMatchItemWriter matchItemWriter;
+
     // 주기적으로 잡을 실행하기 위한 스케줄러 설정
-    // 나중에 예외처리 할 것
     @Scheduled(fixedDelay = 1800000) // 30분마다 실행
     public void runJob() throws Exception {
         JobExecution jobExecution = jobLauncher.run(lolAccountJob(), new JobParameters());
@@ -63,6 +66,8 @@ public class LolApiJob {
                 .start(lolAccountStep())
                 // 게임 정보를 DB에 동기화하는 step 실행
                 .next(lolInfoStep())
+                // 전적 정보를 DB에 동기화하는 step 실행
+                .next(lolMatchStep())
                 .build();
     }
 
@@ -89,6 +94,18 @@ public class LolApiJob {
                 .writer(infoItemWriter)
                 .transactionManager(transactionManager)
                 // 이미 완료된 스텝을 다시 시작할 수 있도록 설정
+                .allowStartIfComplete(true)
+                .build();
+    }
+
+    @Bean
+    public Step lolMatchStep() {
+        return new StepBuilder("lolMatchStep", jobRepository)
+                .<List<LolMatchDto>, List<LolMatchEntity>>chunk(10)
+                .reader(matchItemReader)
+                .processor(matchItemProcessor)
+                .writer(matchItemWriter)
+                .transactionManager(transactionManager)
                 .allowStartIfComplete(true)
                 .build();
     }

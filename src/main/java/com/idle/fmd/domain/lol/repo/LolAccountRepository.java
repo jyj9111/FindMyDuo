@@ -7,4 +7,6 @@ import java.util.Optional;
 
 public interface LolAccountRepository extends JpaRepository<LolAccountEntity, Integer> {
     Optional<LolAccountEntity> findBySummonerId(String summonerId);
+
+    Optional<LolAccountEntity> findByPuuid(String puuid);
 }
