@@ -6,7 +6,6 @@ import com.idle.fmd.domain.user.entity.UserEntity;
 import com.idle.fmd.global.common.entity.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.ColumnDefault;
 
 import java.util.ArrayList;
 import java.util.List;

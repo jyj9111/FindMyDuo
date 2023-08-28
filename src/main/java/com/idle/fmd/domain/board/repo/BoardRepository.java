@@ -12,14 +12,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 
 public interface BoardRepository extends JpaRepository<BoardEntity, Long> {
-
-    // 제목으로 검색
     Page<BoardEntity> findByTitleContainingIgnoreCase(String title, Pageable pageable);
-
-    // 유저로 검색
     Page<BoardEntity> findByUser(UserEntity user, Pageable pageable);
-
-    // 내용으로 검색
     Page<BoardEntity> findByContentContainingIgnoreCase(String content, Pageable pageable);
 
     // 조회수 기능
