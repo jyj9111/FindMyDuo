@@ -42,29 +42,40 @@ public class BoardController {
     // 게시글 단일조회
     @GetMapping("/{boardId}")
     public BoardResponseDto boardRead(@PathVariable Long boardId) {
+        boardService.boardView(boardId);
         return boardService.boardRead(boardId);
     }
 
     // 게시글 수정
     @PutMapping("/{boardId}")
     public void boardUpdate(@RequestPart(value = "dto") @Validated BoardUpdateDto dto,
-                                           @RequestPart(value = "file", required = false) List<MultipartFile> images,
-                                           Authentication authentication,
-                                           @PathVariable Long boardId) {
+                            @RequestPart(value = "file", required = false) List<MultipartFile> images,
+                            Authentication authentication,
+                            @PathVariable Long boardId) {
         if (images == null) images = new ArrayList<>();
         boardService.boardUpdate(dto, images, authentication.getName(), boardId);
     }
 
-    // 게시글 soft delete
+    // 게시글 삭제
     @DeleteMapping("/{boardId}")
     public void boardDelete(Authentication authentication, @PathVariable Long boardId) {
         boardService.boardDelete(authentication.getName(), boardId);
     }
 
-    // 전체조회 (페이징 처리)
+    // 게시글 전체조회 (페이징 처리)
     @GetMapping()
     public Page<BoardAllResponseDto> boardReadAll(@PageableDefault(size = 20, sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
         return boardService.boardReadAll(pageable);
+    }
+
+
+    // 게시글 검색
+    @GetMapping("/search")
+    public Page<BoardAllResponseDto> boardSearch(
+        @RequestParam(required = false) String query,
+        @RequestParam(required = false) String searchBy,
+        @PageableDefault(size = 20, sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
+        return boardService.searchBoardAll(query, searchBy, pageable);
     }
 
     // 좋아요 기능

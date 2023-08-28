@@ -38,6 +38,10 @@ public class BoardEntity extends BaseTimeEntity {
 
     private Integer reported;
 
+    @Column(nullable = false)
+    private Integer view;
+
+
     @OneToMany(mappedBy = "board")
     private List<FileEntity> files = new ArrayList<>();
 
@@ -53,6 +57,7 @@ public class BoardEntity extends BaseTimeEntity {
                 .liked(0)
                 .bookmarked(0)
                 .reported(0)
+                .view(0)
                 .build();
     }
 

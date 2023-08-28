@@ -101,7 +101,7 @@ public class BoardService {
 
             log.info("게시판 이미지 수정 전 삭제");
             for (FileEntity file : boardEntity.getFiles()) {
-                    fileRepository.deleteById(file.getId());
+                fileRepository.deleteById(file.getId());
             }
 
             // 경로에 있는 파일 삭제
@@ -162,6 +162,54 @@ public class BoardService {
         boardRepository.deleteById(boardId);
     }
 
+    // 검색 기능
+    // 제목으로 검색
+    public Page<BoardAllResponseDto> searchBoardsTitle(String query, Pageable pageable) {
+        if (query == null || query.isBlank()) {
+            throw new BusinessException(BusinessExceptionCode.NO_SEARCH_QUERY_PARAMETER);
+        }
+        Page<BoardEntity> searchResult = boardRepository.findByTitleContainingIgnoreCase(query, pageable);
+        return searchResult.map(BoardAllResponseDto::fromBoardEntity);
+    }
+
+    // 작성자로 검색
+    public Page<BoardAllResponseDto> searchBoardsUser(String nickname, Pageable pageable) {
+        if (nickname == null || nickname.isBlank()) {
+            throw new BusinessException(BusinessExceptionCode.NO_SEARCH_QUERY_PARAMETER);
+        }
+        UserEntity user = userRepository.findByNickname(nickname);
+        if (user == null) {
+            log.info("존재 하지 않는 사용자 입니다.");
+            throw new BusinessException(BusinessExceptionCode.NOT_EXIST_USER_ERROR);
+        }
+        Page<BoardEntity> searchUserResult = boardRepository.findByUser(user, pageable);
+        return searchUserResult.map(BoardAllResponseDto::fromBoardEntity);
+    }
+
+    // 내용으로 검색
+    public Page<BoardAllResponseDto> searchBoardsContent(String query, Pageable pageable) {
+        if (query == null || query.isBlank()) {
+            throw new BusinessException(BusinessExceptionCode.NO_SEARCH_QUERY_PARAMETER);
+        }
+        Page<BoardEntity> searchContentResult = boardRepository.findByContentContainingIgnoreCase(query, pageable);
+        return searchContentResult.map(BoardAllResponseDto::fromBoardEntity);
+    }
+
+    // 검색 기능 통합
+    public Page<BoardAllResponseDto> searchBoardAll(String query, String searchBy, Pageable pageable) {
+        if ("user".equals(searchBy)) {
+            return searchBoardsUser(query, pageable);
+        } else if ("content".equals(searchBy)) {
+            return searchBoardsContent(query, pageable);
+        } else if ("title".equals(searchBy)) {
+            return searchBoardsTitle(query, pageable);
+        } else {
+            throw new BusinessException(BusinessExceptionCode.SEARCH_STANDARD_ERROR);
+        }
+    }
+
+
+    // 게시글 전체 조회
     public Page<BoardAllResponseDto> boardReadAll(Pageable pageable) {
         Page<BoardEntity> boardPage = boardRepository.findAll(pageable);
         Page<BoardAllResponseDto> boardResponseDtoPage = boardPage.map(BoardAllResponseDto::fromBoardEntity);
@@ -169,7 +217,7 @@ public class BoardService {
         return boardResponseDtoPage;
     }
 
-    private void deleteBoardImageDirectory(Long boardId) {
+    private void deleteBoardImageDirectory (Long boardId){
         String boardImgDir = String.format("./images/board/%s", boardId);
         try {
             FileUtils.deleteDirectory(new File(boardImgDir));
@@ -177,5 +225,12 @@ public class BoardService {
             log.error("게시판 이미지 디렉토리 삭제 중 오류 발생");
             throw new BusinessException(BusinessExceptionCode.CANNOT_DELETE_DIRECTORY_ERROR);
         }
+    }
+
+    // 조회수 카운팅
+    public BoardEntity boardView(Long id) {
+        BoardEntity boardEntity = boardRepository.findById(id).get();
+        boardRepository.updateViewCount(boardEntity.getView() + 1, boardEntity.getId());
+        return boardEntity;
     }
 }
