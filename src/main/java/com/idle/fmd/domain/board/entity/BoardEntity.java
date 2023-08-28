@@ -6,6 +6,7 @@ import com.idle.fmd.domain.user.entity.UserEntity;
 import com.idle.fmd.global.common.entity.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.ColumnDefault;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,7 +39,7 @@ public class BoardEntity extends BaseTimeEntity {
 
     private Integer reported;
 
-    @Column(columnDefinition = "integer default 0", nullable = false)
+    @Column(nullable = false)
     private Integer view;
 
 
@@ -57,6 +58,7 @@ public class BoardEntity extends BaseTimeEntity {
                 .liked(0)
                 .bookmarked(0)
                 .reported(0)
+                .view(0)
                 .build();
     }
 

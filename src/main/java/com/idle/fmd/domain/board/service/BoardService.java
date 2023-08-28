@@ -19,7 +19,6 @@ import org.apache.tomcat.util.http.fileupload.FileUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
@@ -102,7 +101,7 @@ public class BoardService {
 
             log.info("게시판 이미지 수정 전 삭제");
             for (FileEntity file : boardEntity.getFiles()) {
-                    fileRepository.deleteById(file.getId());
+                fileRepository.deleteById(file.getId());
             }
 
             // 경로에 있는 파일 삭제
@@ -170,10 +169,11 @@ public class BoardService {
             throw new BusinessException(BusinessExceptionCode.NO_SEARCH_QUERY_PARAMETER);
         }
         Page<BoardEntity> searchResult = boardRepository.findByTitleContainingIgnoreCase(query, pageable);
-        return searchResult.map(BoardAllResponseDto::fromEntity);
+        return searchResult.map(BoardAllResponseDto::fromBoardEntity);
     }
+
     // 작성자로 검색
-    public Page<BoardAllResponseDto> searchBoardsUser(String nickname, Pageable pageable){
+    public Page<BoardAllResponseDto> searchBoardsUser(String nickname, Pageable pageable) {
         if (nickname == null || nickname.isBlank()) {
             throw new BusinessException(BusinessExceptionCode.NO_SEARCH_QUERY_PARAMETER);
         }
@@ -183,15 +183,16 @@ public class BoardService {
             throw new BusinessException(BusinessExceptionCode.NOT_EXIST_USER_ERROR);
         }
         Page<BoardEntity> searchUserResult = boardRepository.findByUser(user, pageable);
-        return searchUserResult.map(BoardAllResponseDto::fromEntity);
+        return searchUserResult.map(BoardAllResponseDto::fromBoardEntity);
     }
+
     // 내용으로 검색
-    public Page<BoardAllResponseDto> searchBoardsContent(String query, Pageable pageable){
+    public Page<BoardAllResponseDto> searchBoardsContent(String query, Pageable pageable) {
         if (query == null || query.isBlank()) {
             throw new BusinessException(BusinessExceptionCode.NO_SEARCH_QUERY_PARAMETER);
         }
         Page<BoardEntity> searchContentResult = boardRepository.findByContentContainingIgnoreCase(query, pageable);
-        return searchContentResult.map(BoardAllResponseDto::fromEntity);
+        return searchContentResult.map(BoardAllResponseDto::fromBoardEntity);
     }
 
     // 검색 기능 통합
@@ -202,15 +203,10 @@ public class BoardService {
             return searchBoardsContent(query, pageable);
         } else if ("title".equals(searchBy)) {
             return searchBoardsTitle(query, pageable);
-        }
-        else {
+        } else {
             throw new BusinessException(BusinessExceptionCode.SEARCH_STANDARD_ERROR);
         }
     }
-
-
-
-
 
 
     // 게시글 전체 조회
@@ -218,14 +214,10 @@ public class BoardService {
         Page<BoardEntity> boardPage = boardRepository.findAll(pageable);
         Page<BoardAllResponseDto> boardResponseDtoPage = boardPage.map(BoardAllResponseDto::fromBoardEntity);
 
-    // 조회수 카운팅
-    public BoardEntity boardView(Long id) {
-        BoardEntity boardEntity = boardRepository.findById(id).get();
-        boardRepository.updateViewCount(boardEntity.getView() + 1, boardEntity.getId());
-        return boardEntity;
+        return boardResponseDtoPage;
     }
 
-    private void deleteBoardImageDirectory(Long boardId) {
+    private void deleteBoardImageDirectory (Long boardId){
         String boardImgDir = String.format("./images/board/%s", boardId);
         try {
             FileUtils.deleteDirectory(new File(boardImgDir));
@@ -233,5 +225,12 @@ public class BoardService {
             log.error("게시판 이미지 디렉토리 삭제 중 오류 발생");
             throw new BusinessException(BusinessExceptionCode.CANNOT_DELETE_DIRECTORY_ERROR);
         }
+    }
+
+    // 조회수 카운팅
+    public BoardEntity boardView(Long id) {
+        BoardEntity boardEntity = boardRepository.findById(id).get();
+        boardRepository.updateViewCount(boardEntity.getView() + 1, boardEntity.getId());
+        return boardEntity;
     }
 }

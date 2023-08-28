@@ -65,8 +65,7 @@ public enum BusinessExceptionCode {
     SEARCH_STANDARD_ERROR(HttpStatus.BAD_REQUEST, "해당 기준으로 검색할 수 없습니다."),
 
     // 검색할 값이 입력되지 않았을 때
-    NO_SEARCH_QUERY_PARAMETER(HttpStatus.BAD_REQUEST, "검색할 값을 확인해 주세요");
-    UNAUTHORIZED_USER(HttpStatus.UNAUTHORIZED, "해당 요청에 대한 권한이 없는 사용자입니다."),
+    NO_SEARCH_QUERY_PARAMETER(HttpStatus.BAD_REQUEST, "검색할 값을 확인해 주세요"),
 
     // 게시글 작성자가 본인의 글을 신고할 때 예외
     NOT_SELF_REPORT_ERROR(HttpStatus.UNAUTHORIZED, "게시글 작성자가 본인 글을 신고할 수 없습니다.");

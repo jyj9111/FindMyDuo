@@ -56,13 +56,13 @@ public class BoardController {
         boardService.boardUpdate(dto, images, authentication.getName(), boardId);
     }
 
-    // 게시글 soft delete
+    // 게시글 삭제
     @DeleteMapping("/{boardId}")
     public void boardDelete(Authentication authentication, @PathVariable Long boardId) {
         boardService.boardDelete(authentication.getName(), boardId);
     }
 
-    // 전체조회 (페이징 처리)
+    // 게시글 전체조회 (페이징 처리)
     @GetMapping()
     public Page<BoardAllResponseDto> boardReadAll(@PageableDefault(size = 20, sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
         return boardService.boardReadAll(pageable);
@@ -77,8 +77,6 @@ public class BoardController {
         @PageableDefault(size = 20, sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
         return boardService.searchBoardAll(query, searchBy, pageable);
     }
-
-
 
     // 좋아요 기능
     @PostMapping("/{boardId}/like")
