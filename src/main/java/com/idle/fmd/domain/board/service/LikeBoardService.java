@@ -33,28 +33,33 @@ public class LikeBoardService {
         BoardEntity board = boardRepository.findById(boardId).get();
         UserEntity user = userRepository.findByAccountId(accountId).get();
 
+        String message = "";
         if (!hasLikeBoard(board, user)) {
             board.increaseLikeCount();
-            createLikeBoard(board, user);
+            message = createLikeBoard(board, user);
         } else {
             board.decreaseLikeCount();
-            removeLikeBoard(board, user);
+            message = removeLikeBoard(board, user);
         }
 
-        return LikeBoardResponseDto.fromEntity(board);
+        return LikeBoardResponseDto.fromEntity(board, message);
     }
 
-    private void removeLikeBoard(final BoardEntity board, final UserEntity user) {
+    private String removeLikeBoard(final BoardEntity board, final UserEntity user) {
         LikeBoardEntity likeBoard = likeBoardRepository.findByBoardAndUser(board, user).get();
 
         likeBoardRepository.delete(likeBoard);
         log.info("좋아요 취소 완료");
+        String message = "좋아요 취소 완료";
+        return message;
     }
 
-    private void createLikeBoard(final BoardEntity board, final UserEntity user) {
+    private String createLikeBoard(final BoardEntity board, final UserEntity user) {
         LikeBoardEntity likeBoard = new LikeBoardEntity(board, user);
         likeBoardRepository.save(likeBoard);
         log.info("좋아요 처리 완료");
+        String message = "좋아요 처리 완료";
+        return message;
     }
 
     private boolean hasLikeBoard(final BoardEntity board, final UserEntity user) {

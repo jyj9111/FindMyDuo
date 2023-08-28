@@ -7,10 +7,12 @@ import lombok.Data;
 public class LikeBoardResponseDto {
 
     private Integer liked;
+    private String message;
 
-    public static LikeBoardResponseDto fromEntity(BoardEntity board) {
+    public static LikeBoardResponseDto fromEntity(BoardEntity board, String message) {
         LikeBoardResponseDto dto = new LikeBoardResponseDto();
         dto.setLiked(board.getLiked());
+        dto.setMessage(message);
 
         return dto;
     }
