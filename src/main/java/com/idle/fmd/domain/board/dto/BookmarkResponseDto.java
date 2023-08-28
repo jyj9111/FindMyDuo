@@ -6,10 +6,12 @@ import lombok.Data;
 @Data
 public class BookmarkResponseDto {
     private Integer bookmarked;
+    private String message;
 
-    public static BookmarkResponseDto fromEntity(BoardEntity board) {
+    public static BookmarkResponseDto fromEntity(BoardEntity board, String message) {
         BookmarkResponseDto dto = new BookmarkResponseDto();
         dto.setBookmarked(board.getBookmarked());
+        dto.setMessage(message);
 
         return dto;
     }

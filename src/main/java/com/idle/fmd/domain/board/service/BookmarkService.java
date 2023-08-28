@@ -33,28 +33,33 @@ public class BookmarkService {
         BoardEntity board = boardRepository.findById(boardId).get();
         UserEntity user = userRepository.findByAccountId(accountId).get();
 
+        String message = "";
         if (!hasBookmarkBoard(board, user)) {
             board.increaseBookmarkCount();
-            createBookmark(board, user);
+            message = createBookmark(board, user);
         } else {
             board.decreaseBookmarkCount();
-            removeBookmark(board, user);
+            message = removeBookmark(board, user);
         }
 
-        return BookmarkResponseDto.fromEntity(board);
+        return BookmarkResponseDto.fromEntity(board, message);
     }
 
-    private void removeBookmark(BoardEntity board, UserEntity user) {
+    private String removeBookmark(BoardEntity board, UserEntity user) {
         BookmarkEntity bookmark = bookmarkRepository.findByBoardAndUser(board, user).get();
 
         bookmarkRepository.delete(bookmark);
         log.info("즐겨찾기 취소완료");
+        String message = "즐겨찾기 취소완료";
+        return message;
     }
 
-    private void createBookmark(final BoardEntity board, final UserEntity user) {
+    private String createBookmark(final BoardEntity board, final UserEntity user) {
         BookmarkEntity bookmark = new BookmarkEntity(board, user);
         bookmarkRepository.save(bookmark);
         log.info("즐겨찾기 처리완료");
+        String message = "즐겨찾기 처리완료";
+        return message;
     }
 
     private boolean hasBookmarkBoard(BoardEntity board, UserEntity user) {
