@@ -169,6 +169,10 @@ public class LolApiService {
             }
         }
 
+        // 랭크 티어가 없는 경우 UNRANKED 로 설정
+        if(dto.getSoloTier() == null) dto.setSoloTier("UNRANKED");
+        if(dto.getFlexTier() == null) dto.setFlexTier("UNRANKED");
+
         // 모스트 챔프 3개를 가져오는 API URL 호출
         String champRequestUrl = riotUrl + "/lol/champion-mastery/v4/champion-masteries/by-summoner/" + summonerId;
         JSONArray mostChampion = (JSONArray) executeHttpGet(champRequestUrl);
