@@ -27,6 +27,8 @@ public class BoardResponseDto {
 
     private LocalDateTime modifiedAt;
 
+    private Integer view;
+
     public static BoardResponseDto fromEntity(BoardEntity board) {
         BoardResponseDto boardResponseDto = new BoardResponseDto();
         boardResponseDto.setId(board.getId());
@@ -34,6 +36,7 @@ public class BoardResponseDto {
         boardResponseDto.setTitle(board.getTitle());
         boardResponseDto.setLiked(board.getLiked());
         boardResponseDto.setContent(board.getContent());
+        boardResponseDto.setView(board.getView());
 
         List<String> images = new ArrayList<>();
         for (FileEntity entity : board.getFiles()) {

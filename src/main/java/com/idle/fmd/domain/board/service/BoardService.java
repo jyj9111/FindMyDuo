@@ -226,10 +226,9 @@ public class BoardService {
     }
 
     // 조회수 카운팅
-    public BoardEntity boardView(Long id) {
+    public void boardView(Long id) {
         BoardEntity boardEntity = boardRepository.findById(id).get();
         boardRepository.updateViewCount(boardEntity.getView() + 1, boardEntity.getId());
-        return boardEntity;
     }
 
     // 인기순으로 정렬 기능
