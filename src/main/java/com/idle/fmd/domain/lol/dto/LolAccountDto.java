@@ -17,13 +17,13 @@ public class LolAccountDto {
     // Dto 를 Entity 로 변환하는 메서드
     public LolAccountEntity toEntity() {
         return LolAccountEntity.builder()
-                .accountId(accountId)
-                .summonerId(summonerId)
-                .profileIconId(profileIconId)
-                .revisionDate(revisionDate)
-                .name(name)
-                .puuid(puuid)
-                .summonerLevel(summonerLevel)
+                .accountId(this.accountId)
+                .summonerId(this.summonerId)
+                .profileIconId(this.profileIconId)
+                .revisionDate(this.revisionDate)
+                .name(this.name)
+                .puuid(this.puuid)
+                .summonerLevel(this.summonerLevel)
                 .build();
     }
 
