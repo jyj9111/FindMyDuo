@@ -22,17 +22,17 @@ public class LolMatchDto {
     // Dto 를 Entity 로 변환하는 메서드
     public LolMatchEntity toEntity() {
         return LolMatchEntity.builder()
-                .matchId(matchId)
-                .gameMode(gameMode)
-                .gameCreation(gameCreation)
-                .gameTime(gameDuration)
-                .champion(champion)
-                .championId(championId)
-                .kills(kills)
-                .deaths(deaths)
-                .assists(assists)
-                .teamPosition(teamPosition)
-                .win(win)
+                .matchId(this.matchId)
+                .gameMode(this.gameMode)
+                .gameCreation(this.gameCreation)
+                .gameTime(this.gameDuration)
+                .champion(this.champion)
+                .championId(this.championId)
+                .kills(this.kills)
+                .deaths(this.deaths)
+                .assists(this.assists)
+                .teamPosition(this.teamPosition)
+                .win(this.win)
                 .build();
     }
 }
