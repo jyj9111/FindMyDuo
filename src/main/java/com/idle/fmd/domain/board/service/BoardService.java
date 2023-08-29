@@ -1,9 +1,6 @@
 package com.idle.fmd.domain.board.service;
 
-import com.idle.fmd.domain.board.dto.BoardCreateDto;
-import com.idle.fmd.domain.board.dto.BoardAllResponseDto;
-import com.idle.fmd.domain.board.dto.BoardResponseDto;
-import com.idle.fmd.domain.board.dto.BoardUpdateDto;
+import com.idle.fmd.domain.board.dto.*;
 import com.idle.fmd.domain.board.entity.*;
 import com.idle.fmd.domain.board.repo.*;
 import com.idle.fmd.domain.comment.entity.CommentEntity;
@@ -19,6 +16,7 @@ import org.apache.tomcat.util.http.fileupload.FileUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
@@ -228,9 +226,20 @@ public class BoardService {
     }
 
     // 조회수 카운팅
-    public BoardEntity boardView(Long id) {
+    public void boardView(Long id) {
         BoardEntity boardEntity = boardRepository.findById(id).get();
         boardRepository.updateViewCount(boardEntity.getView() + 1, boardEntity.getId());
-        return boardEntity;
     }
+
+    // 인기순으로 정렬 기능
+    @Transactional(readOnly = true)
+    public Page<BoardAllResponseDto> findLikeSortBoards(Pageable pageable) {
+        Page<BoardEntity> boardEntities = boardRepository.findAll(pageable);
+        Page<BoardAllResponseDto> boardAllResponseDtos = boardEntities.map(BoardAllResponseDto::fromBoardEntity);
+        return boardAllResponseDtos;
+    }
+
+
+
+
 }

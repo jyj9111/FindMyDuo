@@ -34,8 +34,8 @@ public class BoardController {
     // 게시글 작성
     @PostMapping
     public void boardCreate(@RequestPart(value = "dto") @Validated BoardCreateDto dto,
-                                           @RequestPart(value = "file", required = false) List<MultipartFile> images,
-                                           Authentication authentication) {
+                            @RequestPart(value = "file", required = false) List<MultipartFile> images,
+                            Authentication authentication) {
         boardService.boardCreate(dto, images, authentication.getName());
     }
 
@@ -72,9 +72,9 @@ public class BoardController {
     // 게시글 검색
     @GetMapping("/search")
     public Page<BoardAllResponseDto> boardSearch(
-        @RequestParam(required = false) String query,
-        @RequestParam(required = false) String searchBy,
-        @PageableDefault(size = 20, sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
+            @RequestParam(required = false) String query,
+            @RequestParam(required = false) String searchBy,
+            @PageableDefault(size = 20, sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
         return boardService.searchBoardAll(query, searchBy, pageable);
     }
 
@@ -94,5 +94,11 @@ public class BoardController {
     @PostMapping("/{boardId}/report")
     public ReportResponseDto reportBoard(Authentication authentication, @PathVariable Long boardId, @RequestBody @Valid ReportDto dto) {
         return reportService.updateOfReportBoard(authentication.getName(), boardId, dto);
+    }
+
+    // 인기순으로 글 조회
+    @GetMapping("/best")
+    public Page<BoardAllResponseDto> likeSortBoard(@PageableDefault(size = 20, sort = "liked", direction = Sort.Direction.DESC) Pageable pageable) {
+        return boardService.findLikeSortBoards(pageable);
     }
 }
