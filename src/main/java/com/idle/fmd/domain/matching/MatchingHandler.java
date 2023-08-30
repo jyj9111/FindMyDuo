@@ -1,12 +1,26 @@
 package com.idle.fmd.domain.matching;
 
+import com.google.gson.Gson;
+import com.idle.fmd.domain.lol.dto.LolMatchDto;
+import com.idle.fmd.domain.lol.entity.LolMatchEntity;
 import com.idle.fmd.domain.user.entity.UserEntity;
 import com.idle.fmd.domain.user.service.CustomUserDetailsManager;
 import com.idle.fmd.global.auth.jwt.JwtTokenUtils;
 import io.jsonwebtoken.Claims;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.Persistence;
+import jakarta.persistence.PersistenceContext;
+
+import jakarta.transaction.TransactionScoped;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.Hibernate;
+import org.springframework.context.annotation.Scope;
+import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
+import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
@@ -17,9 +31,12 @@ import java.util.Map;
 @Component
 @Slf4j
 @RequiredArgsConstructor
+@Transactional
 public class MatchingHandler extends TextWebSocketHandler{
     private final CustomUserDetailsManager manager;
     private final JwtTokenUtils jwtTokenUtils;
+    private final TierReader tierReader;
+    private final Gson gson = new Gson();
     private final List<WebSocketSession> sessions = new ArrayList<>();
 
     // 새로운 웹 소켓이 연결될 때 마다 실행되는 메서드 ( 매칭 대기열에 새로운 유저가 들어왔을 때 실행 )
@@ -27,6 +44,7 @@ public class MatchingHandler extends TextWebSocketHandler{
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
         // 내 정보를 session 의 속성에 등록하고 매칭 대기열에 추가
         registerClientInfo(session);
+        connectUser(session);
     }
 
     // 토큰에서 accountID 를 추출해내서 반환하는 메서드
@@ -63,48 +81,111 @@ public class MatchingHandler extends TextWebSocketHandler{
         String accountId = tokenToAccountId(token);
         UserEntity userEntity = manager.loadUserEntityByAccountId(accountId);
         log.info("{} 님이 매칭 대기열에 입장하셨습니다.", userEntity.getNickname());
+        log.info("sessionId: {}", session.getId());
 
         // 세션의 속성을 담을 수 있는 객체를 가져온 뒤 속성을 추가
         // 구해듀오 닉네임, 롤 닉네임, 모드, 내 포지션, 듀오 포지션, 티어, 모스트 1/2/3 챔피언 저장
         Map<String, Object> attributes = session.getAttributes();
         attributes.put("nickname", userEntity.getNickname());
+        attributes.put("mode", mode);
+        attributes.put("myLine", myLine);
+        attributes.put("duoLine", duoLine);
 
         if(userEntity.getLolAccount() != null) {
             attributes.put("lolNickname", userEntity.getLolAccount().getName());
-            attributes.put("mode", mode);
-            attributes.put("myLine", myLine);
-            attributes.put("duoLine", duoLine);
 
             // 모드에 따라 티어 속성을 다르게 설정 ( 솔랭 또는 자유랭 티어 )
-            if (mode == "solo") {
-                if(userEntity.getLolAccount().getLolInfo().getSoloTier() == null){
-                    attributes.put("tier", "UNRANKED");
-                    attributes.put("rank", "");
-                }
-                else{
-                    attributes.put("tier", userEntity.getLolAccount().getLolInfo().getSoloTier());
-                    attributes.put("rank", userEntity.getLolAccount().getLolInfo().getSoloRank());
-                }
+            if (mode.equals("solo")) {
+                attributes.put("tier", userEntity.getLolAccount().getLolInfo().getSoloTier());
+                attributes.put("rank", userEntity.getLolAccount().getLolInfo().getSoloRank());
+                attributes.put("totalWins", userEntity.getLolAccount().getLolInfo().getSoloWins());
+                attributes.put("totalLoses", userEntity.getLolAccount().getLolInfo().getSoloLosses());
             }
 
-            if (mode == "flex") {
-                if(userEntity.getLolAccount().getLolInfo().getFlexTier() == null){
-                    attributes.put("tier", "UNRANKED");
-                    attributes.put("rank", "");
-                }
-                else{
-                    attributes.put("tier", userEntity.getLolAccount().getLolInfo().getFlexTier());
-                    attributes.put("rank", userEntity.getLolAccount().getLolInfo().getFlexRank());
-                }
+            if (mode.equals("flex")) {
+                attributes.put("tier", userEntity.getLolAccount().getLolInfo().getFlexTier());
+                attributes.put("rank", userEntity.getLolAccount().getLolInfo().getFlexRank());
+                attributes.put("totalWins", userEntity.getLolAccount().getLolInfo().getFlexWins());
+                attributes.put("totalLoses", userEntity.getLolAccount().getLolInfo().getFlexLosses());
             }
 
-            // 모스트 1/2/3 챔피언이 null 일 경우에는 NONE 을 저장
-            attributes.put("mostOne", userEntity.getLolAccount().getLolInfo().getMostOneChamp() != null ? userEntity.getLolAccount().getLolInfo().getMostOneChamp() : "");
-            attributes.put("mostTwo", userEntity.getLolAccount().getLolInfo().getMostTwoChamp() != null ? userEntity.getLolAccount().getLolInfo().getMostTwoChamp() : "");
-            attributes.put("mostThree", userEntity.getLolAccount().getLolInfo().getMostThreeChamp() != null ? userEntity.getLolAccount().getLolInfo().getMostThreeChamp() : "");
+            // 모스트 1/2/3 챔피언 저장
+            attributes.put("mostOne", userEntity.getLolAccount().getLolInfo().getMostOneChamp());
+            attributes.put("mostTwo", userEntity.getLolAccount().getLolInfo().getMostTwoChamp());
+            attributes.put("mostThree", userEntity.getLolAccount().getLolInfo().getMostThreeChamp());
+        }
+        // 롤 계정이 연동되어 있지 않을 때 속성 설정
+        else{
+            attributes.put("lolNickname","");
+            attributes.put("tier", "UNRANKED");
+            attributes.put("rank", "");
+            attributes.put("totalWins", 0);
+            attributes.put("totalLoses", 0);
+            attributes.put("mostOne", 0);
+            attributes.put("mostTwo", 0);
+            attributes.put("mostThree", 0);
         }
 
         // 매칭 대기열에 추가
         sessions.add(session);
+    }
+
+    public void connectUser(WebSocketSession session) throws Exception{
+        for(WebSocketSession connected: sessions){
+            if(
+                    !connected.getAttributes().containsKey("destination") &&
+                    connected.getAttributes().get("mode").equals(session.getAttributes().get("mode")) &&
+                    connected.getAttributes().get("duoLine").equals(session.getAttributes().get("myLine")) &&
+                    connected.getAttributes().get("myLine").equals(session.getAttributes().get("duoLine"))
+            ){
+                boolean tierInRange = false;
+                String myTier = session.getAttributes().get("tier").toString();
+                String duoTier = connected.getAttributes().get("tier").toString();
+                String mode = session.getAttributes().get("mode").toString();
+
+                if(mode.equals("solo")) tierInRange = tierReader.soloTierInRange(myTier, duoTier);
+                if(mode.equals("flex")) tierInRange = tierReader.flexTierInRange(myTier, duoTier);
+
+                if(tierInRange) {
+                    // 나의 정보를 상대방에게 전달
+                    sendUserInfo(session, connected);
+                    // 상대방의 정보를 나에게 전달
+                    sendUserInfo(connected, session);
+                }
+            }
+        }
+    }
+    public void sendUserInfo(WebSocketSession mySession, WebSocketSession duoSession) throws Exception{
+        UserEntity myEntity = manager.loadUserEntityByNickname(mySession.getAttributes().get("nickname").toString());
+        List<LolMatchDto> myMatchList = new ArrayList<>();
+
+        if(myEntity.getLolAccount() != null){
+            List<LolMatchEntity> lolMatchEntities = myEntity.getLolAccount().getLolMatch();
+            log.info(lolMatchEntities.toString());
+            for(LolMatchEntity match: lolMatchEntities){
+                myMatchList.add(match.entityToDto());
+            }
+        }
+
+        MatchingResponseDto myInfo = new MatchingResponseDto(
+                mySession.getAttributes().get("nickname").toString(),
+                mySession.getAttributes().get("lolNickname").toString(),
+                mySession.getAttributes().get("mode").toString(),
+                mySession.getAttributes().get("myLine").toString(),
+                mySession.getAttributes().get("tier").toString(),
+                mySession.getAttributes().get("rank").toString(),
+                Long.parseLong(mySession.getAttributes().get("mostOne").toString()),
+                Long.parseLong(mySession.getAttributes().get("mostTwo").toString()),
+                Long.parseLong(mySession.getAttributes().get("mostThree").toString()),
+                Long.parseLong(mySession.getAttributes().get("totalWins").toString()),
+                Long.parseLong(mySession.getAttributes().get("totalLoses").toString()),
+                myMatchList
+        );
+
+        duoSession.getAttributes().put("destination", mySession.getId());
+
+        String json = gson.toJson(myInfo);
+        TextMessage textMessage = new TextMessage(json);
+        duoSession.sendMessage(textMessage);
     }
 }
