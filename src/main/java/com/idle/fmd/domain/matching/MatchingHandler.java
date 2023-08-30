@@ -7,18 +7,10 @@ import com.idle.fmd.domain.user.entity.UserEntity;
 import com.idle.fmd.domain.user.service.CustomUserDetailsManager;
 import com.idle.fmd.global.auth.jwt.JwtTokenUtils;
 import io.jsonwebtoken.Claims;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.EntityManagerFactory;
-import jakarta.persistence.Persistence;
-import jakarta.persistence.PersistenceContext;
 
-import jakarta.transaction.TransactionScoped;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.hibernate.Hibernate;
-import org.springframework.context.annotation.Scope;
-import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
@@ -44,6 +36,7 @@ public class MatchingHandler extends TextWebSocketHandler{
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
         // 내 정보를 session 의 속성에 등록하고 매칭 대기열에 추가
         registerClientInfo(session);
+        // 조건에 맞는 상대와 매칭 시도
         connectUser(session);
     }
 
@@ -130,7 +123,9 @@ public class MatchingHandler extends TextWebSocketHandler{
         sessions.add(session);
     }
 
+    // 조건에 맞는 유저를 찾고 서로의 정보를 상대방에게 전달해주는 메서드
     public void connectUser(WebSocketSession session) throws Exception{
+        // 연결된 웹 소켓 세션 중 목적지가 없고 ( 매칭된 상태가 아니고 ), 모드/라인/티어 조건이 만족하는 상대방을 찾는다.
         for(WebSocketSession connected: sessions){
             if(
                     !connected.getAttributes().containsKey("destination") &&
@@ -143,9 +138,11 @@ public class MatchingHandler extends TextWebSocketHandler{
                 String duoTier = connected.getAttributes().get("tier").toString();
                 String mode = session.getAttributes().get("mode").toString();
 
+                // 솔로랭크 모드이면 솔로랭크티어, 자유랭크 모드이면 자유랭크 티어를 찾아서 티어조건이 맞는지 확인
                 if(mode.equals("solo")) tierInRange = tierReader.soloTierInRange(myTier, duoTier);
                 if(mode.equals("flex")) tierInRange = tierReader.flexTierInRange(myTier, duoTier);
 
+                // 티어조건이 맞을 때 실행
                 if(tierInRange) {
                     // 나의 정보를 상대방에게 전달
                     sendUserInfo(session, connected);
@@ -155,18 +152,22 @@ public class MatchingHandler extends TextWebSocketHandler{
             }
         }
     }
-    public void sendUserInfo(WebSocketSession mySession, WebSocketSession duoSession) throws Exception{
+
+    // 서로의 정보를 전달해주는 메서드
+    private void sendUserInfo(WebSocketSession mySession, WebSocketSession duoSession) throws Exception{
+        // 웹 소켓 세션의 닉네임을 이용해서 유저 엔티티를 찾는다.
         UserEntity myEntity = manager.loadUserEntityByNickname(mySession.getAttributes().get("nickname").toString());
         List<LolMatchDto> myMatchList = new ArrayList<>();
 
+        // 유저의 롤 전적기록을 찾아서 DTO 형태로 리스트에 저장
         if(myEntity.getLolAccount() != null){
             List<LolMatchEntity> lolMatchEntities = myEntity.getLolAccount().getLolMatch();
-            log.info(lolMatchEntities.toString());
             for(LolMatchEntity match: lolMatchEntities){
                 myMatchList.add(match.entityToDto());
             }
         }
 
+        // 매칭 성공 시 응답 DTO 를 통해서 상대방에게 전달할 데이터를 준비
         MatchingResponseDto myInfo = new MatchingResponseDto(
                 mySession.getAttributes().get("nickname").toString(),
                 mySession.getAttributes().get("lolNickname").toString(),
@@ -182,8 +183,10 @@ public class MatchingHandler extends TextWebSocketHandler{
                 myMatchList
         );
 
-        duoSession.getAttributes().put("destination", mySession.getId());
+        // 해당 유저의 세션의 목적지를 설정한다.
+        mySession.getAttributes().put("destination", duoSession.getId());
 
+        // 매칭된 상대방에게 DTO 를 JSON 형태로 변환 후 전달한다.
         String json = gson.toJson(myInfo);
         TextMessage textMessage = new TextMessage(json);
         duoSession.sendMessage(textMessage);
