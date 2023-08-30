@@ -1,8 +1,8 @@
 package com.idle.fmd.domain.lol.entity;
 
+import com.idle.fmd.domain.lol.dto.LolMatchDto;
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.DynamicUpdate;
 
 // 롤 전적 정보를 담는 테이블
 @Builder
@@ -41,4 +41,20 @@ public class LolMatchEntity {
     }
 
 
+    public LolMatchDto entityToDto(){
+        LolMatchDto lolMatchDto = new LolMatchDto();
+        lolMatchDto.setMatchId(this.matchId);
+        lolMatchDto.setGameMode(this.matchId);
+        lolMatchDto.setGameCreation(this.gameCreation);
+        lolMatchDto.setGameDuration(this.gameTime);
+        lolMatchDto.setChampion(this.champion);
+        lolMatchDto.setChampionId(this.championId);
+        lolMatchDto.setKills(this.kills);
+        lolMatchDto.setDeaths(this.deaths);
+        lolMatchDto.setAssists(this.assists);
+        lolMatchDto.setTeamPosition(this.teamPosition);
+        lolMatchDto.setWin(this.getWin());
+
+        return lolMatchDto;
+    }
 }
