@@ -21,17 +21,17 @@ public class LolInfoDto {
     // Dto 를 Entity 로 변환하는 메서드
     public LolInfoEntity toEntity() {
         return LolInfoEntity.builder()
-                .mostOneChamp(mostOneChamp)
-                .mostTwoChamp(mostTwoChamp)
-                .mostThreeChamp(mostThreeChamp)
-                .soloTier(soloTier)
-                .soloRank(soloRank)
-                .soloWins(soloWins)
-                .soloLosses(soloLosses)
-                .flexTier(flexTier)
-                .flexRank(flexRank)
-                .flexWins(flexWins)
-                .flexLosses(flexLosses)
+                .mostOneChamp(this.mostOneChamp)
+                .mostTwoChamp(this.mostTwoChamp)
+                .mostThreeChamp(this.mostThreeChamp)
+                .soloTier(this.soloTier)
+                .soloRank(this.soloRank)
+                .soloWins(this.soloWins)
+                .soloLosses(this.soloLosses)
+                .flexTier(this.flexTier)
+                .flexRank(this.flexRank)
+                .flexWins(this.flexWins)
+                .flexLosses(this.flexLosses)
                 .build();
     }
 
