@@ -104,4 +104,21 @@ public class CustomUserDetailsManager implements UserDetailsManager {
         userRepository.save(userEntity);
     }
 
+    // accountId 를 이용해서 UserEntity 를 찾아 반환하는 메서드
+    public UserEntity loadUserEntityByAccountId(String accountId){
+        if(!userExists(accountId))
+            throw new UsernameNotFoundException(accountId);
+
+        return userRepository.findByAccountId(accountId).get();
+    }
+
+    // 닉네임을 이용해서 UserEntity 를 찾아 반환하는 메서드
+    public UserEntity loadUserEntityByNickname(String nickname){
+        Optional<UserEntity> optionalUserEntity = userRepository.findByNickname(nickname);
+
+        if(!optionalUserEntity.isPresent())
+            throw new UsernameNotFoundException(nickname);
+
+        return optionalUserEntity.get();
+    }
 }
