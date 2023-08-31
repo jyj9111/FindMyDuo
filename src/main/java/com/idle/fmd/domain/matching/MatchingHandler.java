@@ -12,6 +12,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
@@ -86,6 +87,13 @@ public class MatchingHandler extends TextWebSocketHandler {
             TextMessage textMessage = new TextMessage("continue");
             session.sendMessage(textMessage);
         }
+    }
+
+    // 세션 종료 시 연결된 웹 소켓을 관리하는 sessions 리스트에서 해당 세션 제거
+    @Override
+    public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
+        if(sessions.contains(session)) sessions.remove(session);
+        log.info("웹 소켓 연결해제");
     }
 
     // 토큰에서 accountID 를 추출해내서 반환하는 메서드
