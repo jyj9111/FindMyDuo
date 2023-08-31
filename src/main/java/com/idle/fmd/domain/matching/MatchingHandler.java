@@ -24,7 +24,7 @@ import java.util.Map;
 @Slf4j
 @RequiredArgsConstructor
 @Transactional
-public class MatchingHandler extends TextWebSocketHandler{
+public class MatchingHandler extends TextWebSocketHandler {
     private final CustomUserDetailsManager manager;
     private final JwtTokenUtils jwtTokenUtils;
     private final TierReader tierReader;
@@ -41,9 +41,9 @@ public class MatchingHandler extends TextWebSocketHandler{
     }
 
     // 토큰에서 accountID 를 추출해내서 반환하는 메서드
-    private String tokenToAccountId(String token){
+    private String tokenToAccountId(String token) {
         String accountId = null;
-        if(jwtTokenUtils.validate(token)){
+        if (jwtTokenUtils.validate(token)) {
             Claims claims = jwtTokenUtils.parseClaims(token);
             accountId = claims.getSubject().toString();
         }
@@ -52,14 +52,14 @@ public class MatchingHandler extends TextWebSocketHandler{
     }
 
     // 내 정보를 session 의 속성에 등록하고 매칭 대기열에 추가하는 메서드
-    private void registerClientInfo(WebSocketSession session){
+    private void registerClientInfo(WebSocketSession session) {
         // URL 에 포함된 쿼리 파라미터 부분을 가져온다
         String requestParameters = session.getUri().getQuery();
         // 쿼리 파라미터를 [변수=값] 형태로 배열에 저장
         String[] paramArray = requestParameters.split("&");
 
         // 배열에 저장된 각 문자열에서 값만 추출해서 다시 저장 ( 덮어쓰기 )
-        for(int i = 0; i < 4; i++){
+        for (int i = 0; i < 4; i++) {
             String param = paramArray[i];
             paramArray[i] = param.substring(param.indexOf("=") + 1);
         }
@@ -73,8 +73,6 @@ public class MatchingHandler extends TextWebSocketHandler{
         // 토큰에서 유저의 아이디를 뽑아내서 유저의 아이디를 이용해 해당 유저의 엔티티를 가져온다.
         String accountId = tokenToAccountId(token);
         UserEntity userEntity = manager.loadUserEntityByAccountId(accountId);
-        log.info("{} 님이 매칭 대기열에 입장하셨습니다.", userEntity.getNickname());
-        log.info("sessionId: {}", session.getId());
 
         // 세션의 속성을 담을 수 있는 객체를 가져온 뒤 속성을 추가
         // 구해듀오 닉네임, 롤 닉네임, 모드, 내 포지션, 듀오 포지션, 티어, 모스트 1/2/3 챔피언 저장
@@ -84,12 +82,15 @@ public class MatchingHandler extends TextWebSocketHandler{
         attributes.put("myLine", myLine);
         attributes.put("duoLine", duoLine);
 
-        if(userEntity.getLolAccount() != null) {
+        if (userEntity.getLolAccount() != null) {
             attributes.put("lolNickname", userEntity.getLolAccount().getName());
 
             // 모드에 따라 티어 속성을 다르게 설정 ( 솔랭 또는 자유랭 티어 )
             if (mode.equals("solo")) {
                 attributes.put("tier", userEntity.getLolAccount().getLolInfo().getSoloTier());
+                if(tierReader.soloTierToNumber(attributes.get("tier").toString()) == -1){
+                    throw new RuntimeException("마스터 이상의 티어는 듀오를 할 수 없습니다.");
+                }
                 attributes.put("rank", userEntity.getLolAccount().getLolInfo().getSoloRank());
                 attributes.put("totalWins", userEntity.getLolAccount().getLolInfo().getSoloWins());
                 attributes.put("totalLoses", userEntity.getLolAccount().getLolInfo().getSoloLosses());
@@ -108,8 +109,8 @@ public class MatchingHandler extends TextWebSocketHandler{
             attributes.put("mostThree", userEntity.getLolAccount().getLolInfo().getMostThreeChamp());
         }
         // 롤 계정이 연동되어 있지 않을 때 속성 설정
-        else{
-            attributes.put("lolNickname","");
+        else {
+            attributes.put("lolNickname", "");
             attributes.put("tier", "UNRANKED");
             attributes.put("rank", "");
             attributes.put("totalWins", 0);
@@ -121,29 +122,32 @@ public class MatchingHandler extends TextWebSocketHandler{
 
         // 매칭 대기열에 추가
         sessions.add(session);
+
+        log.info("{} 님이 매칭 대기열에 입장하셨습니다.", userEntity.getNickname());
+        log.info("sessionId: {}", session.getId());
     }
 
     // 조건에 맞는 유저를 찾고 서로의 정보를 상대방에게 전달해주는 메서드
-    public void connectUser(WebSocketSession session) throws Exception{
+    public void connectUser(WebSocketSession session) throws Exception {
         // 연결된 웹 소켓 세션 중 목적지가 없고 ( 매칭된 상태가 아니고 ), 모드/라인/티어 조건이 만족하는 상대방을 찾는다.
-        for(WebSocketSession connected: sessions){
-            if(
+        for (WebSocketSession connected : sessions) {
+            if (
                     !connected.getAttributes().containsKey("destination") &&
-                    connected.getAttributes().get("mode").equals(session.getAttributes().get("mode")) &&
-                    connected.getAttributes().get("duoLine").equals(session.getAttributes().get("myLine")) &&
-                    connected.getAttributes().get("myLine").equals(session.getAttributes().get("duoLine"))
-            ){
+                            connected.getAttributes().get("mode").equals(session.getAttributes().get("mode")) &&
+                            connected.getAttributes().get("duoLine").equals(session.getAttributes().get("myLine")) &&
+                            connected.getAttributes().get("myLine").equals(session.getAttributes().get("duoLine"))
+            ) {
                 boolean tierInRange = false;
                 String myTier = session.getAttributes().get("tier").toString();
                 String duoTier = connected.getAttributes().get("tier").toString();
                 String mode = session.getAttributes().get("mode").toString();
 
                 // 솔로랭크 모드이면 솔로랭크티어, 자유랭크 모드이면 자유랭크 티어를 찾아서 티어조건이 맞는지 확인
-                if(mode.equals("solo")) tierInRange = tierReader.soloTierInRange(myTier, duoTier);
-                if(mode.equals("flex")) tierInRange = tierReader.flexTierInRange(myTier, duoTier);
+                if (mode.equals("solo")) tierInRange = tierReader.soloTierInRange(myTier, duoTier);
+                if (mode.equals("flex")) tierInRange = tierReader.flexTierInRange(myTier, duoTier);
 
                 // 티어조건이 맞을 때 실행
-                if(tierInRange) {
+                if (tierInRange) {
                     // 나의 정보를 상대방에게 전달
                     sendUserInfo(session, connected);
                     // 상대방의 정보를 나에게 전달
@@ -154,15 +158,15 @@ public class MatchingHandler extends TextWebSocketHandler{
     }
 
     // 서로의 정보를 전달해주는 메서드
-    private void sendUserInfo(WebSocketSession mySession, WebSocketSession duoSession) throws Exception{
+    private void sendUserInfo(WebSocketSession mySession, WebSocketSession duoSession) throws Exception {
         // 웹 소켓 세션의 닉네임을 이용해서 유저 엔티티를 찾는다.
         UserEntity myEntity = manager.loadUserEntityByNickname(mySession.getAttributes().get("nickname").toString());
         List<LolMatchDto> myMatchList = new ArrayList<>();
 
         // 유저의 롤 전적기록을 찾아서 DTO 형태로 리스트에 저장
-        if(myEntity.getLolAccount() != null){
+        if (myEntity.getLolAccount() != null) {
             List<LolMatchEntity> lolMatchEntities = myEntity.getLolAccount().getLolMatch();
-            for(LolMatchEntity match: lolMatchEntities){
+            for (LolMatchEntity match : lolMatchEntities) {
                 myMatchList.add(match.entityToDto());
             }
         }
