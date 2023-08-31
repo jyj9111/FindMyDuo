@@ -1,4 +1,4 @@
-package com.idle.fmd.global.config;
+package com.idle.fmd.global.config.websocket;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;

@@ -1,4 +1,4 @@
-package com.idle.fmd.global.config;
+package com.idle.fmd.global.config.security;
 
 
 import com.idle.fmd.global.auth.jwt.JwtTokenFilter;
