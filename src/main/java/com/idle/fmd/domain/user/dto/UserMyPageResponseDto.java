@@ -1,6 +1,5 @@
 package com.idle.fmd.domain.user.dto;
 
-import com.idle.fmd.domain.lol.entity.LolEntity;
 import com.idle.fmd.domain.user.entity.UserEntity;
 import lombok.Data;
 
@@ -12,7 +11,7 @@ public class UserMyPageResponseDto {
     private String email;
     private String nickname;
     private LocalDateTime createdAt;
-    private LolEntity lolAccount;
+    private String lolNickname;
     private String profileImage;
 
     public static UserMyPageResponseDto fromEntity(UserEntity entity) {
@@ -21,7 +20,9 @@ public class UserMyPageResponseDto {
         dto.setEmail(entity.getEmail());
         dto.setNickname(entity.getNickname());
         dto.setCreatedAt(entity.getCreatedAt());
-        dto.setLolAccount(entity.getLolAccount());
+        if(entity.getLolAccount() != null) {
+            dto.setLolNickname(entity.getLolAccount().getName());
+        }
         dto.setProfileImage(entity.getProfileImage());
         return dto;
     }
