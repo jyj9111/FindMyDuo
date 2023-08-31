@@ -35,6 +35,8 @@ public class WebSecurityConfig {
                                         "/users/oauth-fail" // oauth 실패 시 리다이렉트 url
                                 )
                                 .anonymous()
+                                .requestMatchers("/js/**", "/main", "/login", "/webjars/**")
+                                .permitAll()
                                 .anyRequest()
                                 .authenticated()
                 )
