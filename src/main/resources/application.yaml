@@ -57,5 +57,25 @@ spring :
       port: ${SPRING_CACHE_REDIS_PORT}
       password: ${SPRING_CACHE_REDIS_PASSWORD}
 
+  batch:
+    job:
+      # 특정 JOB만 실행시킬 경우 Default 는 NONE
+      name: ${job.name:NONE}
+      # true : 어플리케이션 실행 시 등록된 job 을 실행 / false : 비실행
+      enabled: false
+
+    # 배치 메타데이터용 데이터베이스 설정 추가
+    jdbc:
+      # 배타 메타데이터 테이블 초기화 여부 설정 (always : 항상 초기화, never : 초기화 x)
+      initialize-schema: never
+      url: ${SPRING_DATASOURCE_URL}
+      username: ${SPRING_DATASOURCE_USERNAME}
+      password: ${SPRING_DATASOURCE_PASSWORD}
+      driver-class-name: com.mysql.cj.jdbc.Driver
+
 jwt:
   secret: ${SPRING_JWT_SECRETE}
+
+# 라이엇 API 키
+riot-api:
+  api-key: ${RIOT_API_KEY}
