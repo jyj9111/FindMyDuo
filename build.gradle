@@ -74,6 +74,12 @@ dependencies {
 	// Gson
 	implementation 'com.google.code.gson:gson:2.9.0'
 
+	implementation 'org.webjars:stomp-websocket:2.3.4'	// STOMP
+	implementation 'org.webjars:sockjs-client:1.5.1'	// SockJS
+
+	implementation 'org.webjars.bower:bootstrap:5.3.0'	// Bootstrap
+	implementation 'org.webjars:jquery:3.6.4'			// jQuery
+
 	compileOnly 'org.projectlombok:lombok'
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
 	annotationProcessor 'org.projectlombok:lombok'
