@@ -40,6 +40,54 @@ public class MatchingHandler extends TextWebSocketHandler {
         connectUser(session);
     }
 
+    // 메세지를 받으면 ( 수락 or 거절 ) 실행되는 메서드
+    @Override
+    protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
+        session.getAttributes().put("answer", message.getPayload());
+
+        WebSocketSession destination = null;
+        for (WebSocketSession connected : sessions) {
+            if (session.getAttributes().get("destination").equals(connected.getId().toString())) {
+                destination = connected;
+                break;
+            }
+        }
+
+        String myAnswer = session.getAttributes().get("answer").toString().toString();
+        if (destination != null) {
+            String destinationAnswer = String.valueOf(destination.getAttributes().get("answer"));
+            log.info("my: {}, des: {}", myAnswer, destinationAnswer);
+
+            if (myAnswer.equals("accept")) {
+                if (destinationAnswer.equals("null")) return;
+                else if (destinationAnswer.equals("accept")) {
+                    TextMessage textMessage = new TextMessage("success");
+                    session.sendMessage(textMessage);
+                    destination.sendMessage(textMessage);
+                    return;
+                }
+            }
+        }
+
+        if (myAnswer.equals("reject")) {
+            TextMessage textMessage = new TextMessage("stop");
+            session.sendMessage(textMessage);
+            if(destination != null && destination.getAttributes().containsKey("answer")){
+                destination.getAttributes().remove("destination");
+                destination.getAttributes().remove("answer");
+                textMessage = new TextMessage("continue");
+                destination.sendMessage(textMessage);
+            }
+            sessions.remove(session);
+            session.close();
+        } else {
+            session.getAttributes().remove("destination");
+            destination.getAttributes().remove("answer");
+            TextMessage textMessage = new TextMessage("continue");
+            session.sendMessage(textMessage);
+        }
+    }
+
     // 토큰에서 accountID 를 추출해내서 반환하는 메서드
     private String tokenToAccountId(String token) {
         String accountId = null;
