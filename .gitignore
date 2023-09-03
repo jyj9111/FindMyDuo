@@ -160,3 +160,4 @@ replay_pid*
 /src/main/resources/application-prod.yaml
 /src/main/resources/application-dev.yaml
 /src/main/resources/application-common.yaml
+!/gradle/wrapper/gradle-wrapper.jar
