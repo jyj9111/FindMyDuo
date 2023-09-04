@@ -1,16 +1,21 @@
 package com.idle.fmd.domain.user.service;
 
 
+import com.idle.fmd.domain.board.dto.BoardAllResponseDto;
+import com.idle.fmd.domain.board.entity.BookmarkEntity;
+import com.idle.fmd.domain.board.repo.BookmarkRepository;
 import com.idle.fmd.domain.user.dto.*;
 import com.idle.fmd.domain.user.entity.UserEntity;
 import com.idle.fmd.domain.user.repo.UserRepository;
 import com.idle.fmd.global.auth.jwt.JwtTokenUtils;
-import com.idle.fmd.global.common.utils.RedisUtil;
+import com.idle.fmd.global.utils.RedisUtil;
 import com.idle.fmd.global.error.exception.BusinessException;
 import com.idle.fmd.global.error.exception.BusinessExceptionCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.tomcat.util.http.fileupload.FileUtils;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -36,6 +41,7 @@ public class UserService {
     private final JavaMailSender mailSender;
     private final RedisUtil redisUtil;
     private final UserRepository repository;
+    private final BookmarkRepository bookmarkRepository;
 
     // 회원가입 메서드
     public void signup(SignupDto dto){
@@ -222,5 +228,15 @@ public class UserService {
             log.error("프로필 이미지 디렉토리 삭제 중 오류 발생");
             throw new BusinessException(BusinessExceptionCode.CANNOT_DELETE_DIRECTORY_ERROR);
         }
+    }
+
+    public Page<BoardAllResponseDto> findBookmark(String accountId, Pageable pageable) {
+
+        UserEntity user = repository.findByAccountId(accountId).get();
+
+        Page<BookmarkEntity> board = bookmarkRepository.findAllByUser(user, pageable);
+        Page<BoardAllResponseDto> boardDto = board.map(BoardAllResponseDto::fromBookmarkEntity);
+
+        return boardDto;
     }
 }
