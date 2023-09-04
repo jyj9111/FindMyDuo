@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:v-bind="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>mypage</title>
+    <link href="/static/css/main.css" rel="stylesheet" />
+</head>
+<body>
+<script src="/webjars/vue/2.6.14/dist/vue.js"></script>
+<script src="/webjars/axios/0.21.1/dist/axios.js"></script>
+<script src="/webjars/jquery/3.6.4/jquery.js"></script>
+<script>
+    // 네비게이션 바 HTML을 불러와서 삽입
+    $.get('/static/html/navbar.html', function (data) {
+        $('#menu-bar').html(data);
+        console.log(data);
+    })
+</script>
+<div class="main-container">
+    <div id="menu-bar"></div>
+    <div class="content">
+        <div id="app">
+            <h1>마이페이지</h1>
+
+            <!-- 기본 정보 -->
+            <p>아이디: {{ accountId }}</p>
+            <p>닉네임: {{ nickname }}</p>
+            <p>이메일: <input v-model="email"></p>
+            <p>아이디 생성날짜: {{ createdAt }}</p>
+
+            <!-- 비밀번호 입력란 -->
+            <label for="password">비밀번호: </label>
+            <input v-model="password" id="password" type="password">
+            <label for="passwordCheck">비밀번호 확인: </label>
+            <input v-model="passwordCheck" id="passwordCheck" type="password">
+
+            <!-- 롤 닉네임 연동-->
+            <p>롤닉네임: <input v-model="lolNickname"></p>
+            <button @click="linkLolAccount">RIOT 계정 연동</button>
+
+            <!-- 프로필 이미지 등록 및 변경-->
+            <p>프로필이미지:</p>
+            <img v-if="profileImage" v-bind:src="profileImage" alt="프로필 이미지" width="100" height="100">
+            <input type="file" @change="selectImage">
+            <button @click="uploadImage">이미지 등록</button>
+
+            <!-- 회원 정보 수정 -->
+            <button @click="updateData">수정</button>
+
+            <!-- 회원 탈퇴-->
+            <button @click="deleteAccount">회원 탈퇴</button>
+        </div>
+    </div>
+</div>
+<script src="/static/js/mypage.js"></script>
+</body>
+</html>
