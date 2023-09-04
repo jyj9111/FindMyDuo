@@ -189,7 +189,6 @@ public class UserService {
         String profileDir = String.format("./images/profile/%s", accountId);
 
         // 폴더 생성
-        log.info(profileDir);
         try {
             Files.createDirectories(Path.of(profileDir));
         } catch (Exception e) {
@@ -201,7 +200,6 @@ public class UserService {
         String originalImageName = image.getOriginalFilename();
         String extension = originalImageName.substring(originalImageName.lastIndexOf(".") + 1);
         String profileFileName = "profile." + extension;
-        log.info(profileFileName);
 
         // 폴더 + 파일 경로 이름
         String profilePath = String.format("%s/%s", profileDir, profileFileName);
