@@ -186,7 +186,7 @@ public class UserService {
     // 프로필 이미지 변경 메서드
     public void uploadProfileImage(String accountId, MultipartFile image) {
         // 유저 ID를 프로필 디렉토리명으로 설정
-        String profileDir = String.format("medias/profile/%s", accountId);
+        String profileDir = String.format("./images/profile/%s", accountId);
 
         // 폴더 생성
         log.info(profileDir);
@@ -215,12 +215,12 @@ public class UserService {
         }
 
         manager.updateProfileImage(accountId,
-                String.format("/static/%s", profilePath));
+                String.format("/static/profile/%s/%s", accountId, profileFileName));
     }
 
     // 회원 탈퇴 시 프로필 이미지 디렉토리 삭제 메서드
     public void deleteProfileImageDirectory(String accountId) {
-        String profileDir = String.format("medias/profile/%s", accountId);
+        String profileDir = String.format("images/profile/%s", accountId);
         try {
             FileUtils.deleteDirectory(new File(profileDir));
         } catch (IOException e) {
