@@ -2,11 +2,14 @@ package com.idle.fmd.domain.user.entity;
 
 
 import com.idle.fmd.domain.lol.entity.LolAccountEntity;
+import com.idle.fmd.domain.board.entity.BoardEntity;
 
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 // 유저 테이블 엔티티
 @Builder
@@ -46,6 +49,9 @@ public class UserEntity {
     // UserEntity 가 삭제되면 연동된 계정 정보도 삭제되도록 설정
     @OneToOne(mappedBy = "user", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private LolAccountEntity lolAccount;
+
+    @OneToMany(mappedBy = "user")
+    private List<BoardEntity> boards = new ArrayList<>();
 
     // CustomUserDetails -> UserEntity 변환 정적 팩토리 메소드
     public static UserEntity fromCustomUserDetails(CustomUserDetails userDetails) {
