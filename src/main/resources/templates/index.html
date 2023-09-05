@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>홈페이지</title>
+    <link href="/static/css/main.css" rel="stylesheet" />
+</head>
+<body>
+<div class="main-container">
+    <div id="menu-bar"></div>
+    <div class="content">
+        <h1>구해듀오</h1>
+    </div>
+</div>
+<script src="/webjars/vue/2.6.14/dist/vue.js"></script>
+<script src="/webjars/axios/0.21.1/dist/axios.js"></script>
+<script src="/webjars/jquery/3.6.4/jquery.js"></script>
+<script>
+    $.get('/static/html/navbar.html', function (data) {
+        $('#menu-bar').html(data);
+    })
+</script>
+</body>
+</html>

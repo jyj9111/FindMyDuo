@@ -64,15 +64,6 @@ jobs:
         touch ./application-dev.yaml
         # Github Secret에 설정한 내용을 application-dev.yaml 파일에 쓰기
         echo "${{ secrets.APPLICATION_DEV}}" > ./application-dev.yaml
-
-    # application-prod.yaml 생성
-    - name: make application-prod.yaml
-      # main 브랜치 일때
-      if: contains(github.ref, 'main') 
-      run: |
-        cd ./src/main/resources
-        touch ./application-prod.yaml
-        echo "${{ secrets.APPLICATION_PROD}}" > ./application-prod.yaml
     
     # Gradlew 권한 설정
     - name: Grant execute permission for gradlew

@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>회원가입</title>
+    <link href="/static/css/main.css" rel="stylesheet" />
+</head>
+<body>
+<script src="/webjars/vue/2.6.14/dist/vue.js"></script>
+<script src="/webjars/axios/0.21.1/dist/axios.js"></script>
+<script src="/webjars/jquery/3.6.4/jquery.js"></script>
+<script src="/static/js/signup.js"></script>
+<script>
+  // 네비게이션 바 HTML 을 불러와서 삽입
+  $.get('/static/html/navbar.html', function (data) {
+    $('#menu-bar').html(data);
+    console.log(data);
+  })
+</script>
+<div class="main-container">
+    <div id="menu-bar"></div>
+    <div class="content">
+        <div id="signup-app">
+            <label for="accountId">아이디: </label>
+            <input v-model="accountId" id= "accountId" placeholder="ID">
+
+            <label for="email">이메일: </label>
+            <input v-model="email" id="email" placeholder="이메일">
+            <button type="button" @click="sendEmailAuthCode">인증번호 보내기</button>
+
+            <label for="emailAuthCode">이메일 확인: </label>
+            <input v-model="emailAuthCode" id="emailAuthCode" placeholder="이메일 인증코드">
+
+            <label for="nickname">닉네임: </label>
+            <input v-model="nickname" id="nickname" placeholder="닉네임">
+
+            <label for="password">비밀번호: </label>
+            <input v-model="password" id="password" type="password" placeholder="비밀번호">
+
+            <label for="passwordCheck">비밀번호 확인: </label>
+            <input v-model="passwordCheck" id="passwordCheck" type="password" placeholder="비밀번호 확인">
+
+            <button type="button" @click="signup">회원가입</button>
+        </div>
+    </div>
+</div>
+</body>
+</html>
