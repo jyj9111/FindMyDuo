@@ -1,4 +1,4 @@
-package com.idle.fmd.global.config;
+package com.idle.fmd.global.config.security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -10,5 +10,4 @@ public class PasswordEncoderConfig {
     public BCryptPasswordEncoder passwordEncoder(){
         return new BCryptPasswordEncoder();
     }
-
 }
