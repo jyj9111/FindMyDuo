@@ -1,0 +1,19 @@
+<link href="/static/css/main.css" rel="stylesheet">
+<script src="/webjars/vue/2.6.14/dist/vue.js"></script>
+<script src="/webjars/axios/0.21.1/dist/axios.js"></script>
+<script src="/static/js/navbar.js"></script>
+<div class="navbar dark" id="navbar-app">
+    <nav class="navbar main">
+        <div class="manu-bar">
+            <ul>
+                <li><a href="/main">Home</a></li>
+                <!-- 로그인 여부에 따라 보여지는 메뉴가 다르도록 설정-->
+                <li v-if="loggedIn"><a href="/mypage">마이페이지</a></li>
+                <li v-if="!loggedIn"><a href="/signup">회원가입</a></li>
+                <li v-if="!loggedIn"><a href="/login">로그인</a></li>
+                <li v-if="loggedIn"><button @click="logout">로그아웃</button></li>
+                <!-- 각 화면 구성 후 여기에 추가적으로 링크를 걸어주세요 -->
+            </ul>
+        </div>
+    </nav>
+</div>
