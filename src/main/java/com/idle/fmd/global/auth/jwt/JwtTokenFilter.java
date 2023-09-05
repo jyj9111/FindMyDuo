@@ -42,9 +42,16 @@ public class JwtTokenFilter extends OncePerRequestFilter {
             HttpServletRequest request, HttpServletResponse response, FilterChain filterChain
     ) throws ServletException, IOException {
         String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
+        String requestUrl = request.getRequestURI();
 
-        if (authHeader != null && authHeader.startsWith("Bearer ")) {
-            String token = authHeader.split(" ")[1];
+        if (authHeader != null && authHeader.startsWith("Bearer ") || requestUrl.startsWith("/ws/matching")) {
+            String token;
+
+            if(requestUrl.startsWith("/ws/matching")) {
+                token = request.getQueryString().replace("Authorization=", "");
+                token = token.substring(0,token.indexOf("&"));
+            }
+            else token = authHeader.split(" ")[1];
 
             // 토큰이 유효하다면 인증정보 등록 후 다음 필터 실행
             if(jwtTokenUtils.validate(token)){
@@ -82,7 +89,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
                 // 리프레쉬 토큰을 가지고 있지 않으면 로그인되어 있지 않은 것으로 간주한다.
                 else{
                     log.error("Does not have refresh token ( 로그아웃 상태 )");
-                    response.setStatus(400);
+                    response.setStatus(403);
                     log.info(token);
                 }
                 return;

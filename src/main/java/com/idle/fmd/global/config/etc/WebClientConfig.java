@@ -1,4 +1,4 @@
-package com.idle.fmd.global.config;
+package com.idle.fmd.global.config.etc;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
