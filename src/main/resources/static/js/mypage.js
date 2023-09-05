@@ -1,4 +1,5 @@
 const token = localStorage.getItem('token');
+
 new Vue({
     el: '#app',
     data: {
@@ -90,6 +91,9 @@ new Vue({
                     console.error('계정 연동 실패: ', error);
                 })
         },
+        selectImage(event) {
+            this.profileImage = event.target.files[0];
+        },
         // 프로필 이미지 등록 기능
         uploadImage() {
             // FormData 객체를 생성하여 이미지 파일을 담는다.
@@ -123,7 +127,7 @@ new Vue({
                         'Authorization': `Bearer ${token}`
                     }
                 })
-                    .then(response => {
+                    .then(() => {
                         alert('회원 탈퇴가 완료되었습니다.');
                         localStorage.clear();
                         location.href = '/main';
