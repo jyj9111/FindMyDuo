@@ -10,9 +10,9 @@ document.addEventListener("DOMContentLoaded", function () {
             passwordCheck: '',
         },
         methods: {
-            sendEmailAuthCode() {
+            async sendEmailAuthCode() {
                 // 이메일 인증번호 보내기 요청
-                axios.post('/users/email-auth', { email: this.email })
+                await axios.post('/users/email-auth', { email: this.email })
                     .then(response => {
                         alert('이메일로 인증번호가 전송되었습니다.');
                     })
@@ -20,9 +20,9 @@ document.addEventListener("DOMContentLoaded", function () {
                         console.error('이메일 인증번호 요청 에러: ', error);
                     });
             },
-            signup() {
+            async signup() {
                 // 회원가입 요청
-                axios.post('/users/signup', {
+                await axios.post('/users/signup', {
                     accountId: this.accountId,
                     email: this.email,
                     emailAuthCode: this.emailAuthCode,

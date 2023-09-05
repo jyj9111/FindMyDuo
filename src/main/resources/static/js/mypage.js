@@ -1,4 +1,5 @@
 const token = localStorage.getItem('token');
+
 new Vue({
     el: '#app',
     data: {
@@ -12,7 +13,7 @@ new Vue({
         passwordCheck: '',
     },
     // 페이지 방문시 조회 기능
-    created() {
+    async created() {
         if (!token) {
             // 토큰이 없는 경우 로그인 페이지로 이동
             alert('로그인이 필요합니다.')
@@ -21,7 +22,7 @@ new Vue({
         }
 
         // 마이페이지 조회 요청
-        axios.get('/users/mypage', {
+        await axios.get('/users/mypage', {
             // 헤더 설정
             headers: {
                 'Authorization': `Bearer ${token}`
@@ -45,7 +46,7 @@ new Vue({
     },
     methods: {
         // 회원 정보 수정
-        updateData() {
+        async updateData() {
             // 수정된 데이터를 서버로 수정 요청
             const updateData = {
                 accountId: this.accountId,
@@ -56,7 +57,7 @@ new Vue({
             };
 
             // 마이페이지 정보 수정 요청
-            axios.put('/users/mypage', updateData, {
+            await axios.put('/users/mypage', updateData, {
                 headers: {
                     'Authorization': `Bearer ${token}`
                 }
@@ -72,9 +73,9 @@ new Vue({
                 })
         },
         // 롤 계정 연동 기능
-        linkLolAccount() {
+        async linkLolAccount() {
             // 계정 연동 요청
-            axios.post('/lol/save', null, {
+            await axios.post('/lol/save', null, {
                 params: {
                     lolNickname: this.lolNickname.replaceAll(" ", "")
                 },
@@ -90,14 +91,17 @@ new Vue({
                     console.error('계정 연동 실패: ', error);
                 })
         },
+        async selectImage(event) {
+            this.profileImage = event.target.files[0];
+        },
         // 프로필 이미지 등록 기능
-        uploadImage() {
+        async uploadImage() {
             // FormData 객체를 생성하여 이미지 파일을 담는다.
             const formData = new FormData();
             formData.append('image', this.profileImage);
 
             // 프로필 이미지 업로드 요청
-            axios.put('/users/mypage/profile-image', formData, {
+            await axios.put('/users/mypage/profile-image', formData, {
                 headers: {
                     'Authorization': `Bearer ${token}`,
                     // 파일 업로드시 필요한 헤더
@@ -115,15 +119,15 @@ new Vue({
                 })
         },
         // 회원 탈퇴 기능
-        deleteAccount() {
+        async deleteAccount() {
             if (confirm('정말로 회원을 탈퇴하시겠습니까?')) {
                 // 탈퇴 요청
-                axios.delete('/users/mypage', {
+                await axios.delete('/users/mypage', {
                     headers: {
                         'Authorization': `Bearer ${token}`
                     }
                 })
-                    .then(response => {
+                    .then(() => {
                         alert('회원 탈퇴가 완료되었습니다.');
                         localStorage.clear();
                         location.href = '/main';
