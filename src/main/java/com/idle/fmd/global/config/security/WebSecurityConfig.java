@@ -7,6 +7,7 @@ import com.idle.fmd.global.auth.oauth2.OAuth2UserServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -27,6 +28,10 @@ public class WebSecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(
                         authHttp -> authHttp
+                                .requestMatchers(
+                                        HttpMethod.GET, "/board/**"
+                                )
+                                .permitAll()
                                 .requestMatchers(
                                         "/users/login",     // 로그인 url
                                         "/users/signup",    // 회원가입 url

@@ -114,11 +114,8 @@ public class CustomUserDetailsManager implements UserDetailsManager {
 
     // 닉네임을 이용해서 UserEntity 를 찾아 반환하는 메서드
     public UserEntity loadUserEntityByNickname(String nickname){
-        Optional<UserEntity> optionalUserEntity = userRepository.findByNickname(nickname);
+        UserEntity userEntity = userRepository.findByNickname(nickname);
 
-        if(!optionalUserEntity.isPresent())
-            throw new UsernameNotFoundException(nickname);
-
-        return optionalUserEntity.get();
+        return userEntity;
     }
 }
