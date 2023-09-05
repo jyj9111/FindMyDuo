@@ -29,7 +29,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Optional;
-import java.util.Random;
 
 @Slf4j
 @Service
@@ -113,8 +112,7 @@ public class UserService {
         // 제목 설정
         simpleMailMessage.setSubject("[구해듀오] 이메일 인증 요청메일입니다.");
         // 랜덤한 6자리의 난수를 인증코드로 생성 후 이메일 내용에 포함
-        Random random = new Random();
-        int authCode = random.nextInt(100000, 1000000);
+        int authCode = (int)(Math.random() * 1000000);
         simpleMailMessage.setText("아래의 인증코드를 입력해주세요.\n" + authCode);
 
         // 이메일 전송
