@@ -5,3 +5,4 @@ spring:
       local: local, common, oauth
       dev: dev, common, oauth
       prod: prod, common, oauth
+
