@@ -1,4 +1,4 @@
-package com.idle.fmd.global.config;
+package com.idle.fmd.global.config.websocket;
 
 import com.idle.fmd.domain.matching.MatchingHandler;
 import lombok.RequiredArgsConstructor;

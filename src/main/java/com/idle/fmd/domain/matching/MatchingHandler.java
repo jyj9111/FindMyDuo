@@ -29,6 +29,7 @@ public class MatchingHandler extends TextWebSocketHandler {
     private final CustomUserDetailsManager manager;
     private final JwtTokenUtils jwtTokenUtils;
     private final TierReader tierReader;
+    private final MatchingService matchingService;
     private final Gson gson = new Gson();
     private final List<WebSocketSession> sessions = new ArrayList<>();
 
@@ -62,9 +63,8 @@ public class MatchingHandler extends TextWebSocketHandler {
             if (myAnswer.equals("accept")) {
                 if (destinationAnswer.equals("null")) return;
                 else if (destinationAnswer.equals("accept")) {
-                    TextMessage textMessage = new TextMessage("success");
-                    session.sendMessage(textMessage);
-                    destination.sendMessage(textMessage);
+                    String roomName = String.format("%s.%s", session.getId(),destination.getId());
+                    matchingService.openChatRoom(roomName, session, destination);
                     return;
                 }
             }

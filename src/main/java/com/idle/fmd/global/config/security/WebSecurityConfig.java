@@ -1,4 +1,4 @@
-package com.idle.fmd.global.config;
+package com.idle.fmd.global.config.security;
 
 
 import com.idle.fmd.global.auth.jwt.JwtTokenFilter;
@@ -35,7 +35,12 @@ public class WebSecurityConfig {
                                         "/users/oauth-fail" // oauth 실패 시 리다이렉트 url
                                 )
                                 .anonymous()
-                                .requestMatchers("/js/**", "/main", "/login", "/webjars/**")
+                                .requestMatchers(
+                                        "/js/**",
+                                        "/webjars/**",
+                                        "/ws-stomp/**",
+                                        "/chat/**"
+                                )
                                 .permitAll()
                                 .anyRequest()
                                 .authenticated()
