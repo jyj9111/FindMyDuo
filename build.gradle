@@ -80,6 +80,10 @@ dependencies {
 	implementation 'org.webjars.bower:bootstrap:5.3.0'	// Bootstrap
 	implementation 'org.webjars:jquery:3.6.4'			// jQuery
 
+	// Aws S3
+	implementation platform('com.amazonaws:aws-java-sdk-bom:1.11.1000')
+	implementation 'com.amazonaws:aws-java-sdk-s3'
+
 	compileOnly 'org.projectlombok:lombok'
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
 	annotationProcessor 'org.projectlombok:lombok'
