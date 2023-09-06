@@ -1,57 +1,78 @@
 <!DOCTYPE html>
 <html xmlns:v-bind="http://www.w3.org/1999/xhtml">
 <head>
-  <meta charset="UTF-8">
-  <title>게시판 단일조회</title>
+    <meta charset="UTF-8">
+    <title>게시판 단일조회</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/css/style.css"/>
 </head>
 <body>
-<div class="main-container" style="display: inline-block">
-  <div id="menu-bar"></div>
+<!-- 헤더 네브바 -->
+<div id="header-bar"></div>
+
+<div class="container-fluid">
+    <!-- 사이드바 -->
+    <div id="menu-bar"></div>
+    <!-- 본문 -->
+    <div class="col-sm-9 page board-container" id="board-app">
+<!--        <div class="board-container">-->
+            <div class="form-group col-sm-12">
+                <div class="board-title row">
+                    <p class="form-control-static col-sm-10"><strong>{{board.title}}</strong></p>
+                    <div class="col-sm-2" v-if="isAuthorizedUser">
+                        <button class="btn btn-default title-btn" @click="redirectToEditPage">수정</button>
+                        <button class="btn btn-default title-btn" @click="deleteBoard">삭제</button>
+                    </div>
+                </div>
+                <p class="help-block col-sm-10"> {{ board.accountId }}님의 게시물</p>
+            </div>
+            <div class="form-group col-sm-12 board-text">
+                <p>{{board.content}}</p>
+                <img v-for="name in images" v-bind:src="name" alt="이미지">
+            </div>
+            <div class="form-group">
+                <button class="btn btn-info" @click="likeBoard">좋아요</button>
+                <button class="btn btn-warning" @click="bookmarkBoard">즐겨찾기</button>
+                <button class="btn btn-danger" @click="reportBoard">신고</button>
+            </div>
+            <div class="form-group col-sm-12 board-text">
+                <label class="control-label"><h4><strong>댓글</strong></h4></label>
+                <div v-for="comment in comments">
+                    <div class="comment-block">
+                        <div class="form-group">
+                            <label class="control-label">{{comment.nickname}}</label>
+                            <div class="comment-text">
+                                {{comment.content}}
+                            </div>
+                            <p class="help-block text-right">수정시간 : {{comment.modifiedAt}}</p>
+                        </div>
+                        <button class="btn btn-default" @click="deleteComment(comment.id, nickname)">삭제</button>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <textarea class="form-control" name="content" id="content" placeholder="내용"></textarea>
+                </div>
+                <div class="from-group">
+                    <button class="btn btn-default" @click="inputComment">작성</button>
+                </div>
+            </div>
+        </div>
+<!--    </div>-->
 </div>
-<div id="board-app" style="display: inline-block">
-  <div>
-    <button @click="likeBoard">좋아요</button>
-  </div>
-
-  <div>
-    <button @click="bookmarkBoard">즐겨찾기</button>
-  </div>
-
-  <div>
-    <button @click="reportBoard">신고</button>
-  </div>
-  <h1>제목: {{board.title}}</h1>
-  <p>내용: {{board.content}}</p>
-
-  <img v-for="name in images" v-bind:src="name" alt="이미지">
-
-  <div v-if="isAuthorizedUser">
-      <button @click="redirectToEditPage">수정</button>
-      <button @click="deleteBoard">삭제</button>
-  </div>
-
-  <p>댓글</p>
-  <div>
-    <textarea name="content" id= "content" placeholder="내용"></textarea>
-    <button @click="inputComment">작성</button>
-  </div>
-  <div v-for="comment in comments">
-    <div>닉네임 : {{comment.nickname}}</div>
-    <div>댓글 : {{comment.content}}</div>
-    <div>수정시간 : {{comment.modifiedAt}}</div>
-    <button @click="deleteComment(comment.id, nickname)">삭제</button>
-  </div>
-
-</div>
-
 <script src="/webjars/axios/0.21.1/dist/axios.js"></script>
 <script src="/webjars/vue/2.6.14/dist/vue.js"></script>
 <script src="/webjars/jquery/3.6.4/jquery.js"></script>
 <script>
-  $.get('/static/html/navbar.html', function (data) {
-    $('#menu-bar').html(data);
-  })
+    $.get('/static/html/navbar.html', function (data) {
+        $('#menu-bar').html(data);
+    })
 </script>
-<script src = "/static/js/board.js" type="module"></script>
+<script>
+    $.get('/static/html/header.html', function (data) {
+        $('#header-bar').html(data);
+    })
+</script>
+<script src="/static/js/board.js" type="module"></script>
 </body>
 </html>

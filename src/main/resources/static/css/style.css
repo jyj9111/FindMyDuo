@@ -1,3 +1,7 @@
+/*. {*/
+/*    overflow: auto;*/
+/*}*/
+
 /* 사이드바 */
 .sidenav {
     background-color: #f1f1f1;
@@ -5,14 +9,15 @@
     width: 200px;
     height: 100%;
     margin-left: -20px;
-    margin-top:50px;
+    margin-top: 50px;
     display: flex;
     flex-direction: column;
     align-items: center;
 }
+
 /* 본문 */
 .page {
-    margin-top:50px;
+    margin-top: 50px;
     margin-left: 250px;
     display: flex;
     flex-direction: column;
@@ -25,6 +30,51 @@
     margin-bottom: 10px;
 }
 
+.title-btn {
+    margin-top: 10px;
+}
+
 .sidebar-block {
     height: 20%;
+}
+
+.board-container {
+    display: inline-block;
+}
+
+.board-title {
+    margin-top: 20px;
+    padding: 10px;
+    font-size: 35px;
+    /*border: 1px lightgray solid;*/
+}
+
+.board-text {
+    padding: 20px;
+    border-radius: 10px; /* 말풍선 모서리 둥글게 */
+    font-size: 16px;
+    border: 1px lightgray solid;
+    display: inline-block;
+}
+
+.board-text img {
+    width: 400px;
+    height: 340px;
+    object-fit: contain;
+}
+
+.comment-block {
+    padding: 20px;
+    border-radius: 10px; /* 말풍선 모서리 둥글게 */
+    font-size: 16px;
+    background-color: #F5F5F5;
+    margin-bottom: 10px;
+}
+
+.comment-text {
+    padding: 10px;
+    border-radius: 10px; /* 말풍선 모서리 둥글게 */
+    font-size: 16px;
+    background-color: white;
+    margin-bottom: 20px;
 }
