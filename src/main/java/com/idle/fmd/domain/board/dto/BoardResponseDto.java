@@ -17,6 +17,8 @@ public class BoardResponseDto {
 
     private String nickName;
 
+    private String accountId;
+
     private String title;
 
     private String content;
@@ -36,6 +38,7 @@ public class BoardResponseDto {
         boardResponseDto.setId(board.getId());
         boardResponseDto.setAccountId(board.getUser().getAccountId());
         boardResponseDto.setNickName(board.getUser().getNickname());
+        boardResponseDto.setAccountId(board.getUser().getAccountId());
         boardResponseDto.setTitle(board.getTitle());
         boardResponseDto.setLiked(board.getLiked());
         boardResponseDto.setContent(board.getContent());

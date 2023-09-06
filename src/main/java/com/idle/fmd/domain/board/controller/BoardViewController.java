@@ -17,9 +17,16 @@ public class BoardViewController {
         return "/board/board";
     }
 
-    // 글 수정
-    @GetMapping("/form/{boardId}")
-    public String update() {
-        return "/board/updateboard";
+    // 글 작성 폼으로 이동
+    @GetMapping("/form/write")
+    public String writeForm() {
+        return "/board/board-write-form";
     }
+
+    // 글 수정 폼으로 이동
+    @GetMapping("/form/{boardId}")
+    public String updateForm() {
+        return "/board/board-update-form";
+    }
+
 }

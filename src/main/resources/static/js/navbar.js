@@ -17,7 +17,7 @@ new Vue({
             axios.post('/users/logout')
                 .then(() => {
                     // 로그아웃 성공 시 로컬 스토리지의 토큰 삭제
-                    localStorage.removeItem('token');
+                    localStorage.clear();
                     alert("로그아웃 되었습니다.")
                     // 로그인 상태 업데이트
                     this.loggedIn = false;

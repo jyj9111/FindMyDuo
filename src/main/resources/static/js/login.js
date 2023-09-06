@@ -25,15 +25,32 @@ document.addEventListener("DOMContentLoaded", function() {
                     localStorage.setItem("token", token);
                     alert("로그인에 성공했습니다.")
                     console.log(localStorage.getItem('token'));
-
-                    // 로그인에 성공하면 main 페이지로 이동
-                    location.href = "/main";
                 } else {
                     alert(response.data)
-
                     // 로그인에 실패하면 login 페이지로 다시 이동
                     location.href = "/login";
                 }
+
+                // 프로필 정보를 스토리지에 담기 위해 조회 요청
+                await axios.get('/users/mypage', {
+                    // 헤더 설정
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                })
+                    .then(response => {
+                        console.log(response.data);
+                        localStorage.setItem('profileImage', response.data.profileImage);
+                        localStorage.setItem('accountId', response.data.accountId);
+                        // 저장하는 것 까지 성공하면 홈페이지로 이동
+                        location.href = '/main'
+                    })
+                    .catch(error => {
+                        console.error('조회 에러', error);
+                        // 조회 에러시 로그인 페이지로 이동
+                        localStorage.removeItem(token);
+                        location.href = '/login';
+                    })
             } catch (error) {
                 console.error('Login error: ', error);
             }
