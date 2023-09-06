@@ -1,4 +1,4 @@
-package com.idle.fmd.global.config;
+package com.idle.fmd.global.config.etc;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -10,13 +10,13 @@ import javax.sql.DataSource;
 @Configuration
 public class DataSourceConfig {
 
-    @Value("${SPRING_DATASOURCE_URL}")
+    @Value("${spring.batch.jdbc.url}")
     private String dataSourceUrl;
 
-    @Value("${SPRING_DATASOURCE_USERNAME}")
+    @Value("${spring.batch.jdbc.username}")
     private String dataSourceUsername;
 
-    @Value(("${SPRING_DATASOURCE_PASSWORD}"))
+    @Value("${spring.batch.jdbc.password}")
     private String dataSourcePassword;
     @Bean
     public DataSource dataSource() {
