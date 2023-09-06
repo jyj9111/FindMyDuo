@@ -46,7 +46,9 @@ public class LolMatchItemReader implements ItemReader<List<LolMatchDto>> {
 
         // 다음 계정 정보가 있는 경우
         while (lolAccountIterator.hasNext()) {
-            puuid = lolAccountIterator.next().getPuuid();
+            LolAccountEntity lolAccountEntity = lolAccountIterator.next();
+            puuid = lolAccountEntity.getPuuid();
+            String accountId = lolAccountEntity.getAccountId();
             List<String> matchIdList = lolApiService.getUserLolMatchId(puuid);
             matchIdIterator = matchIdList.iterator();
 
@@ -54,16 +56,16 @@ public class LolMatchItemReader implements ItemReader<List<LolMatchDto>> {
             while (matchIdIterator.hasNext()) {
                 String matchId = matchIdIterator.next();
 
-                // DB에 있는 지 판별하고 만약 있다면 그 이후 데이터는 처리하지 않음
-                if(!lolMatchRepository.existsByMatchId(matchId)) {
+                // 해당 유저의 매치 ID가 DB에 있는 지 판별하고 만약 있다면 그 이후 데이터는 처리하지 않음
+                if(!lolMatchRepository.existsByLolAccountAccountIdAndMatchId(accountId, matchId)) {
                     LolMatchDto dto = lolApiService.getLolMatchInfo(puuid, matchId);
+                    // 초당 요청 범위를 넘지 않도록 약간의 딜레이
+                    Thread.sleep(REQUEST_DELAY_MS);
                     // 게임모드가 솔랭이나 자랭이 아니면 다음 매치 id로 넘어감
                     if(dto.getGameMode() == null) {
                         continue;
                     }
                     log.info(matchId + "- 전적 정보 추가");
-                    // 초당 요청 범위를 넘지 않도록 약간의 딜레이
-                    Thread.sleep(REQUEST_DELAY_MS);
                     dtoList.add(dto);
                 } else {
                     // DB에 있는 매치 id면 그 이후 데이터는 이미 처리한 데이터니까 다음 계정으로 넘어감
