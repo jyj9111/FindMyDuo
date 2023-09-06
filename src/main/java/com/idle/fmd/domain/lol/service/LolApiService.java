@@ -90,6 +90,11 @@ public class LolApiService {
             throw new BusinessException(BusinessExceptionCode.NOT_EXIST_USER_ERROR);
         }
 
+        // DB에 이미 등록된 닉네임일 경우 예외 발생
+        if(lolAccountRepository.existsByName(summonerName)) {
+            throw new BusinessException(BusinessExceptionCode.DUPLICATED_LOL_NICKNAME_ERROR);
+        }
+
         // 토큰에 있는 유저 정보를 가져옴
         UserEntity user = userRepository.findByAccountId(accountId).get();
 
