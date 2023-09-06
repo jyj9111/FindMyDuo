@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Matching</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- 합쳐지고 최소화된 최신 CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
+    <link href="/static/css/style.css" rel="stylesheet"/>
+    <link rel="stylesheet" href="/static/css/matching.css"/>
+</head>
+<body>
+<script src="/webjars/vue/2.6.14/dist/vue.js"></script>
+<script src="/webjars/axios/0.21.1/dist/axios.js"></script>
+<script src="/webjars/jquery/3.6.4/jquery.js"></script>
+
+<!-- 헤더 네브바 -->
+<div id="header-bar"></div>
+
+<div class="container-fluid">
+    <!-- 사이드바 -->
+    <div id="menu-bar"></div>
+
+    <!-- 본문 -->
+    <div class="col-sm-9 page" id="matching-app">
+        <div class="matching">
+            <form class="form-horizontal">
+                <div class="form-group">
+                    <label class="col-sm-5 control-label text-right"><strong>게임 모드 선택</strong></label>
+                    <div class="col-sm-7 text-left">
+                        <div class="radio">
+                            <label>
+                                <input type="radio" name="mode" value="solo" checked> 솔로랭크
+                            </label>
+                            <label>
+                                <input type="radio" name="mode" value="flex"> 자유랭크
+                            </label>
+                            <label>
+                                <input type="radio" name="mode" value="wind"> 칼바람
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-5 control-label text-right"><strong>본인 라인 선택</strong></label>
+                    <div class="col-sm-7 text-left">
+                        <div class="radio">
+                            <label>
+                                <input type="radio" name="myLine" value="top" checked> 탑
+                            </label>
+                            <label>
+                                <input type="radio" name="myLine" value="mid"> 미드
+                            </label>
+                            <label>
+                                <input type="radio" name="myLine" value="jungle"> 정글
+                            </label>
+                            <label>
+                                <input type="radio" name="myLine" value="ad"> 원딜
+                            </label>
+                            <label>
+                                <input type="radio" name="myLine" value="sup"> 서폿
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-5 control-label text-right"><strong>상대 라인 선택</strong></label>
+                    <div class="col-sm-7 text-left">
+                        <div class="radio">
+                            <label>
+                                <input type="radio" name="duoLine" value="top" checked> 탑
+                            </label>
+                            <label>
+                                <input type="radio" name="duoLine" value="mid"> 미드
+                            </label>
+                            <label>
+                                <input type="radio" name="duoLine" value="jungle"> 정글
+                            </label>
+                            <label>
+                                <input type="radio" name="duoLine" value="ad"> 원딜
+                            </label>
+                            <label>
+                                <input type="radio" name="duoLine" value="sup"> 서폿
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </form>
+            <div class="form-group text-center col-sm-12">
+<!--                id="btn-start-matching"-->
+                <button class="btn btn-default btn-lg" type="button" @click="toggleMatching">{{ matchingButtonLabel }}</button>
+            </div>
+        </div>
+        <!-- 추가 구현 필요 -->
+        <div class="matching-block">
+            <p>여기에 매칭된 전적 요소가 나옵니다.</p>
+        </div>
+        <div>
+            <button class="btn btn-default" id="btn-matching-accept"
+                    onclick="window.open('/chat','_blank', 'scrollbars=yes, resizable=yes, location=no, width=800,height=800');">수락</button>
+            <button class="btn btn-default" id="btn-matching-reject">거절</button>
+        </div>
+
+
+    </div>
+</div>
+<script>
+    $.get('/static/html/navbar.html', function (data) {
+        $('#menu-bar').html(data);
+    })
+</script>
+<script>
+    $.get('/static/html/header.html', function (data) {
+        $('#header-bar').html(data);
+    })
+</script>
+<script src="/static/js/matching.js"></script>
+</body>
+</html>
