@@ -43,7 +43,7 @@ public enum BusinessExceptionCode {
     TOKEN_ACCOUNT_MISMATCH_ERROR(HttpStatus.BAD_REQUEST, "토큰의 계정 정보와 요청 데이터의 계정 정보가 일치하지 않습니다."),
 
     // 프로필 이미지 저장 실패
-    CANNOT_SAVE_IMAGE_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "프로필 이미지를 저장할 수 없습니다."),
+    CANNOT_SAVE_IMAGE_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "프로필 이미지 업로드 중 오류가 발생했습니다."),
 
     // 회원 탈퇴시 프로필 이미지 디렉토리 삭제하는 과정에서 예외 처리
     CANNOT_DELETE_DIRECTORY_ERROR(HttpStatus.BAD_REQUEST, "프로필 이미지 디렉터리 삭제 중 오류가 발생했습니다."),
@@ -61,6 +61,9 @@ public enum BusinessExceptionCode {
 
     // 게시판 이미지 저장 실패
     CANNOT_SAVE_BOARD_IMAGE_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "게시판 이미지를 저장할 수 없습니다."),
+
+    // 게시판 이미지 삭제 실패
+    CANNOT_DELETE_BOARD_DIRECTORY_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "해당 게시글 이미지 폴더 삭제 중 오류가 발생했습니다."),
 
     // 댓글을 작성할 때 작성자가 아닌 사람이 적을 때의 예외코드
     UNAUTHORIZED_USER(HttpStatus.UNAUTHORIZED, "해당 요청에 대한 권한이 없는 사용자입니다."),
