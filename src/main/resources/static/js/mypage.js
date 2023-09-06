@@ -16,7 +16,7 @@ new Vue({
     async created() {
         if (!token) {
             // 토큰이 없는 경우 로그인 페이지로 이동
-            alert('로그인이 필요합니다.')
+            alert('로그인 후 이용해주세요.')
             location.href = '/login';
             return;
         }

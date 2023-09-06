@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>chat</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/css/matching.css"/>
+</head>
+<body>
+<script src="/webjars/vue/2.6.14/dist/vue.js"></script>
+<script src="/webjars/axios/0.21.1/dist/axios.js"></script>
+<script src="/webjars/jquery/3.6.4/jquery.js"></script>
+
+<div class="matching-chat">
+    <div class="container">
+        <!--채팅창 -->
+        <div class="text-center">
+            <h3 class="text-right"><strong>~님과의 채팅</strong></h3>
+            <div class="chat-container">
+                <div class="row">
+                    <!-- 추가 구현 필요 -->
+                    <div class=" message-box1 text-left">
+                        <div>안녕</div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="message-box2 text-center">
+                        <div>ㅎㅇ해위여</div>
+                    </div>
+                </div>
+                <!-- <label class="col-sm-2"><strong>사용자 1</strong></label>-->
+
+            </div>
+
+            <!-- 메시지 입력창 -->
+            <div class="input-group col-sm-12">
+                <div class="input-group-prepend text-left">
+                    <!--                            <label class="input-group-text">내용</label>-->
+                </div>
+                <input type="text" class="form-control" placeholder="메시지 입력">
+                <div class="input-group-append text-right">
+                    <button class="btn btn-default" type="button">디스코드 서버 연결</button>
+                    <button class="btn btn-primary" type="button">보내기</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
