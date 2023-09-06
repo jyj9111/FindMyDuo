@@ -10,6 +10,13 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 @Controller
 public class BoardViewController {
+
+    // 단일조회
+    @GetMapping("/view/{boardId}")
+    public String read() {
+        return "/board/board";
+    }
+
     // 글 작성 폼으로 이동
     @GetMapping("/form/write")
     public String writeForm() {
@@ -21,4 +28,5 @@ public class BoardViewController {
     public String updateForm() {
         return "/board/board-update-form";
     }
+
 }
