@@ -119,7 +119,8 @@ new Vue({
                     alert('신고');
                 })
                 .catch(error => {
-                    alert('에러' + error);
+                    // alert('에러' + error);
+                    alert('작성자를 제외한 유저만 신고를 할 수 있습니다.');
                 })
         },
         // 댓글 작성
