@@ -17,8 +17,6 @@ public class BoardResponseDto {
 
     private String nickName;
 
-    private String accountId;
-
     private String title;
 
     private String content;
