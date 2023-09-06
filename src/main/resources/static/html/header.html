@@ -14,8 +14,10 @@
       </li>
     </ul>
     <ul class="nav navbar-nav navbar-right" id="navbar-app">
+      <!-- 로그인 여부에 따라 보여지는 메뉴가 다르도록 설정-->
       <li><a v-if="!loggedIn" href="/signup"><span class="glyphicon glyphicon-user"></span> Sign Up</a></li>
       <li><a v-if="!loggedIn" href="/login"><span class="glyphicon glyphicon-log-in"></span> Login</a></li>
+      <li><a v-if="loggedIn" href="/mypage"><span class="glyphicon glyphicon-user"></span> My Page</a></li>
       <li><a v-if="loggedIn" @click="logout"><span class="glyphicon glyphicon-log-out" ></span> Logout</a></li>
     </ul>
   </div>
