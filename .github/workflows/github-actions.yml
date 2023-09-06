@@ -86,7 +86,6 @@ jobs:
             docker-compose -f docker-compose.prod.yaml down --rmi all 
             docker pull ${{ secrets.DOCKER_USERNAME }}/fmd-prod:latest
             docker-compose -f docker-compose.prod.yaml up -d
-            docker rmi $(docker images -f "dangling=true" -q)
 
       - name: Deploy to dev
         uses: appleboy/ssh-action@master
@@ -100,4 +99,3 @@ jobs:
             docker-compose -f docker-compose.dev.yaml down --rmi all
             docker pull ${{ secrets.DOCKER_USERNAME }}/fmd-dev:latest
             docker-compose -f docker-compose.dev.yaml up -d
-            docker rmi $(docker images -f "dangling=true" -q)
