@@ -23,6 +23,7 @@ document.addEventListener("DOMContentLoaded", function() {
                 // 후에 access token 부분 구현 후 추가 구현해야 함
                 if(token != undefined) {
                     localStorage.setItem("token", token);
+                    localStorage.setItem("sender", response.data.nickname);
                     alert("로그인에 성공했습니다.")
                     console.log(localStorage.getItem('token'));
                 } else {
