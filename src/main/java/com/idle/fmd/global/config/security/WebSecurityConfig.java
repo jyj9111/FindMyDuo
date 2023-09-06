@@ -35,7 +35,9 @@ public class WebSecurityConfig {
                                         "/main",
                                         "/login",
                                         "/signup",
-                                        "/mypage"
+                                        "/mypage",
+                                        "/matching",
+                                        "/chat"
                                 )
                                 .permitAll()
                                 .requestMatchers(
