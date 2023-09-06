@@ -110,6 +110,7 @@ new Vue({
             })
                 .then(response => {
                     alert('프로필 이미지가 업로드되었습니다.')
+                    localStorage.setItem('profileImage', response.data.profileImage);
                     // 프로필 이미지 등록시 마이페이지 재로드해서 변경사항 확인
                     location.href = '/mypage';
                 })
