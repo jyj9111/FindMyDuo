@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Board List</title>
+  <!-- Vue.js와 Axios 라이브러리를 로드합니다. -->
+  <script src="/webjars/vue/2.6.14/dist/vue.js"></script>
+  <script src="/webjars/axios/0.21.1/dist/axios.js"></script>
+</head>
+<body>
+<div id="app">
+  <h1>자유 게시판</h1>
+  <a href="/board/form/write">게시물 작성</a>
+  <div>
+    <!-- 검색 폼 추가 -->
+    <form @submit.prevent="search" style="display: flex; align-items: center;">
+      <select v-model="searchBy" style="margin-right: 10px;">
+        <option value="title">제목</option>
+        <option value="user">작성자</option>
+        <option value="content">내용</option>
+      </select>
+      <input type="text" v-model="searchQuery" placeholder="검색어를 입력하세요">
+      <button type="submit">검색</button>
+    </form>
+  </div>
+  <div>
+    <button @click="sortByPopular">인기순으로 정렬</button>
+    <button @click="sortByLatest">최신순으로 정렬</button>
+  </div>
+  <hr>
+  <div v-if="content.length === 0">
+    <p>No Board Here...</p>
+
+  </div>
+  <div v-else v-for="board in content" :key="board.id">
+    <p>번호: {{ board.id }}</p>
+    <!-- 게시물 상세 페이지로 이동할 수 있는 링크 추가 -->
+    <p>제목: <a :href="'/board/view/' + board.id">{{ board.title }}</a></p>
+    <p>작성자: {{ board.nickName }}</p>
+    <p>좋아요: {{ board.liked }}</p>
+    <p>수정시간: {{ board.modifiedAt }}</p>
+    <hr>
+  </div>
+</div>
+<script>
+  new Vue({
+    el: '#app',
+    data: {
+      content: [], // 게시판 목록을 저장할 데이터 속성
+      sortBy: 'id', // 최초 로딩 시 최신순으로 초기화
+      searchQuery: '', // 검색어를 저장할 데이터 속성
+      searchBy: 'title' // 검색 기준 초기값 설정
+    },
+    methods: {
+      fetchContent() {
+        axios.get(`/${this.sortBy === 'best' ? 'board/best' : this.sortBy === 'search' ? 'board/search' : 'board'}`, {
+          params: {
+            page: 0,
+            size: 20,
+            query: this.searchQuery, // 검색어 추가
+            searchBy: this.searchBy // 검색 기준 추가
+          }
+        })
+                .then(res => {
+                  this.content = res.data.content;
+                })
+                .catch(error => console.error(error));
+      },
+      sortByPopular() {
+        this.sortBy = 'best'; // '인기순' 버튼 클릭 시
+        this.fetchContent();
+      },
+      sortByLatest() {
+        this.sortBy = 'id'; // '최신순' 버튼 클릭 시
+        this.fetchContent();
+      },
+      search() {
+        this.sortBy = 'search'
+        this.fetchContent(); // 검색 버튼 클릭 시 검색 수행
+      }
+    },
+    mounted() {
+      this.fetchContent();
+    }
+  });
+</script>
+</body>
+</html>
