@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html xmlns:v-bind="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="UTF-8">
+  <title>게시판 단일조회</title>
+</head>
+<body>
+<div class="main-container" style="display: inline-block">
+  <div id="menu-bar"></div>
+</div>
+<div id="board-app" style="display: inline-block">
+  <div>
+    <button @click="likeBoard">좋아요</button>
+  </div>
+
+  <div>
+    <button @click="bookmarkBoard">즐겨찾기</button>
+  </div>
+
+  <div>
+    <button @click="reportBoard">신고</button>
+  </div>
+  <h1>제목: {{board.title}}</h1>
+  <p>내용: {{board.content}}</p>
+
+  <img v-for="name in images" v-bind:src="name" alt="이미지">
+
+  <div v-if="isAuthorizedUser">
+      <button @click="redirectToEditPage">수정</button>
+      <button @click="deleteBoard">삭제</button>
+  </div>
+
+  <p>댓글</p>
+  <div>
+    <textarea name="content" id= "content" placeholder="내용"></textarea>
+    <button @click="inputComment">작성</button>
+  </div>
+  <div v-for="comment in comments">
+    <div>닉네임 : {{comment.nickname}}</div>
+    <div>댓글 : {{comment.content}}</div>
+    <div>수정시간 : {{comment.modifiedAt}}</div>
+    <button @click="deleteComment(comment.id, nickname)">삭제</button>
+  </div>
+
+</div>
+
+<script src="/webjars/axios/0.21.1/dist/axios.js"></script>
+<script src="/webjars/vue/2.6.14/dist/vue.js"></script>
+<script src="/webjars/jquery/3.6.4/jquery.js"></script>
+<script>
+  $.get('/static/html/navbar.html', function (data) {
+    $('#menu-bar').html(data);
+  })
+</script>
+<script src = "/static/js/board.js" type="module"></script>
+</body>
+</html>
