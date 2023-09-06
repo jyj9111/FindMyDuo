@@ -1,4 +1,4 @@
-import {jwtToAccountId} from "./decode-jwt.js";
+import {jwtToAccountId} from "./jwt-to-accountid.js";
 
 const token = localStorage.getItem('token');
 
