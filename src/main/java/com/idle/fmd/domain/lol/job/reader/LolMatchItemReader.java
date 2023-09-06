@@ -29,7 +29,7 @@ public class LolMatchItemReader implements ItemReader<List<LolMatchDto>> {
     private Iterator<String> matchIdIterator;
     private String puuid;
 
-    private static final int REQUEST_DELAY_MS = 300; // 1000 = 1초
+    private static final int REQUEST_DELAY_MS = 1000; // 1000 = 1초
 
     @Override
     public List<LolMatchDto> read() throws Exception, UnexpectedInputException, ParseException, NonTransientResourceException {
