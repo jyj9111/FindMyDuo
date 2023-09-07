@@ -29,4 +29,9 @@ public class BoardViewController {
         return "/board/board-update-form";
     }
 
+    // 게시글 전체 조회
+    @GetMapping("/view")
+    public String board(){
+        return "board/board-list";
+    }
 }
