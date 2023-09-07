@@ -37,7 +37,6 @@ public class WebSecurityConfig {
                                         "/signup",
                                         "/mypage",
                                         "/matching",
-                                        "/chat",
                                         "/ws-stomp/**",
                                         "/chat/**"
                                 )
