@@ -82,8 +82,7 @@ public class UserEntity {
     }
 
     // UserEntity 업데이트 메소드
-    public void updateUser(String password, String email, String nickname) {
-        this.password = password;
+    public void updateUser(String email, String nickname) {
         this.email = email;
         this.nickname = nickname;
     }

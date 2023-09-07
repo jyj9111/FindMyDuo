@@ -55,8 +55,6 @@ new Vue({
                 accountId: this.accountId,
                 email: this.email,
                 nickname: this.nickname,
-                password: this.password,
-                passwordCheck: this.passwordCheck,
             };
 
             // 마이페이지 정보 수정 요청

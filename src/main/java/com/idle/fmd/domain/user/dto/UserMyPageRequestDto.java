@@ -12,9 +12,4 @@ public class UserMyPageRequestDto {
     private String email;
 
     private String nickname;
-
-    @Size(min = 8, message = "패스워드는 최소 8자리입니다.")
-    private String password;
-
-    private String passwordCheck;
 }

@@ -66,7 +66,6 @@ public class CustomUserDetailsManager implements UserDetailsManager {
 
         UserEntity entity = optionalUser.get();
         entity.updateUser(
-                updatedUser.getPassword(),
                 updatedUser.getEmail(),
                 updatedUser.getNickname()
         );
