@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Board Bookmark</title>
+
+</head>
+<body>
+<div id="board-bookmark-app">
+    <h1>북마크 목록</h1>
+
+    <table class="table">
+        <thead>
+        <tr>
+            <th>번호</th>
+            <th>제목</th>
+            <th>작성자</th>
+            <th>좋아요</th>
+            <th>수정시간</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr class="board-list-block" v-if="content.length === 0">
+            <td colspan="5">No Board Here...</td>
+        </tr>
+        <tr class="board-list-block" v-else v-for="board in content" :key="board.id">
+            <td>{{ board.id }}</td>
+            <!-- 게시물 상세 페이지로 이동할 수 있는 링크 추가 -->
+            <td><a :href="'/board/view/' + board.id">{{ board.title }}</a></td>
+            <td>{{ board.nickName }}</td>
+            <td>{{ board.liked }}</td>
+            <td>{{ board.modifiedAt }}</td>
+        </tr>
+        </tbody>
+    </table>
+    <div class="pagination">
+        <a v-for="page in totalPages" :key="page" @click="goToPage(page)" :class="{ active: currentPage === page }">{{ page }}</a>
+    </div>
+</div>
+<script src="/webjars/axios/0.21.1/dist/axios.js"></script>
+<script src="/webjars/vue/2.6.14/dist/vue.js"></script>
+<script src="/static/js/board-bookmark.js"></script>
+</body>
+</html>
