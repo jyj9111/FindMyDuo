@@ -63,6 +63,11 @@
                 </tr>
             </tbody>
         </table>
+        <!-- 페이지 번호를 클릭할 수 있는 하이퍼링크를 추가합니다 -->
+        <div class="pagination">
+            <a v-for="page in totalPages" :key="page" @click="goToPage(page)" :class="{ active: currentPage === page }">{{ page }}</a>
+        </div>
+
     </div>
 </div>
 <!-- Vue.js와 Axios 라이브러리를 로드합니다. -->
