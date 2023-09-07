@@ -3,8 +3,6 @@ package com.idle.fmd.domain.board.entity;
 import com.idle.fmd.domain.user.entity.UserEntity;
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
@@ -24,7 +22,6 @@ public class LikeBoardEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
-    @OnDelete(action = OnDeleteAction.CASCADE)
     private UserEntity user;
 
     // true = 좋아요, false = 좋아요 취소

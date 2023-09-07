@@ -135,25 +135,6 @@ public class BoardService {
             throw new BusinessException(BusinessExceptionCode.NOT_MATCHES_USER_ERROR);
         }
 
-        List<FileEntity> files = fileRepository.findAllByBoardId(boardId);
-        fileRepository.deleteAll(files);
-
-        // 게시글 삭제 전에 해당 게시글의 댓글들을 삭제
-        List<CommentEntity> commentsToDelete = commentRepository.findAllByBoardId(boardId);
-        commentRepository.deleteAll(commentsToDelete);
-
-        // 게시글 삭제 전에 해당 좋아요 삭제
-        List<LikeBoardEntity> likeBoard = likeBoardRepository.findAllByBoardId(boardId);
-        likeBoardRepository.deleteAll(likeBoard);
-
-        // 게시글 삭제 전에 해당 즐겨찾기 삭제
-        List<BookmarkEntity> bookmarkBoard = bookmarkRepository.findAllByBoardId(boardId);
-        bookmarkRepository.deleteAll(bookmarkBoard);
-
-        // 게시글 삭제 전에 신고 삭제
-        List<ReportEntity> reports = reportRepository.findAllByBoardId(boardId);
-        reportRepository.deleteAll(reports);
-
         // 경로에 있는 파일 삭제
         deleteBoardImageDirectory(boardId);
         log.info("게시글이 삭제되었습니다.");
