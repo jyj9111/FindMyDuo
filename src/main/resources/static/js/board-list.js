@@ -6,7 +6,7 @@ new Vue({
         searchQuery: '', // 검색어를 저장할 데이터 속성
         searchBy: 'title', // 검색 기준 초기값 설정
         currentPage: 1, // 현재 페이지 번호 초기화
-        totalPages: 1, // 전체 페이지 수 초기화
+        totalPages: 1 // 전체 페이지 수 초기화
     },
     methods: {
         async fetchContent() {
