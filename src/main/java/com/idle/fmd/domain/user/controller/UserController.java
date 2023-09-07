@@ -93,6 +93,15 @@ public class UserController {
         return userService.update(accountId, dto);
     }
 
+    // 비밀번호 변경
+    @PutMapping("/mypage/change-password")
+    public String changePassword(
+            Authentication authentication,
+            @RequestBody ChangePasswordRequestDto dto) {
+        userService.changePassword(authentication.getName(), dto);
+        return "변경이 완료되었습니다.";
+    }
+
     // 마이페이지 회원 탈퇴 (유저 정보 삭제)
     @DeleteMapping("/mypage")
     public void UserDelete(Authentication authentication) {

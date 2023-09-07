@@ -168,6 +168,34 @@ public class UserService {
         return dto;
     }
 
+    // 비밀번호 변경 메서드
+    public void changePassword(String accountId, ChangePasswordRequestDto dto) {
+        String password = dto.getPassword();
+        String passwordCheck = dto.getPasswordCheck();
+
+        // 비밀번호와 비밀번호 확인 데이터가 다르면 예외 발생 (회원가입에 사용한 에러 사용)
+        if(!password.equals(passwordCheck))
+            throw new BusinessException(BusinessExceptionCode.PASSWORD_CHECK_ERROR);
+
+        // 비밀번호 값이 null 일 경우 (입력하지 않고 요청을 보냈을 경우)
+        if(password == null || password.trim().isEmpty()) {
+            throw new BusinessException(BusinessExceptionCode.EMPTY_PASSWORD_ERROR);
+        }
+
+        // 비밀번호 길이 검증 후 8자리 미만 시 예외 발생
+        if(password.length() < 8) {
+            throw new BusinessException(BusinessExceptionCode.PASSWORD_LENGTH_ERROR);
+        }
+
+        CustomUserDetails userDetails =
+                CustomUserDetails.builder()
+                        .password(passwordEncoder.encode(dto.getPassword()))
+                        .build();
+
+        // CustomUserDetailsManager 의 updateUser 메서드를 호출해서 유저를 등록 (UserDetails 객체 전달 필요)
+        manager.changePassword(accountId, userDetails.getPassword());
+    }
+
     // User 삭제 메서드
     public void delete(String accountId) {
         // 이미 탈퇴를 해서 없는 회원일 경우 존재하지 않는 아이디 예외 발생 (로그인에 처리한 예외 사용)
