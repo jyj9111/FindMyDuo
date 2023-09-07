@@ -74,6 +74,31 @@ new Vue({
 
                 })
         },
+        // 비밀번호 변경
+        async changePassword() {
+          const changePasswordData = {
+              password: this.password,
+              passwordCheck: this.passwordCheck
+          };
+
+            // 비밀번호 변경 요청
+            token = await isValidateToken()
+            await axios.put('/users/mypage/change-password', changePasswordData, {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            })
+
+                .then(response => {
+                    alert('비밀번호가 변경되었습니다.');
+                    console.log(response.data);
+                })
+                .catch(error => {
+                    alert('수정이 실패하였습니다.');
+                    console.error('비밀번호 변경 에러: ', error);
+
+                })
+        },
         // 롤 계정 연동 기능
         async linkLolAccount() {
             // 계정 연동 요청
