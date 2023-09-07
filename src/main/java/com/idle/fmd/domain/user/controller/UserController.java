@@ -124,4 +124,12 @@ public class UserController {
     public Page<BoardAllResponseDto> findBookmark(Authentication authentication, @PageableDefault(size = 20, sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
         return userService.findBookmark(authentication.getName(), pageable);
     }
+
+    // 닉네임 중복 확인
+    @GetMapping("/check-nickname")
+    public Boolean existsByNickname(
+            Authentication authentication,
+            @RequestParam("nickname") String nickname) {
+        return userService.existsByNickname(nickname);
+    }
 }

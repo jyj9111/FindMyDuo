@@ -258,4 +258,9 @@ public class UserService {
 
         return boardDto;
     }
+
+    // 닉네임 중복 확인
+    public Boolean existsByNickname(String nickname) {
+        return repository.existsByNickname(nickname);
+    }
 }

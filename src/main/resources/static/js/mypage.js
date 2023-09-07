@@ -76,10 +76,10 @@ new Vue({
         },
         // 비밀번호 변경
         async changePassword() {
-          const changePasswordData = {
-              password: this.password,
-              passwordCheck: this.passwordCheck
-          };
+            const changePasswordData = {
+                password: this.password,
+                passwordCheck: this.passwordCheck
+            };
 
             // 비밀번호 변경 요청
             token = await isValidateToken()
@@ -166,6 +166,23 @@ new Vue({
                     .catch(error => {
                         alert('회원 탈퇴 실패: ' + error);
                     })
+            }
+        },
+        async checkNickname() {
+            token = await isValidateToken()
+            const nickname = this.nickname;
+            const response = await axios.get('/users/check-nickname', {
+                params: {nickname},
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                }
+            });
+
+            console.log(response.data);
+            if(!response.data) {
+                alert('사용 가능한 닉네임입니다.');
+            } else {
+                alert('이미 사용 중인 닉네임입니다.');
             }
         }
     }
