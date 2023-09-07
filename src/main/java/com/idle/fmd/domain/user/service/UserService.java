@@ -87,7 +87,7 @@ public class UserService {
             throw new BusinessException(BusinessExceptionCode.NOT_EXIST_USER_ERROR);
         }
 
-        UserDetails userDetails = manager.loadUserByUsername(dto.getAccountId());
+        CustomUserDetails userDetails = (CustomUserDetails)manager.loadUserByUsername(dto.getAccountId());
 
         if (!passwordEncoder.matches(dto.getPassword(), userDetails.getPassword())) {
             throw new BusinessException(BusinessExceptionCode.LOGIN_PASSWORD_CHECK_ERROR);
@@ -97,7 +97,7 @@ public class UserService {
         String token = jwtTokenUtils.generateToken(userDetails);
         redisUtil.issueRefreshToken(token);
 
-        return new UserLoginResponseDto(token);
+        return new UserLoginResponseDto(token, userDetails.getNickname());
     }
 
     // 이메일 인증 메일을 보내는 메서드

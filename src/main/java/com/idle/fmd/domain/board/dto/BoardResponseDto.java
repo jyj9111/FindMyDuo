@@ -13,6 +13,8 @@ import java.util.List;
 public class BoardResponseDto {
     private Long id;
 
+    private String accountId;
+
     private String nickName;
 
     private String title;
@@ -32,7 +34,9 @@ public class BoardResponseDto {
     public static BoardResponseDto fromEntity(BoardEntity board) {
         BoardResponseDto boardResponseDto = new BoardResponseDto();
         boardResponseDto.setId(board.getId());
+        boardResponseDto.setAccountId(board.getUser().getAccountId());
         boardResponseDto.setNickName(board.getUser().getNickname());
+        boardResponseDto.setAccountId(board.getUser().getAccountId());
         boardResponseDto.setTitle(board.getTitle());
         boardResponseDto.setLiked(board.getLiked());
         boardResponseDto.setContent(board.getContent());

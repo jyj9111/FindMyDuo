@@ -29,7 +29,16 @@ public class WebSecurityConfig {
                 .authorizeHttpRequests(
                         authHttp -> authHttp
                                 .requestMatchers(
-                                        HttpMethod.GET, "/board/**"
+                                        HttpMethod.GET, "/board/**",
+                                        "/webjars/**",
+                                        "/static/**",
+                                        "/main",
+                                        "/login",
+                                        "/signup",
+                                        "/mypage",
+                                        "/matching",
+                                        "/ws-stomp/**",
+                                        "/chat/**"
                                 )
                                 .permitAll()
                                 .requestMatchers(
@@ -40,13 +49,6 @@ public class WebSecurityConfig {
                                         "/users/oauth-fail" // oauth 실패 시 리다이렉트 url
                                 )
                                 .anonymous()
-                                .requestMatchers(
-                                        "/js/**",
-                                        "/webjars/**",
-                                        "/ws-stomp/**",
-                                        "/chat/**"
-                                )
-                                .permitAll()
                                 .anyRequest()
                                 .authenticated()
                 )

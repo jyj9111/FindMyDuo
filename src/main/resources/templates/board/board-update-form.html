@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title></title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <link rel="stylesheet" href="/static/css/style.css"/>
+</head>
+<body>
+<div id="header-bar"></div>
+
+<div class="container-fluid">
+  <!-- 사이드바 -->
+  <div id="menu-bar"></div>
+  <!-- 본문 -->
+  <div class="col-sm-9 page" id="div-update-data">
+    <div class="form-group form-group-lg col-sm-12">
+      <label></label>
+      <input class="form-control" v-model= board.title id="title" placeholder="제목">
+    </div>
+    <div class="form-group form-group-lg col-sm-12">
+      <label></label>
+      <textarea class="form-control" rows="20" v-model= board.content id= "content" placeholder="내용"></textarea>
+    </div>
+    <div class="form-group col-sm-12">
+      <label class="text-center">파일 업로드</label>
+      <input type="file" id="input-images" @change=handleFileUpload multiple>
+    </div>
+    <div class="form-group">
+      <button class="btn btn-default" @click= updateBoard>저장</button>
+    </div>
+  </div>
+</div>
+
+
+<script src="/webjars/axios/0.21.1/dist/axios.js"></script>
+<script src="/webjars/vue/2.6.14/dist/vue.js"></script>
+<script src="/webjars/jquery/3.6.4/jquery.js"></script>
+<script>
+  $.get('/static/html/navbar.html', function (data) {
+    $('#menu-bar').html(data);
+  })
+</script>
+<script>
+  $.get('/static/html/header.html', function (data) {
+    $('#header-bar').html(data);
+  })
+</script>
+<script src="/static/js/board-update-form.js"></script>
+</body>
+</html>

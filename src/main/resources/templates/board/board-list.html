@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Board List</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/css/style.css"/>
+</head>
+<body>
+<!-- 헤더 네브바 -->
+<div id="header-bar"></div>
+
+<div class="container-fluid">
+    <!-- 사이드바 -->
+    <div id="menu-bar"></div>
+    <!-- 본문 -->
+    <div class="col-sm-9 page table-striped" id="board-list-app">
+        <h1><strong>자유 게시판</strong></h1>
+        <br>
+        <!-- 검색 폼 추가 -->
+        <div class="form-group col-sm-12" @submit.prevent="search">
+            <div class="col-sm-2">
+                <select class="form-control" v-model="searchBy">
+                    <option value="title">제목</option>
+                    <option value="user">작성자</option>
+                    <option value="content">내용</option>
+                </select>
+            </div>
+            <div class="col-sm-9">
+                <input class="form-control" type="text" v-model="searchQuery" placeholder="검색어를 입력하세요">
+            </div>
+            <button class="btn btn-default col-sm-1" type="submit">검색</button>
+        </div>
+        <div class="col-sm-12">
+            <div class="col-sm-10">
+                <button class="btn btn-link"  @click="sortByPopular">인기순으로 정렬</button>
+                <button class="btn btn-link" @click="sortByLatest">최신순으로 정렬</button>
+            </div>
+            <button class="btn btn-default col-sm-2" @click="redirectToWritePage">게시물 작성</button>
+        </div>
+        <table class="table">
+            <thead>
+            <tr>
+                <th>번호</th>
+                <th>제목</th>
+                <th>작성자</th>
+                <th>좋아요</th>
+                <th>수정시간</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr class="board-list-block" v-if="content.length === 0">
+                <td colspan="5">No Board Here...</td>
+            </tr>
+                <tr class="board-list-block" v-else v-for="board in content" :key="board.id">
+                    <td>{{ board.id }}</td>
+                    <!-- 게시물 상세 페이지로 이동할 수 있는 링크 추가 -->
+                    <td><a :href="'/board/view/' + board.id">{{ board.title }}</a></td>
+                    <td>{{ board.nickName }}</td>
+                    <td>{{ board.liked }}</td>
+                    <td>{{ board.modifiedAt }}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+<!-- Vue.js와 Axios 라이브러리를 로드합니다. -->
+<script src="/webjars/axios/0.21.1/dist/axios.js"></script>
+<script src="/webjars/vue/2.6.14/dist/vue.js"></script>
+<script src="/webjars/jquery/3.6.4/jquery.js"></script>
+<script>
+    $.get('/static/html/navbar.html', function (data) {
+        $('#menu-bar').html(data);
+    })
+</script>
+<script>
+    $.get('/static/html/header.html', function (data) {
+        $('#header-bar').html(data);
+    })
+</script>
+<script src="/static/js/board-list.js"></script>
+</body>
+</html>

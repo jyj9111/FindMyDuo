@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>구해듀오</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/css/style.css"/>
+</head>
+<body>
+<!-- 헤더 네브바 -->
+<div id="header-bar"></div>
+
+<div class="container-fluid">
+    <!-- 사이드바 -->
+    <div id="menu-bar"></div>
+
+    <!-- 본문 -->
+    <div class="col-sm-9 page">
+        <h1><strong>구해듀오</strong></h1>
+    </div>
+</div>
+<script src="/webjars/vue/2.6.14/dist/vue.js"></script>
+<script src="/webjars/axios/0.21.1/dist/axios.js"></script>
+<script src="/webjars/jquery/3.6.4/jquery.js"></script>
+<!--<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>-->
+<script>
+    $.get('/static/html/navbar.html', function (data) {
+        $('#menu-bar').html(data);
+    })
+</script>
+<script>
+    $.get('/static/html/header.html', function (data) {
+        $('#header-bar').html(data);
+    })
+</script>
+</body>
+</html>

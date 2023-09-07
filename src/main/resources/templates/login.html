@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>login</title>
+    <!-- 합쳐지고 최소화된 최신 CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
+    <link href="/static/css/style.css" rel="stylesheet"/>
+</head>
+<body>
+<script src="/webjars/vue/2.6.14/dist/vue.js"></script>
+<script src="/webjars/axios/0.21.1/dist/axios.js"></script>
+<script src="/webjars/jquery/3.6.4/jquery.js"></script>
+
+<!-- 헤더 네브바 -->
+<div id="header-bar"></div>
+
+<div class="container-fluid">
+    <!-- 사이드바 -->
+    <div id="menu-bar"></div>
+    <!-- 본문 -->
+    <div class="col-sm-9 page" id="login-app">
+        <form>
+            <div class="row">
+                <div class="form-group">
+                    <label for="accountId">아이디: </label>
+                    <input class="form-control" id="accountId" v-model="accountId"
+                           placeholder="ID를 입력하세요.">
+                </div>
+                <div class="form-group">
+                    <label for="password">비밀번호: </label>
+                    <input class="form-control" type="password" id="password" v-model="password"
+                           placeholder="password를 입력하세요.">
+                </div>
+                <div class="form-group">
+                    <button class="btn btn-default" type="button" id="login-button">로그인</button>
+                </div>
+                <div>
+                    <!-- 소셜 로그인 -->
+                    <a class="btn btn-success" href="/oauth2/authorization/naver">네이버 로그인</a>
+                    <a class="btn btn-warning" href="/oauth2/authorization/kakao">카카오 로그인</a>
+                    <a class="btn btn-danger" href="/oauth2/authorization/google">구글 로그인</a>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+<script>
+    $.get('/static/html/navbar.html', function (data) {
+        $('#menu-bar').html(data);
+    })
+</script>
+<script>
+    $.get('/static/html/header.html', function (data) {
+        $('#header-bar').html(data);
+    })
+</script>
+<script src="/static/js/login.js"></script>
+</body>
+</html>
