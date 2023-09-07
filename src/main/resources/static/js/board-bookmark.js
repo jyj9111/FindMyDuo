@@ -1,4 +1,6 @@
-const token = localStorage.getItem('token');
+import {isValidateToken} from "./keep-access-token.js";
+
+let token = localStorage.getItem('token');
 new Vue({
     el: '#board-bookmark-app',
     data: {
@@ -7,8 +9,9 @@ new Vue({
         totalPages: 1
     },
     methods: {
-        fetchBoards() {
-            axios.get('/users/bookmark', {
+        async fetchBoards() {
+            await isValidateToken()
+            await axios.get('/users/bookmark', {
                 params:{
                     page: this.currentPage - 1,
                     size: 20

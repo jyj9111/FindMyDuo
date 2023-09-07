@@ -1,3 +1,6 @@
+import {isValidateToken} from "./keep-access-token.js";
+let token = localStorage.getItem('token');
+
 new Vue({
     el: '#navbar-app',
     data: {
@@ -5,16 +8,14 @@ new Vue({
     },
     methods: {
         async checkLoginStatus() {
-            // 로컬 스토리지에서 토큰을 가져온다.
-            const token = localStorage.getItem('token');
-
             console.log(token);
             // 토큰이 존재하면 로그인 상태로 간주한다.
             this.loggedIn = token != null;
         },
         async logout() {
+            token = await isValidateToken()
             // 로그아웃 요청을 서버로 전송
-            axios.post('/users/logout')
+            await axios.post('/users/logout')
                 .then(() => {
                     // 로그아웃 성공 시 로컬 스토리지의 토큰 삭제
                     localStorage.clear();

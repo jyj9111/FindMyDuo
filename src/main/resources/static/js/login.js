@@ -1,3 +1,5 @@
+import {isValidateToken} from "./keep-access-token.js";
+
 document.addEventListener("DOMContentLoaded", function() {
     const vm = new Vue({
         el: '#login-app',
