@@ -37,6 +37,7 @@ public class DiscordConfig {
 
     public DiscordConfig(@Value("${discord.key}") String botToken) {
         try {
+            // 디스코드의 bot과 연결하는 코드
             this.jda = JDABuilder.createDefault(botToken)
                     .setStatus(OnlineStatus.ONLINE)
                     .setActivity(Activity.playing("채널 생성 대기"))
@@ -50,7 +51,9 @@ public class DiscordConfig {
         log.debug("Discord 서버 연결 성공");
     }
 
+    // 디스코드 음성 채널 생성 메서드
     public String createVoiceChannel(String channelName, int limit) {
+        // 연결 된 bot이 다루는 서버 중 특정 서버를 guild에 할당
         Guild guild = this.jda.getGuildById(this.guildId);
         String url = "";
         try {
@@ -61,7 +64,9 @@ public class DiscordConfig {
         return url;
     }
 
+    // 실제 디스코드 앱에 음성채널을 생성 후 생성한 음성채널의 Url값 반환하는 메서드
     private String getUrl(String channelName, Guild guild, String categoryId, int limit) {
+        // category: 해당 guild(서버)에 포함되어있는 카테고리 할당
         Category category = guild.getCategoryById(categoryId);
         String channelUrl = "";
         try {
@@ -81,11 +86,16 @@ public class DiscordConfig {
         return channelUrl;
     }
 
+    // 음성채널 삭제 메서드
     public void deleteVoiceChannel() {
+        // 특정 서버 지정
         Guild guild = this.jda.getGuildById(this.guildId);
+        // 해당 서버에 존재하는 음성 채널들 가져오기
         List<VoiceChannel> channelList = guild.getVoiceChannels();
         for (VoiceChannel voiceChannel : channelList) {
+            // 음성 채널에 존재하는 멤버들 가져오기
             List<Member> memberList = voiceChannel.getMembers();
+            // 음성 채널에 아무도 없다면 해당 채널 삭제
             if (memberList.isEmpty()) {
                 voiceChannel.delete().reason("사용자가 없으므로 채널 삭제").queue();
             }

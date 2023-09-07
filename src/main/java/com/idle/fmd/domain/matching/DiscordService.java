@@ -13,6 +13,7 @@ import java.util.Optional;
 public class DiscordService {
     private final DiscordConfig discordConfig;
 
+    // 디스코드 채널 생성 메서드
     public Optional<String> createChannel(String channelName, int limit) {
         Optional<String> url = Optional.empty();
         try {
@@ -23,6 +24,7 @@ public class DiscordService {
         return url;
     }
 
+    // 매일 자정마다 비어있는 음성채널 삭제
     @Scheduled(cron = "0 0 0 * * *")
     public void deleteChannel() {
         discordConfig.deleteVoiceChannel();
