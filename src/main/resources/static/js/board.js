@@ -1,6 +1,7 @@
 import {jwtToAccountId} from "./jwt-to-accountid.js";
+import {isValidateToken} from "./keep-access-token.js";
 
-const token = localStorage.getItem('token');
+let token = localStorage.getItem('token');
 
 new Vue({
     el: "#board-app",
@@ -15,9 +16,10 @@ new Vue({
         isBookmark: '',
         nickname: ''
     },
-    created() {
+    async created() {
         const url = window.location.href.split("/");
         this.boardId = url[url.length - 1];
+
         axios.get('/board/' + this.boardId)
             .then(response => {
                 this.board = response.data;
@@ -44,6 +46,7 @@ new Vue({
         // 게시판 삭제
         async deleteBoard() {
             if (confirm('게시글을 삭제하시겠습니까?')) {
+                token = await isValidateToken()
                 await axios.delete('/board/' + this.boardId, {
                     headers: {
                         'Authorization': `Bearer ${token}`
@@ -61,6 +64,7 @@ new Vue({
         // 좋아요
         async likeBoard() {
             const url = '/board/' + this.boardId + '/like';
+            token = await isValidateToken()
             await axios.post(url,{}, {
                 headers: {
                     'Authorization': `Bearer ${token}`
@@ -84,6 +88,7 @@ new Vue({
         // 즐겨찾기
         async bookmarkBoard() {
             const url = '/board/' + this.boardId + '/bookmark';
+            token = await isValidateToken()
             await axios.post(url,{}, {
                 headers: {
                     'Authorization': `Bearer ${token}`
@@ -108,6 +113,7 @@ new Vue({
         async reportBoard() {
             const url = '/board/' + this.boardId + '/report';
             const message = prompt();
+            token = await isValidateToken()
             await axios.post(url,{'content': message}, {
                 headers: {
                     'Authorization': `Bearer ${token}`
@@ -127,6 +133,7 @@ new Vue({
         async inputComment() {
             const url = '/board/' + this.boardId + '/comment';
             const content = document.getElementById("content").value
+            token = await isValidateToken()
             await axios.post(url, {'content': content}, {
                 headers: {
                     'Authorization': `Bearer ${token}`
@@ -143,6 +150,7 @@ new Vue({
             const url = '/board/' + this.boardId + '/comment/' + commentId;
 
             if (confirm('댓글을 삭제하시겠습니까?')) {
+                token = await isValidateToken()
                 await axios.delete(url, {
                     headers: {
                         'Authorization': `Bearer ${token}`
