@@ -37,7 +37,9 @@ public class WebSecurityConfig {
                                         "/signup",
                                         "/mypage",
                                         "/matching",
-                                        "/chat"
+                                        "/chat",
+                                        "/ws-stomp/**",
+                                        "/chat/**"
                                 )
                                 .permitAll()
                                 .requestMatchers(
@@ -48,13 +50,6 @@ public class WebSecurityConfig {
                                         "/users/oauth-fail" // oauth 실패 시 리다이렉트 url
                                 )
                                 .anonymous()
-                                .requestMatchers(
-                                        "/js/**",
-                                        "/webjars/**",
-                                        "/ws-stomp/**",
-                                        "/chat/**"
-                                )
-                                .permitAll()
                                 .anyRequest()
                                 .authenticated()
                 )
