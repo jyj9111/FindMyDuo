@@ -18,7 +18,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import com.idle.fmd.domain.user.entity.CustomUserDetails;
@@ -83,24 +82,36 @@ public class UserService {
         redisUtil.delete(dto.getEmail());
     }
 
+    // 로그인 메서드
     public UserLoginResponseDto loginUser(UserLoginRequestDto dto) {
 
         log.info("로그인 : " + manager.userExists(dto.getAccountId()));
 
-        if (!manager.userExists(dto.getAccountId())) {
+        if (!manager.userExists(dto.getAccountId()))
             throw new BusinessException(BusinessExceptionCode.NOT_EXIST_USER_ERROR);
-        }
 
         CustomUserDetails userDetails = (CustomUserDetails)manager.loadUserByUsername(dto.getAccountId());
 
-        if (!passwordEncoder.matches(dto.getPassword(), userDetails.getPassword())) {
+        if (!passwordEncoder.matches(dto.getPassword(), userDetails.getPassword()))
             throw new BusinessException(BusinessExceptionCode.LOGIN_PASSWORD_CHECK_ERROR);
-        }
 
         // 새로운 액세스 토큰과 리프레쉬 토큰 생성
         String token = jwtTokenUtils.generateToken(userDetails);
         redisUtil.issueRefreshToken(token);
 
+        return new UserLoginResponseDto(token, userDetails.getNickname());
+    }
+
+    // Oauth 로그인 유저를 위한 메서드
+    public UserLoginResponseDto loginForOauthUser(String token) {
+        // 전달 받은 jwt Token 유효성 검사
+        if (!jwtTokenUtils.validate(token)) {
+            throw new BusinessException(BusinessExceptionCode.TOKEN_ACCOUNT_MISMATCH_ERROR);
+        }
+        // 전달 받은 jwt 토큰에서 accountId 값 추출
+        String accountId = jwtTokenUtils.parseClaims(token).getSubject();
+        // UserDetails에서 nickname 추출
+        CustomUserDetails userDetails = (CustomUserDetails)manager.loadUserByUsername(accountId);
         return new UserLoginResponseDto(token, userDetails.getNickname());
     }
 

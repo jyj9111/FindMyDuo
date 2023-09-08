@@ -44,8 +44,7 @@ public class UserController {
     // OAuth 로그인 유저 토큰 발급
     @GetMapping("/oauth")
     public UserLoginResponseDto oauthLogin(@RequestParam("token") String token) {
-        return new UserLoginResponseDto(token);
-
+        return userService.loginForOauthUser(token);
     }
 
     // 인증 메일 발송
