@@ -26,6 +26,15 @@
     height: calc(100vh - 50px);
 }
 
+.table-page {
+    margin-top: 50px;
+    margin-left: 250px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
 .btn {
     margin-bottom: 10px;
 }

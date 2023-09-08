@@ -1,10 +1,27 @@
-const token = localStorage.getItem('token');
+import {isValidateToken} from "./keep-access-token.js";
+
+let token = localStorage.getItem('token');
+let webSocket;
+let timeoutId;
 
 new Vue({
     el: '#matching-app',
     data: {
         isMatching: false, // 매칭 됐는지 여부
-        matchingButtonLabel: '매칭 시작'
+        matchingButtonLabel: '매칭 시작',
+        mode: '',
+        myLine: '',
+        duoLine: '',
+        nickname:'',
+        lolNickname: '',
+        tier:'',
+        rank: '',
+        mostOne:'',
+        mostTwo: '',
+        mostThree:'',
+        totalWins: '',
+        totalLoses: '',
+        matches: []
     },
     async created() {
         if (!token) {
@@ -15,10 +32,72 @@ new Vue({
         }
     },
     methods: {
-        async toggleMatching() {
-            // console.log('버튼 눌림');
-            this.isMatching = !this.isMatching;
-            this.matchingButtonLabel = this.isMatching ? '매칭 취소' : '매칭 시작';
+        async startMatching() {
+            token = await isValidateToken();
+            if(this.myLine == this.duoLine){
+                alert("같은 역할군 간의 매칭은 불가능합니다.")
+                return
+            }
+
+            webSocket = await new WebSocket(`ws://localhost:8080/ws/matching?Authorization=${token}&mode=${this.mode}&myLine=${this.myLine}&duoLine=${this.duoLine}`);
+
+            webSocket.onmessage = (msg) => {
+                console.log(msg)
+                try {
+                    const data = JSON.parse(msg.data)
+                    const chatMessage = document.createElement("div")
+                    const message = document.createElement("p")
+                    const matches = document.createElement("p")
+                    if (data.roomId == undefined) {
+                        message.innerText = data.username + ": " + data.message
+                        message.innerText = "---------- 상대방 정보 ----------\n" +
+                            "닉네임: " + data.nickname + "\n" +
+                            "롤 닉네임: " + data.lolNickname + "\n" +
+                            "티어: " + data.tier + data.rank + "\n" +
+                            "모드: " + data.mode + "\n" +
+                            "모스트1: " + data.mostOne + "\n" +
+                            "모스트2: " + data.mostTwo + "\n" +
+                            "모스트3: " + data.mostThree + "\n" +
+                            "승리: " + data.totalWins + "\n" +
+                            "패배: " + data.totalLoses + "\n"
+                        ;
+
+                        matches.innerText = "--------------- 전적 -------------------\n"
+
+                        for(let i = 0; i < data.matchList.length; i++){
+                            matches.innerText += `${data.matchList[i].gameMode}  ${data.matchList[i].champion}  ${data.matchList[i].teamPosition} ${data.matchList[i].kills} ${data.matchList[i].deaths} ${data.matchList[i].assists} ${data.matchList[i].win} \n`
+                        }
+                        chatMessage.appendChild(message)
+                        chatMessage.appendChild(matches)
+                        document.getElementById("div-matching").appendChild(chatMessage)
+                        timeoutId = setTimeout(function(){
+                            webSocket.send("reject")
+                        }, 2000000)
+                    } else {
+                        localStorage.setItem('roomId', data.roomId);
+                        const url = "http://localhost:8080" + data.url;
+                        window.open('/chat/room/enter','_blank', 'scrollbars=yes, resizable=yes, location=no, width=800,height=800');
+                    }
+                } catch (e) {
+                    const data = msg.data
+                    const chatMessage = document.createElement("div")
+                    const message = document.createElement("p")
+                    // message.innerText = data.username + ": " + data.message
+                    message.innerText = data;
+                    ;
+
+                    chatMessage.appendChild(message)
+                    document.getElementById("div-matching").appendChild(chatMessage)
+                }
+            }
+        },
+        async matchingAccept(){
+            clearTimeout(timeoutId);
+            webSocket.send("accept")
+        },
+        async matchingReject(){
+            clearTimeout(timeoutId);
+            webSocket.send("reject")
         }
     }
 });

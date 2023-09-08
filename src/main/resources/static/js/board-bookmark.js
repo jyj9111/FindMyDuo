@@ -10,7 +10,7 @@ new Vue({
     },
     methods: {
         async fetchBoards() {
-            await isValidateToken()
+            token = await isValidateToken()
             await axios.get('/users/bookmark', {
                 params:{
                     page: this.currentPage - 1,
