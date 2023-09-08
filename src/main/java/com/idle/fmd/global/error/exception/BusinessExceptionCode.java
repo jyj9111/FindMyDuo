@@ -48,6 +48,12 @@ public enum BusinessExceptionCode {
     // 회원 탈퇴시 프로필 이미지 디렉토리 삭제하는 과정에서 예외 처리
     CANNOT_DELETE_DIRECTORY_ERROR(HttpStatus.BAD_REQUEST, "프로필 이미지 디렉터리 삭제 중 오류가 발생했습니다."),
 
+    // 변경할 비밀번호를 입력하지 않고 요청을 보냈을 경우 예외 처리
+    EMPTY_PASSWORD_ERROR(HttpStatus.BAD_REQUEST, "변경하실 비밀번호를 입력해주세요."),
+
+    // 비밀번호 길이가 8자리 미만일 경우 예외 처리
+    PASSWORD_LENGTH_ERROR(HttpStatus.BAD_REQUEST, "비밀번호는 최소 8자리 입니다."),
+
     // 자유게시글 관련 예외
     // 게시글이 존재하지 않는 경우 예외
     NOT_EXISTS_BOARD_ERROR(HttpStatus.NOT_FOUND, "해당 게시글은 존재하지 않습니다."),

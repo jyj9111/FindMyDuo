@@ -21,77 +21,71 @@
     <!-- 본문 -->
     <div class="col-sm-9 page" id="app">
         <img class="img-circle" v-if="profileImage" v-bind:src="profileImage" width="100" height="100">
-        <div class="text-center">
-            <h3><strong>{{ accountId }} 님의 마이페이지</strong></h3>
-        </div>
-        <form class="form-horizontal">
+        <h3><strong>{{ accountId }} 님의 마이페이지</strong></h3>
+        <a class="btn btn-default" href="/board/bookmark">북마크</a>
+        <form class="form-horizontal col-sm-12">
             <!-- 기본 정보 -->
             <div class="form-group">
-                <label class="col-sm-3 control-label">아이디</label>
-                <div class="col-sm-9">
+                <label class="col-sm-4 control-label">아이디</label>
+                <div class="col-sm-5">
                     <p class="form-control-static">{{ accountId }}</p>
                 </div>
             </div>
             <div class="form-group">
-                <label class="col-sm-3 control-label">닉네임</label>
-                <div class="col-sm-9">
-                    <p class="form-control-static">{{ nickname }}</p>
+                <label class="col-sm-4 control-label">닉네임</label>
+                <div class="col-sm-4">
+                    <input class="form-control" v-model="nickname" :placeholder="nickname">
                 </div>
+                <button class="btn btn-default col-sm-1" type="button" @click="checkNickname">중복 확인</button>
             </div>
             <div class="form-group">
-                <label class="col-sm-3 control-label">이메일</label>
-                <div class="col-sm-9">
+                <label class="col-sm-4 control-label">이메일</label>
+                <div class="col-sm-4">
                     <input class="form-control" v-model="email" :placeholder="email">
                 </div>
             </div>
 
             <!-- 비밀번호 -->
             <div class="form-group">
-                <label class="col-sm-3 control-label">비밀번호</label>
-                <div class="col-sm-9">
+                <label class="col-sm-4 control-label">비밀번호</label>
+                <div class="col-sm-4">
                     <input class="form-control" v-model="password" id="password" type="password"
                            placeholder="변경할 password를 입력하세요.">
                 </div>
             </div>
             <div class="form-group">
-                <label class="col-sm-3 control-label">비밀번호 확인</label>
-                <div class="col-sm-9">
-                    <input class="form-control"  v-model="passwordCheck" id="passwordCheck" type="password"
-                    placeholder="password를 한 번 더 입력하세요.">
+                <label class="col-sm-4 control-label">비밀번호 확인</label>
+                <div class="col-sm-4">
+                    <input class="form-control" v-model="passwordCheck" id="passwordCheck" type="password"
+                           placeholder="password를 한 번 더 입력하세요.">
                 </div>
+                <button class="btn btn-default" type="button" @click="changePassword">비밀번호 변경</button>
             </div>
 
             <!-- 라이엇 계정 연동 -->
             <div class="form-group">
-                <label class="col-sm-3 control-label">롤 닉네임</label>
-                <div class="col-sm-6">
+                <label class="col-sm-4 control-label">롤 닉네임</label>
+                <div class="col-sm-4">
                     <input class="form-control" v-model="lolNickname">
                 </div>
-                <div class="col-sm-3">
-                    <button class="btn btn-default" type="button" @click="linkLolAccount">RIOT 계정 연동</button>
-                </div>
+                <button class="btn btn-default" type="button" @click="linkLolAccount">롤 계정 연동</button>
             </div>
 
             <!-- 프로필 이미지 등록 및 변경-->
             <div class="form-group">
-                <label class="col-sm-3 control-label">프로필 이미지</label>
-                <div class="col-sm-6">
+                <label class="col-sm-4 control-label">프로필 이미지</label>
+                <div class="col-sm-4">
                     <input type="file" @change="selectImage">
                 </div>
-                <div class="col-sm-3">
-                    <button class="btn btn-default" type="button" @click=uploadImage>이미지 등록</button>
-                </div>
+                <button class="btn btn-default" type="button" @click=uploadImage>이미지 등록</button>
             </div>
 
             <!-- 생성날짜 -->
             <div class="form-group">
-                <label class="col-sm-3 control-label">생성날짜</label>
-                <div class="col-sm-9">
-                    <p class="form-control-static">{{ createdAt }}</p>
+                <label class="col-sm-4 control-label">생성날짜</label>
+                <div class="col-sm-5">
+                    <p class="help-block">{{ createdAt }}</p>
                 </div>
-            </div>
-
-            <div class="col-sm-offset-3 col-sm-9">
             </div>
         </form>
         <div>
