@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.tomcat.util.http.fileupload.FileUtils;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,6 +21,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 
@@ -153,7 +155,8 @@ public class BoardService {
         UserEntity user = userRepository.findByNickname(nickname);
         if (user == null) {
             log.info("존재 하지 않는 사용자 입니다.");
-            throw new BusinessException(BusinessExceptionCode.NOT_EXIST_USER_ERROR);
+            List<BoardAllResponseDto> emptyList = Collections.emptyList();
+            return new PageImpl<>(emptyList, pageable, 0);
         }
         Page<BoardEntity> searchUserResult = boardRepository.findByUser(user, pageable);
         return searchUserResult.map(BoardAllResponseDto::fromBoardEntity);
