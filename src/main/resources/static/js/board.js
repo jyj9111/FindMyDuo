@@ -35,7 +35,7 @@ new Vue({
                 // console.log(this.board);
             })
             .catch((error) => {
-                alert('해당 게시글은 존재하지 않습니다.');
+                alert(error.response.data.message);
                 location.href = '/board/view';
             });
     },
