@@ -168,6 +168,11 @@ new Vue({
                         alert('댓글 작성자만 삭제 가능합니다.');
                     })
             }
+        },
+        isCommentAuthor(commentNickname) {
+            const userNickname = localStorage.getItem('sender');
+            console.log(userNickname);
+            return userNickname === commentNickname;
         }
     },
 });
