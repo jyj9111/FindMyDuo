@@ -93,6 +93,15 @@ public class UserController {
         return userService.update(accountId, dto);
     }
 
+    // 비밀번호 변경
+    @PutMapping("/mypage/change-password")
+    public String changePassword(
+            Authentication authentication,
+            @RequestBody ChangePasswordRequestDto dto) {
+        userService.changePassword(authentication.getName(), dto);
+        return "변경이 완료되었습니다.";
+    }
+
     // 마이페이지 회원 탈퇴 (유저 정보 삭제)
     @DeleteMapping("/mypage")
     public void UserDelete(Authentication authentication) {
@@ -114,5 +123,13 @@ public class UserController {
     @GetMapping("/bookmark")
     public Page<BoardAllResponseDto> findBookmark(Authentication authentication, @PageableDefault(size = 20, sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
         return userService.findBookmark(authentication.getName(), pageable);
+    }
+
+    // 닉네임 중복 확인
+    @GetMapping("/check-nickname")
+    public Boolean existsByNickname(
+            Authentication authentication,
+            @RequestParam("nickname") String nickname) {
+        return userService.existsByNickname(nickname);
     }
 }

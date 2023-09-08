@@ -47,7 +47,7 @@
                             </div>
                             <p class="help-block text-right">수정시간 : {{comment.modifiedAt}}</p>
                         </div>
-                        <button class="btn btn-default" @click="deleteComment(comment.id, nickname)">삭제</button>
+                        <button class="btn btn-default" v-if="isCommentAuthor(comment.nickname)" @click="deleteComment(comment.id, nickname)">삭제</button>
                     </div>
                 </div>
                 <div class="form-group">
