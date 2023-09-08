@@ -3,8 +3,6 @@ package com.idle.fmd.domain.board.service;
 import com.idle.fmd.domain.board.dto.*;
 import com.idle.fmd.domain.board.entity.*;
 import com.idle.fmd.domain.board.repo.*;
-import com.idle.fmd.domain.comment.entity.CommentEntity;
-import com.idle.fmd.domain.comment.repo.CommentRepository;
 import com.idle.fmd.domain.user.entity.UserEntity;
 import com.idle.fmd.domain.user.repo.UserRepository;
 import com.idle.fmd.global.utils.FileHandler;
@@ -32,12 +30,8 @@ public class BoardService {
 
     private final BoardRepository boardRepository;
     private final UserRepository userRepository;
-    private final CommentRepository commentRepository;
     private final FileHandler fileHandler;
     private final FileRepository fileRepository;
-    private final LikeBoardRepository likeBoardRepository;
-    private final BookmarkRepository bookmarkRepository;
-    private final ReportRepository reportRepository;
 
     public void boardCreate(BoardCreateDto dto, List<MultipartFile> images, String accountId) {
 
@@ -222,8 +216,4 @@ public class BoardService {
         Page<BoardAllResponseDto> boardAllResponseDtos = boardEntities.map(BoardAllResponseDto::fromBoardEntity);
         return boardAllResponseDtos;
     }
-
-
-
-
 }
