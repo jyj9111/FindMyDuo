@@ -75,7 +75,12 @@ public enum BusinessExceptionCode {
     NO_SEARCH_QUERY_PARAMETER(HttpStatus.BAD_REQUEST, "검색할 값을 확인해 주세요"),
 
     // 게시글 작성자가 본인의 글을 신고할 때 예외
-    NOT_SELF_REPORT_ERROR(HttpStatus.UNAUTHORIZED, "게시글 작성자가 본인 글을 신고할 수 없습니다.");
+    NOT_SELF_REPORT_ERROR(HttpStatus.UNAUTHORIZED, "게시글 작성자가 본인 글을 신고할 수 없습니다."),
+
+    // 매칭 시스템 관련 예외
+    // Discord 음성채널 생성과정에서 오류가 났을 때
+    CANNOT_CREATE_VOICE_CHANNEL(HttpStatus.INTERNAL_SERVER_ERROR, "Discord 음성 채널 생성과정에서 오류가 발생했습니다.");
+
 
     private final HttpStatus status;
     private final String message;

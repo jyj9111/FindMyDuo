@@ -63,8 +63,7 @@ public class MatchingHandler extends TextWebSocketHandler {
             if (myAnswer.equals("accept")) {
                 if (destinationAnswer.equals("null")) return;
                 else if (destinationAnswer.equals("accept")) {
-                    String roomName = String.format("%s.%s", session.getId(),destination.getId());
-                    matchingService.openChatRoom(roomName, session, destination);
+                    matchingService.openChatRoom(session, destination);
                     return;
                 }
             }
