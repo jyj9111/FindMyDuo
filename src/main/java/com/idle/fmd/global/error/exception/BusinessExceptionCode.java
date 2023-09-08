@@ -43,6 +43,10 @@ public enum BusinessExceptionCode {
     CANNOT_SAVE_IMAGE_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "프로필 이미지를 저장할 수 없습니다."),
     // 회원 탈퇴시 프로필 이미지 디렉토리 삭제하는 과정에서 예외 처리
     CANNOT_DELETE_DIRECTORY_ERROR(HttpStatus.BAD_REQUEST, "프로필 이미지 디렉터리 삭제 중 오류가 발생했습니다."),
+    // 변경할 비밀번호를 입력하지 않고 요청을 보냈을 경우 예외 처리
+    EMPTY_PASSWORD_ERROR(HttpStatus.BAD_REQUEST, "변경하실 비밀번호를 입력해주세요."),
+    // 비밀번호 길이가 8자리 미만일 경우 예외 처리
+    PASSWORD_LENGTH_ERROR(HttpStatus.BAD_REQUEST, "비밀번호는 최소 8자리 입니다."),
 
 
     // 자유게시판 관련 예외 -----------------------------------------------------------------------------------------------

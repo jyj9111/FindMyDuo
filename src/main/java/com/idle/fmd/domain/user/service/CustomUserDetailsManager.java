@@ -66,7 +66,6 @@ public class CustomUserDetailsManager implements UserDetailsManager {
 
         UserEntity entity = optionalUser.get();
         entity.updateUser(
-                updatedUser.getPassword(),
                 updatedUser.getEmail(),
                 updatedUser.getNickname()
         );
@@ -83,9 +82,15 @@ public class CustomUserDetailsManager implements UserDetailsManager {
         userRepository.delete(optionalUser.get());
     }
 
+    // 비밀번호 변경 메서드
     @Override
-    public void changePassword(String oldPassword, String newPassword) {
-
+    public void changePassword(String accountId, String newPassword) {
+        UserEntity entity = userRepository.findByAccountId(accountId).get();
+        if(entity == null) {
+            throw new UsernameNotFoundException(accountId);
+        }
+        entity.changePassword(newPassword);
+        userRepository.save(entity);
     }
 
     // 해당 이메일의 존재여부를 반환하는 메서드

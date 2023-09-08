@@ -12,6 +12,7 @@ new Vue({
         images: [],
         accountId: '',
         isAuthorizedUser: false, // 작성자인지 체크
+        isUnAuthorizedUser: false, // 작성자 아닌지 체크(신고)
         isLike: '',
         isBookmark: '',
         nickname: ''
@@ -32,10 +33,13 @@ new Vue({
                     this.isAuthorizedUser = true;
                 }
 
-                // console.log(this.board);
+                if (this.accountId !== jwtToAccountId() && jwtToAccountId() !== null) {
+                    this.isUnAuthorizedUser = true;
+                }
             })
             .catch((error) => {
-                console.error(error)
+                alert(error.response.data.message);
+                location.href = '/board/view';
             });
     },
     methods: {
@@ -81,9 +85,6 @@ new Vue({
                         alert('좋아요 취소 완료');
                     }
                 })
-                .catch(error => {
-                    alert('에러' + error);
-                })
         },
         // 즐겨찾기
         async bookmarkBoard() {
@@ -105,9 +106,6 @@ new Vue({
                         alert('즐겨찾기 취소완료');
                     }
                 })
-                .catch(error => {
-                    alert('에러' + error);
-                })
         },
         // 신고
         async reportBoard() {
@@ -123,10 +121,6 @@ new Vue({
                     console.log(this.boardId);
                     console.log(url);
                     alert('신고');
-                })
-                .catch(error => {
-                    // alert('에러' + error);
-                    alert('작성자를 제외한 유저만 신고를 할 수 있습니다.');
                 })
         },
         // 댓글 작성
@@ -163,11 +157,12 @@ new Vue({
                             location.href = '/board/view/' + this.boardId;
                         }
                     })
-                    .catch(error => {
-                        // alert('에러' + error);
-                        alert('댓글 작성자만 삭제 가능합니다.');
-                    })
             }
+        },
+        isCommentAuthor(commentNickname) {
+            const userNickname = localStorage.getItem('sender');
+            console.log(userNickname);
+            return userNickname === commentNickname;
         }
     },
 });

@@ -3,8 +3,6 @@ package com.idle.fmd.domain.board.service;
 import com.idle.fmd.domain.board.dto.*;
 import com.idle.fmd.domain.board.entity.*;
 import com.idle.fmd.domain.board.repo.*;
-import com.idle.fmd.domain.comment.entity.CommentEntity;
-import com.idle.fmd.domain.comment.repo.CommentRepository;
 import com.idle.fmd.domain.user.entity.UserEntity;
 import com.idle.fmd.domain.user.repo.UserRepository;
 import com.idle.fmd.global.utils.FileHandler;
@@ -14,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.tomcat.util.http.fileupload.FileUtils;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,6 +21,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 
@@ -32,12 +32,8 @@ public class BoardService {
 
     private final BoardRepository boardRepository;
     private final UserRepository userRepository;
-    private final CommentRepository commentRepository;
     private final FileHandler fileHandler;
     private final FileRepository fileRepository;
-    private final LikeBoardRepository likeBoardRepository;
-    private final BookmarkRepository bookmarkRepository;
-    private final ReportRepository reportRepository;
 
     public void boardCreate(BoardCreateDto dto, List<MultipartFile> images, String accountId) {
 
@@ -159,7 +155,8 @@ public class BoardService {
         UserEntity user = userRepository.findByNickname(nickname);
         if (user == null) {
             log.info("존재 하지 않는 사용자 입니다.");
-            throw new BusinessException(BusinessExceptionCode.NOT_EXIST_USER_ERROR);
+            List<BoardAllResponseDto> emptyList = Collections.emptyList();
+            return new PageImpl<>(emptyList, pageable, 0);
         }
         Page<BoardEntity> searchUserResult = boardRepository.findByUser(user, pageable);
         return searchUserResult.map(BoardAllResponseDto::fromBoardEntity);
@@ -208,6 +205,9 @@ public class BoardService {
 
     // 조회수 카운팅
     public void boardView(Long id) {
+        if (!boardRepository.existsById(id)) {
+            throw new BusinessException(BusinessExceptionCode.NOT_EXISTS_BOARD_ERROR);
+        }
         BoardEntity boardEntity = boardRepository.findById(id).get();
         boardRepository.updateViewCount(boardEntity.getView() + 1, boardEntity.getId());
     }
@@ -219,8 +219,4 @@ public class BoardService {
         Page<BoardAllResponseDto> boardAllResponseDtos = boardEntities.map(BoardAllResponseDto::fromBoardEntity);
         return boardAllResponseDtos;
     }
-
-
-
-
 }
