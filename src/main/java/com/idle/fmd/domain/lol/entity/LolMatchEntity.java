@@ -44,7 +44,7 @@ public class LolMatchEntity {
     public LolMatchDto entityToDto(){
         LolMatchDto lolMatchDto = new LolMatchDto();
         lolMatchDto.setMatchId(this.matchId);
-        lolMatchDto.setGameMode(this.matchId);
+        lolMatchDto.setGameMode(this.gameMode);
         lolMatchDto.setGameCreation(this.gameCreation);
         lolMatchDto.setGameDuration(this.gameTime);
         lolMatchDto.setChampion(this.champion);
