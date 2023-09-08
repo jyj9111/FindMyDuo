@@ -15,9 +15,12 @@
     <!-- 사이드바 -->
     <div id="menu-bar"></div>
     <!-- 본문 -->
-    <div class="col-sm-9 page table-striped" id="board-list-app">
-        <h1><strong>자유 게시판</strong></h1>
-        <br>
+    <div class="col-sm-9 table-page table-striped" id="board-list-app">
+        <div class="col-sm-12 text-center">
+            <br>
+            <h1><strong>자유 게시판</strong></h1>
+            <hr>
+        </div>
         <!-- 검색 폼 추가 -->
         <div class="form-group col-sm-12" @submit.prevent="search">
             <div class="col-sm-2">
@@ -30,22 +33,23 @@
             <div class="col-sm-9">
                 <input class="form-control" type="text" v-model="searchQuery" placeholder="검색어를 입력하세요">
             </div>
-            <button class="btn btn-default col-sm-1" type="submit">검색</button>
+            <button class="btn btn-default col-sm-1" type="button" @click="search">검색</button>
         </div>
-        <div class="col-sm-12">
+        <div class="form-group col-sm-12">
             <div class="col-sm-10">
-                <button class="btn btn-link"  @click="sortByPopular">인기순으로 정렬</button>
+                <button class="btn btn-link" @click="sortByPopular">인기순으로 정렬</button>
                 <button class="btn btn-link" @click="sortByLatest">최신순으로 정렬</button>
+                <a class="btn btn-default" href="/board/bookmark">북마크</a>
             </div>
             <button class="btn btn-default col-sm-2" @click="redirectToWritePage">게시물 작성</button>
         </div>
         <table class="table">
             <thead>
             <tr>
-                <th>번호</th>
-                <th>제목</th>
-                <th>작성자</th>
-                <th>좋아요</th>
+                <th style="width: 10%">번호</th>
+                <th style="width: 40%">제목</th>
+                <th style="width: 20%">작성자</th>
+                <th style="width: 7%">좋아요</th>
                 <th>수정시간</th>
             </tr>
             </thead>
@@ -53,19 +57,21 @@
             <tr class="board-list-block" v-if="content.length === 0">
                 <td colspan="5">No Board Here...</td>
             </tr>
-                <tr class="board-list-block" v-else v-for="board in content" :key="board.id">
-                    <td>{{ board.id }}</td>
-                    <!-- 게시물 상세 페이지로 이동할 수 있는 링크 추가 -->
-                    <td><a :href="'/board/view/' + board.id">{{ board.title }}</a></td>
-                    <td>{{ board.nickName }}</td>
-                    <td>{{ board.liked }}</td>
-                    <td>{{ board.modifiedAt }}</td>
-                </tr>
+            <tr class="board-list-block" v-else v-for="board in content" :key="board.id">
+                <td>{{ board.id }}</td>
+                <!-- 게시물 상세 페이지로 이동할 수 있는 링크 추가 -->
+                <td><a :href="'/board/view/' + board.id">{{ board.title }}</a></td>
+                <td>{{ board.nickName }}</td>
+                <td>{{ board.liked }}</td>
+                <td>{{ board.modifiedAt }}</td>
+            </tr>
             </tbody>
         </table>
         <!-- 페이지 번호를 클릭할 수 있는 하이퍼링크를 추가합니다 -->
         <div class="pagination">
-            <a v-for="page in totalPages" :key="page" @click="goToPage(page)" :class="{ active: currentPage === page }">{{ page }}</a>
+            <button class="btn btn-link" v-for="page in totalPages" :key="page" @click="goToPage(page)" :class="{ active: currentPage === page }">
+                {{ page }}
+            </button>
         </div>
 
     </div>
