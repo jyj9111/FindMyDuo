@@ -1,6 +1,5 @@
 package com.idle.fmd.domain.chating.controller;
 
-
 import com.idle.fmd.domain.chating.dto.ChatMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,11 +19,11 @@ public class ChatController {
     // 채팅방 입장 화면
     @GetMapping("/room/enter")
     public String roomDetail() {
-        return "chat/room-detail";
+        return "/matching/chat";
     }
 
     // 채팅(STOMP)방 입장, 대화
-    @MessageMapping("/message")
+    @MessageMapping("/chat/message")
     public void message(ChatMessage message) {
         if (ChatMessage.MessageType.ENTER.equals(message.getType())) {
             log.info("{} 채팅방(id:{}) 입장", message.getSender(), message.getRoomId());
