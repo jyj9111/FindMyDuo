@@ -208,6 +208,9 @@ public class BoardService {
 
     // 조회수 카운팅
     public void boardView(Long id) {
+        if (!boardRepository.existsById(id)) {
+            throw new BusinessException(BusinessExceptionCode.NOT_EXISTS_BOARD_ERROR);
+        }
         BoardEntity boardEntity = boardRepository.findById(id).get();
         boardRepository.updateViewCount(boardEntity.getView() + 1, boardEntity.getId());
     }
