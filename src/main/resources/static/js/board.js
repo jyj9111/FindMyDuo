@@ -12,6 +12,7 @@ new Vue({
         images: [],
         accountId: '',
         isAuthorizedUser: false, // 작성자인지 체크
+        isUnAuthorizedUser: false, // 작성자 아닌지 체크(신고)
         isLike: '',
         isBookmark: '',
         nickname: ''
@@ -32,10 +33,15 @@ new Vue({
                     this.isAuthorizedUser = true;
                 }
 
+                if (this.accountId !== jwtToAccountId() && jwtToAccountId() !== null) {
+                    this.isUnAuthorizedUser = true;
+                }
+
                 // console.log(this.board);
             })
             .catch((error) => {
-                console.error(error)
+                alert(error.response.data.message);
+                location.href = '/board/view';
             });
     },
     methods: {
