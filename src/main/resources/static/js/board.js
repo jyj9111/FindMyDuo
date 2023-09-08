@@ -36,8 +36,6 @@ new Vue({
                 if (this.accountId !== jwtToAccountId() && jwtToAccountId() !== null) {
                     this.isUnAuthorizedUser = true;
                 }
-
-                // console.log(this.board);
             })
             .catch((error) => {
                 alert(error.response.data.message);
@@ -87,9 +85,6 @@ new Vue({
                         alert('좋아요 취소 완료');
                     }
                 })
-                .catch(error => {
-                    alert('에러' + error);
-                })
         },
         // 즐겨찾기
         async bookmarkBoard() {
@@ -111,9 +106,6 @@ new Vue({
                         alert('즐겨찾기 취소완료');
                     }
                 })
-                .catch(error => {
-                    alert('에러' + error);
-                })
         },
         // 신고
         async reportBoard() {
@@ -129,10 +121,6 @@ new Vue({
                     console.log(this.boardId);
                     console.log(url);
                     alert('신고');
-                })
-                .catch(error => {
-                    // alert('에러' + error);
-                    alert('작성자를 제외한 유저만 신고를 할 수 있습니다.');
                 })
         },
         // 댓글 작성
@@ -168,10 +156,6 @@ new Vue({
                             alert('댓글 삭제 완료');
                             location.href = '/board/view/' + this.boardId;
                         }
-                    })
-                    .catch(error => {
-                        // alert('에러' + error);
-                        alert('댓글 작성자만 삭제 가능합니다.');
                     })
             }
         },
