@@ -53,7 +53,7 @@ public class WebSecurityConfig {
                                 .authenticated()
                 )
                 .oauth2Login(oauth2Login -> oauth2Login
-                        .loginPage("/users/login")
+                        .loginPage("/login")
                         .userInfoEndpoint(userInfo -> userInfo
                                 .userService(oAuth2UserService)
                         )

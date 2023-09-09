@@ -51,7 +51,8 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
                     .password(providerId)
                     .build());
         }
-
+        // 도메인 주소값 추출
+        String domainUrl = request.getRequestURL().toString().replace(request.getRequestURI(), "");
         try{
             // 데이터베이스에서 사용자 회수
             UserDetails details
@@ -60,15 +61,14 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
             String jwt = tokenUtils.generateToken(details);
 
             // 목적지 URL 설정
-            // 우리 서비스의 Frontend 구성에 따라 유연하게 대처해야 한다.
-            String targetUrl = String.format("http://localhost:8080/users/oauth?token=%s", jwt);
+            String targetUrl = String.format("%s/main?token=%s", domainUrl, jwt);
             // 실제 Redirect 응답 생성
             getRedirectStrategy().sendRedirect(request, response, targetUrl);
 
         }catch (Exception e){
             log.error(e.getMessage());
             // oauth 인증 실패 시 oauth-fail URL 로 리다이렉트
-            String targetUrl = String.format("http://localhost:8080/users/oauth-fail");
+            String targetUrl = String.format("%s/login?oauth-fail", domainUrl);
             getRedirectStrategy().sendRedirect(request, response, targetUrl);
         }
     }
