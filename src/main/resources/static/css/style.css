@@ -37,6 +37,8 @@
 
 .btn {
     margin-bottom: 10px;
+    padding: 10px 30px;
+    background: #f1f0f0;
 }
 
 .title-btn {
@@ -90,4 +92,14 @@
 
 .table td, .table th {
     text-align: center;
+}
+
+.img.login{
+    text-align: center;
+    margin-bottom: 10px;
+    height: 52px;
+}
+.h5.login{
+    text-align: center;
+    margin-bottom: 16px;
 }
