@@ -124,11 +124,21 @@ public class UserController {
         return userService.findBookmark(authentication.getName(), pageable);
     }
 
+    // 아이디 중복 확인
+    @GetMapping("/check/accountId")
+    public boolean existsByAccountId(@RequestParam("accountId") String accountId) {
+        return userService.existsByAccountId(accountId);
+    }
+
     // 닉네임 중복 확인
-    @GetMapping("/check-nickname")
-    public Boolean existsByNickname(
-            Authentication authentication,
-            @RequestParam("nickname") String nickname) {
+    @GetMapping("/check/nickname")
+    public boolean existsByNickname(@RequestParam("nickname") String nickname) {
         return userService.existsByNickname(nickname);
+    }
+
+    // 이메일 중복 확인
+    @GetMapping("/check/email")
+    public boolean existsByEmail(@RequestParam("email") String email) {
+        return userService.existsByEmail(email);
     }
 }

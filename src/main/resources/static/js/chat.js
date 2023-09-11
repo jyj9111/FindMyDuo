@@ -12,12 +12,14 @@ var vm = new Vue({
         roomId: '',
         room: {},
         sender: '',
+        discordUrl: '',
         message: '',
         messages: []
     },
     created() {
         this.roomId = localStorage.getItem('roomId');
-        this.sender = localStorage.getItem('sender');
+        this.sender = localStorage.getItem('nickname');
+        this.discordUrl = localStorage.getItem('discordUrl');
         this.findRoom();
     },
     methods: {
@@ -30,6 +32,9 @@ var vm = new Vue({
         },
         recvMessage: function(recv) {
             this.messages.unshift({"type":recv.type,"sender":recv.type=='ENTER'?'[알림]':recv.sender,"message":recv.message})
+        },
+        connectDiscord: function (){
+            window.open(this.discordUrl);
         }
     }
 });

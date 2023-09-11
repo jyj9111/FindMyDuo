@@ -40,13 +40,18 @@ public enum BusinessExceptionCode {
     // 토큰의 계정 정보와 요청 데이터의 계정 정보가 불일치할 때 예외코드
     TOKEN_ACCOUNT_MISMATCH_ERROR(HttpStatus.BAD_REQUEST, "토큰의 계정 정보와 요청 데이터의 계정 정보가 일치하지 않습니다."),
     // 프로필 이미지 저장 실패
-    CANNOT_SAVE_IMAGE_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "프로필 이미지를 저장할 수 없습니다."),
+    CANNOT_SAVE_IMAGE_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "프로필 이미지 업로드 중 오류가 발생했습니다."),
     // 회원 탈퇴시 프로필 이미지 디렉토리 삭제하는 과정에서 예외 처리
     CANNOT_DELETE_DIRECTORY_ERROR(HttpStatus.BAD_REQUEST, "프로필 이미지 디렉터리 삭제 중 오류가 발생했습니다."),
     // 변경할 비밀번호를 입력하지 않고 요청을 보냈을 경우 예외 처리
     EMPTY_PASSWORD_ERROR(HttpStatus.BAD_REQUEST, "변경하실 비밀번호를 입력해주세요."),
     // 비밀번호 길이가 8자리 미만일 경우 예외 처리
     PASSWORD_LENGTH_ERROR(HttpStatus.BAD_REQUEST, "비밀번호는 최소 8자리 입니다."),
+
+
+    // 라이엇 API 관련 예외 -----------------------------------------------------------------------------------------------
+    // 롤 계정 연동 시 이미 연동된 닉네임으로 시도했을 때 예외코드
+    DUPLICATED_LOL_NICKNAME_ERROR(HttpStatus.BAD_REQUEST, "이미 등록된 롤 계정입니다."),
 
 
     // 자유게시판 관련 예외 -----------------------------------------------------------------------------------------------
@@ -56,6 +61,8 @@ public enum BusinessExceptionCode {
     NOT_MATCHES_USER_ERROR(HttpStatus.UNAUTHORIZED, "게시글의 작성자가 아닙니다."),
     // 게시판 이미지 저장 실패
     CANNOT_SAVE_BOARD_IMAGE_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "게시판 이미지를 저장할 수 없습니다."),
+    // 게시판 이미지 삭제 실패
+    CANNOT_DELETE_BOARD_DIRECTORY_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "해당 게시글 이미지 폴더 삭제 중 오류가 발생했습니다."),
     // 댓글을 작성할 때 작성자가 아닌 사람이 적을 때의 예외코드
     UNAUTHORIZED_USER(HttpStatus.UNAUTHORIZED, "해당 요청에 대한 권한이 없는 사용자입니다."),
     // 검색 기준이 user, content, title 이 아닐 때 발생하는 예외코드
@@ -63,7 +70,12 @@ public enum BusinessExceptionCode {
     // 검색할 값이 입력되지 않았을 때
     NO_SEARCH_QUERY_PARAMETER(HttpStatus.BAD_REQUEST, "검색할 값을 확인해 주세요"),
     // 게시글 작성자가 본인의 글을 신고할 때 예외
-    NOT_SELF_REPORT_ERROR(HttpStatus.UNAUTHORIZED, "게시글 작성자가 본인 글을 신고할 수 없습니다.");
+    NOT_SELF_REPORT_ERROR(HttpStatus.UNAUTHORIZED, "게시글 작성자가 본인 글을 신고할 수 없습니다."),
+
+    // 매칭 시스템 관련 예외 ----------------------------------------------------------------------------------------------
+    // Discord 음성채널 생성과정에서 오류가 났을 때
+    CANNOT_CREATE_VOICE_CHANNEL(HttpStatus.INTERNAL_SERVER_ERROR, "Discord 음성 채널 생성과정에서 오류가 발생했습니다.");
+
 
     private final HttpStatus status;
     private final String message;
