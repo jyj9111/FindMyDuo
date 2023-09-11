@@ -10,21 +10,24 @@ var vm = new Vue({
     el: '#div-chatting',
     data: {
         roomId: '',
-        room: {},
+        roomname: '',
         sender: '',
+        other:'',
         discordUrl: '',
         message: '',
         messages: []
     },
-    created() {
+    async created() {
         this.roomId = localStorage.getItem('roomId');
         this.sender = localStorage.getItem('nickname');
         this.discordUrl = localStorage.getItem('discordUrl');
+        this.other = localStorage.getItem('other');
         this.findRoom();
     },
     methods: {
         findRoom: function() {
-            axios.get('/chat/room/'+this.roomId).then(response => { this.room = response.data; });
+            axios.get('/chat/room/'+this.roomId)
+                .then(response => {this.roomname = response.data.name;});
         },
         sendMessage: function() {
             ws.send("/app/chat/message", {}, JSON.stringify({type:'TALK', roomId:this.roomId, sender:this.sender, message:this.message}));
