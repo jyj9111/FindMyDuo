@@ -38,7 +38,8 @@
 .btn {
     margin-bottom: 10px;
 }
-.btn-default{
+
+.btn-custom {
     margin-bottom: 10px;
     padding: 10px 30px;
     background: #f1f0f0;
