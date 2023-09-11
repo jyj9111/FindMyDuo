@@ -10,7 +10,6 @@ import com.idle.fmd.global.error.exception.BusinessException;
 import com.idle.fmd.global.error.exception.BusinessExceptionCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.tomcat.util.http.fileupload.FileUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -18,8 +17,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -194,13 +191,8 @@ public class BoardService {
     }
 
     private void deleteBoardImageDirectory (Long boardId){
-        String boardImgDir = String.format("./images/board/%s", boardId);
-        try {
-            FileUtils.deleteDirectory(new File(boardImgDir));
-        } catch (IOException e) {
-            log.error("게시판 이미지 디렉토리 삭제 중 오류 발생");
-            throw new BusinessException(BusinessExceptionCode.CANNOT_DELETE_DIRECTORY_ERROR);
-        }
+        String boardImgDir = String.format("images/board/%s", boardId);
+        fileHandler.deleteFolder(boardImgDir, "board");
     }
 
     // 조회수 카운팅

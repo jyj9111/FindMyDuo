@@ -8,12 +8,12 @@ import com.idle.fmd.domain.user.dto.*;
 import com.idle.fmd.domain.user.entity.UserEntity;
 import com.idle.fmd.domain.user.repo.UserRepository;
 import com.idle.fmd.global.auth.jwt.JwtTokenUtils;
+import com.idle.fmd.global.utils.FileHandler;
 import com.idle.fmd.global.utils.RedisUtil;
 import com.idle.fmd.global.error.exception.BusinessException;
 import com.idle.fmd.global.error.exception.BusinessExceptionCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.tomcat.util.http.fileupload.FileUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.mail.SimpleMailMessage;
@@ -23,12 +23,7 @@ import org.springframework.stereotype.Service;
 import com.idle.fmd.domain.user.entity.CustomUserDetails;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.Optional;
-import java.util.Random;
 
 @Slf4j
 @Service
@@ -41,6 +36,7 @@ public class UserService {
     private final RedisUtil redisUtil;
     private final UserRepository repository;
     private final BookmarkRepository bookmarkRepository;
+    private final FileHandler fileHandler;
 
     // 회원가입 메서드
     public void signup(SignupDto dto){
@@ -124,8 +120,7 @@ public class UserService {
         // 제목 설정
         simpleMailMessage.setSubject("[구해듀오] 이메일 인증 요청메일입니다.");
         // 랜덤한 6자리의 난수를 인증코드로 생성 후 이메일 내용에 포함
-        Random random = new Random();
-        int authCode = random.nextInt(100000, 1000000);
+        int authCode = (int)(Math.random() * 1000000);
         simpleMailMessage.setText("아래의 인증코드를 입력해주세요.\n" + authCode);
 
         // 이메일 전송
@@ -217,47 +212,16 @@ public class UserService {
 
     // 프로필 이미지 변경 메서드
     public void uploadProfileImage(String accountId, MultipartFile image) {
-        // 유저 ID를 프로필 디렉토리명으로 설정
-        String profileDir = String.format("./images/profile/%s", accountId);
-
-        // 폴더 생성
-        try {
-            Files.createDirectories(Path.of(profileDir));
-        } catch (Exception e) {
-            log.error("프로필 이미지 디렉토리를 생성할 수 없음");
-            throw new BusinessException(BusinessExceptionCode.CANNOT_SAVE_IMAGE_ERROR);
-        }
-
-        // 이미지 이름 생성
-        String originalImageName = image.getOriginalFilename();
-        String extension = originalImageName.substring(originalImageName.lastIndexOf(".") + 1);
-        String profileFileName = "profile." + extension;
-
-        // 폴더 + 파일 경로 이름
-        String profilePath = String.format("%s/%s", profileDir, profileFileName);
-
-        // 저장
-        try {
-            image.transferTo(Path.of(profilePath));
-        } catch (Exception e) {
-            log.error("이미지를 해당 경로에 저장할 수 없음");
-            throw new BusinessException(BusinessExceptionCode.CANNOT_SAVE_IMAGE_ERROR);
-        }
-
-        manager.updateProfileImage(accountId,
-                String.format("/static/profile/%s/%s", accountId, profileFileName));
+        String imageUrl = fileHandler.getProfileFilePath(accountId, image);
+        manager.updateProfileImage(accountId, imageUrl);
     }
 
     // 회원 탈퇴 시 프로필 이미지 디렉토리 삭제 메서드
     public void deleteProfileImageDirectory(String accountId) {
+        // 프로필 이미지 저장 폴더 경로 세팅
         String profileDir = String.format("images/profile/%s", accountId);
-        try {
-            FileUtils.deleteDirectory(new File(profileDir));
-        } catch (IOException e) {
-            // 프로필 이미지 디렉토리 삭제 하는 과정에서 예외 처리 (파일이 다른 곳에서 사용중일 때)
-            log.error("프로필 이미지 디렉토리 삭제 중 오류 발생");
-            throw new BusinessException(BusinessExceptionCode.CANNOT_DELETE_DIRECTORY_ERROR);
-        }
+        // 해당 폴더의 이미지 삭제
+        fileHandler.deleteFolder(profileDir, "profile");
     }
 
     public Page<BoardAllResponseDto> findBookmark(String accountId, Pageable pageable) {
