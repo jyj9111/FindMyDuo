@@ -190,7 +190,7 @@ public class BoardService {
         return boardResponseDtoPage;
     }
 
-    private void deleteBoardImageDirectory (Long boardId){
+    public void deleteBoardImageDirectory (Long boardId){
         String boardImgDir = String.format("images/board/%s", boardId);
         fileHandler.deleteFolder(boardImgDir, "board");
     }

@@ -2,8 +2,11 @@ package com.idle.fmd.domain.user.service;
 
 
 import com.idle.fmd.domain.board.dto.BoardAllResponseDto;
+import com.idle.fmd.domain.board.entity.BoardEntity;
 import com.idle.fmd.domain.board.entity.BookmarkEntity;
+import com.idle.fmd.domain.board.repo.BoardRepository;
 import com.idle.fmd.domain.board.repo.BookmarkRepository;
+import com.idle.fmd.domain.board.service.BoardService;
 import com.idle.fmd.domain.user.dto.*;
 import com.idle.fmd.domain.user.entity.UserEntity;
 import com.idle.fmd.domain.user.repo.UserRepository;
@@ -23,6 +26,7 @@ import org.springframework.stereotype.Service;
 import com.idle.fmd.domain.user.entity.CustomUserDetails;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
 import java.util.Optional;
 
 @Slf4j
@@ -37,6 +41,9 @@ public class UserService {
     private final UserRepository repository;
     private final BookmarkRepository bookmarkRepository;
     private final FileHandler fileHandler;
+    private final BoardRepository boardRepository;
+    private final BoardService boardService;
+    private final UserRepository userRepository;
 
     // 회원가입 메서드
     public void signup(SignupDto dto){
@@ -202,12 +209,21 @@ public class UserService {
             throw new BusinessException(BusinessExceptionCode.NOT_EXIST_USER_ERROR);
         }
 
+        // 회원 탈퇴시 게시글에 포함된 이미지 저장한 디렉토리 삭제
+        UserEntity userEntity = userRepository.findByAccountId(accountId).get();
+        List<BoardEntity> boards = boardRepository.findAllByUser(userEntity);
+
+        for (BoardEntity board: boards) {
+            Long boardId = board.getId();
+            log.info("회원 탈퇴 디렉토리 삭제 테스트 : " + boardId);
+            boardService.deleteBoardImageDirectory(boardId);
+        }
+
         // UserDetailsManager 의 deleteUser 메소드를 호출하여 유저 정보 삭제
         manager.deleteUser(accountId);
 
         // 프로필 이미지 저장한 디렉토리 삭제
         deleteProfileImageDirectory(accountId);
-
     }
 
     // 프로필 이미지 변경 메서드
