@@ -17,7 +17,17 @@ document.addEventListener("DOMContentLoaded", function () {
             isFormValid: false, // 회원가입 버튼
         },
         watch: {
+            accountId: 'checkFormValidity',
+            email: 'checkFormValidity',
+            emailAuthCode: 'checkFormValidity',
+            nickname: 'checkFormValidity',
+            password: 'checkFormValidity',
             passwordCheck: 'checkFormValidity',
+            accountIdErrorMessage: 'checkFormValidity',
+            emailErrorMessage: 'checkFormValidity',
+            emailAuthCodeErrorMessage: 'checkFormValidity',
+            nicknameErrorMessage: 'checkFormValidity',
+            passwordErrorMessage: 'checkFormValidity',
             passwordCheckErrorMessage: 'checkFormValidity'
         },
         methods: {
