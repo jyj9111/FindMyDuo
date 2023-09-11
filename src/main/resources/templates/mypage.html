@@ -67,10 +67,13 @@
                 <label class="col-sm-4 control-label">롤 닉네임</label>
                 <div class="col-sm-4">
                     <input class="form-control" v-model="lolNickname">
+                    <div class="help-blcok" style="color: gray">계정 연동시 약 1분의 시간이 소요될 수 있습니다.</div>
                 </div>
-                <button class="btn btn-default" type="button" @click="linkLolAccount">롤 계정 연동</button>
+                <button class="btn btn-default" type="button" @click="linkLolAccount" :disabled="linkingLolAccount">
+                    롤 계정 연동
+                    <span v-if="linkingLolAccount" class="glyphicon glyphicon-refresh glyphicon-refresh-animate"></span>
+                </button>
             </div>
-
             <!-- 프로필 이미지 등록 및 변경-->
             <div class="form-group">
                 <label class="col-sm-4 control-label">프로필 이미지</label>
