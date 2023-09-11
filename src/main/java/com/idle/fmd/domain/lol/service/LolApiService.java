@@ -4,7 +4,11 @@ import com.idle.fmd.domain.lol.dto.LolAccountDto;
 import com.idle.fmd.domain.lol.dto.LolInfoDto;
 import com.idle.fmd.domain.lol.dto.LolMatchDto;
 import com.idle.fmd.domain.lol.entity.LolAccountEntity;
+import com.idle.fmd.domain.lol.entity.LolInfoEntity;
+import com.idle.fmd.domain.lol.entity.LolMatchEntity;
 import com.idle.fmd.domain.lol.repo.LolAccountRepository;
+import com.idle.fmd.domain.lol.repo.LolInfoRepository;
+import com.idle.fmd.domain.lol.repo.LolMatchRepository;
 import com.idle.fmd.domain.user.entity.UserEntity;
 import com.idle.fmd.domain.user.repo.UserRepository;
 import com.idle.fmd.global.error.exception.BusinessException;
@@ -34,6 +38,8 @@ public class LolApiService {
 
     private final LolAccountRepository lolAccountRepository;
     private final UserRepository userRepository;
+    private final LolInfoRepository lolInfoRepository;
+    private final LolMatchRepository lolMatchRepository;
 
 
     @Value("${riot-api.api-key}")
@@ -86,12 +92,12 @@ public class LolApiService {
     // 회원이 소환사 닉네임과 함께 처음 연동 버튼을 눌렀을 때 계정 정보 저장
     public LolAccountDto save(String accountId, String summonerName) {
         // 토큰에 있는 유저 정보가 없는 정보일 때 예외 발생
-        if(!userRepository.existsByAccountId(accountId)) {
+        if (!userRepository.existsByAccountId(accountId)) {
             throw new BusinessException(BusinessExceptionCode.NOT_EXIST_USER_ERROR);
         }
 
         // DB에 이미 등록된 닉네임일 경우 예외 발생
-        if(lolAccountRepository.existsByName(summonerName)) {
+        if (lolAccountRepository.existsByName(summonerName)) {
             throw new BusinessException(BusinessExceptionCode.DUPLICATED_LOL_NICKNAME_ERROR);
         }
 
@@ -99,20 +105,72 @@ public class LolApiService {
         UserEntity user = userRepository.findByAccountId(accountId).get();
 
         // 롤 계정 정보를 가져오는 메서드 호출해서 dto 에 저장
-        LolAccountDto dto = getSummoner(summonerName);
+        LolAccountDto lolAccountDto = getSummoner(summonerName);
 
         // 이미 연동되어 있는 롤 계정이 있다면 연동되어 있던 기존 롤 계정을 지워줌
-        if(user.getLolAccount() != null) {
+        if (user.getLolAccount() != null) {
             LolAccountEntity deleteAccount = user.getLolAccount();
             lolAccountRepository.delete(deleteAccount);
         }
 
         // 새로운 롤 계정 정보 생성 해서 저장
-        LolAccountEntity lolAccountEntity = dto.toEntity();
+        LolAccountEntity lolAccountEntity = lolAccountDto.toEntity();
         // userEntity 애도 연관관계 맺어줌
         lolAccountEntity.addLolAccountUser(user);
         lolAccountRepository.save(lolAccountEntity);
-        return dto;
+
+        // 롤 정보 Dto를 받아온다.
+        String summonerId = lolAccountDto.getSummonerId();
+        LolInfoDto lolInfoDto = getLolInfo(summonerId);
+        LolInfoEntity lolInfoEntity = lolInfoDto.toEntity();
+
+        // LolAccountEntity 와 LolInfoEntity 에 서로 연결
+        lolAccountEntity.setLolInfo(lolInfoEntity);
+        lolInfoEntity.addAccountInfo(lolAccountEntity);
+
+        // DB에 저장
+        lolInfoRepository.save(lolInfoEntity);
+
+        // 매치 정보를 읽어오기
+        String puuid = lolAccountDto.getPuuid();
+        Long lolAccountId = lolAccountEntity.getId();
+        List<String> matchList = getUserLolMatchId(puuid);
+
+        boolean countSolo = false;
+        boolean countFlex = false;
+
+        // 모든 매치 ID를 읽어온다.
+        try {
+            for (String matchId : matchList) {
+                LolMatchDto lolMatchDto = getLolMatchInfo(puuid, matchId);
+                // 약간의 딜레이 주기
+                Thread.sleep(1000); // 1초 딜레이
+                // 게임모드가 솔랭이나 자랭이 아니면 다음 매치 id로 넘어감
+                if (lolMatchDto.getGameMode() == null ) continue;
+
+                // 각 모드가 10개씩까지만 저장되도록 설정
+                if (lolMatchRepository.countByLolAccount_IdAndGameMode(lolAccountId, "SOLO") == 10 &&
+                        lolMatchDto.getGameMode().equals("SOLO")) { continue; }
+
+                if (lolMatchRepository.countByLolAccount_IdAndGameMode(lolAccountId, "FLEX") == 10 &&
+                        lolMatchDto.getGameMode().equals("FLEX")) { continue; }
+
+                log.info(matchId + "- 전적 정보 추가");
+
+                // dto -> entity
+                LolMatchEntity lolMatchEntity = lolMatchDto.toEntity();
+                // 연관관계 맺어주기
+                lolMatchEntity.addAccountMatch(lolAccountEntity);
+
+                // 일단 반환된 entity 들을 저장
+                lolMatchRepository.save(lolMatchEntity);
+            }
+        } catch (InterruptedException e) {
+            // 나중에 수정할 것
+            e.printStackTrace();
+        }
+
+        return lolAccountDto;
     }
 
     // 소환사 계정 정보를 가져오는 메서드
@@ -124,7 +182,7 @@ public class LolApiService {
 
         JSONObject jsonObject = (JSONObject) executeHttpGet(reqeustUrl);
 
-        if(jsonObject != null) {
+        if (jsonObject != null) {
             // SummonerDto 에 데이터를 매핑하여 반환
             LolAccountDto dto = new LolAccountDto();
             dto.setAccountId((String) jsonObject.get("accountId"));
@@ -153,18 +211,18 @@ public class LolApiService {
         log.info(tierRequestUrl);
 
         // 티어정보를 dto에 저장
-        if(tierEntries != null) {
+        if (tierEntries != null) {
             for (Object entryObject : tierEntries) {
                 JSONObject entry = (JSONObject) entryObject;
                 String queueType = (String) entry.get("queueType");
 
-                if("RANKED_SOLO_5x5".equals(queueType)) {
+                if ("RANKED_SOLO_5x5".equals(queueType)) {
                     // LolDto 에 데이터를 매핑하여 반환
                     dto.setSoloTier((String) entry.get("tier"));
                     dto.setSoloRank((String) entry.get("rank"));
                     dto.setSoloWins((Long) entry.get("wins"));
                     dto.setSoloLosses((Long) entry.get("losses"));
-                } else if("RANKED_FLEX_SR".equals(queueType)) {
+                } else if ("RANKED_FLEX_SR".equals(queueType)) {
                     // LolDto 에 데이터를 매핑하여 반환
                     dto.setFlexTier((String) entry.get("tier"));
                     dto.setFlexRank((String) entry.get("rank"));
@@ -175,11 +233,11 @@ public class LolApiService {
         }
 
         // 랭크 티어가 없는 경우 UNRANKED 로 설정
-        if(dto.getSoloTier() == null) {
+        if (dto.getSoloTier() == null) {
             dto.setSoloTier("UNRANKED");
             dto.setSoloRank("");
         }
-        if(dto.getFlexTier() == null) {
+        if (dto.getFlexTier() == null) {
             dto.setFlexTier("UNRANKED");
             dto.setFlexRank("");
         }
@@ -190,8 +248,8 @@ public class LolApiService {
         log.info(champRequestUrl);
 
         // 모스트 챔프 3개를 Dto에 저장
-        if(mostChampion != null) {
-            for(int i = 0; i < 3 && i < mostChampion.size(); i++) {
+        if (mostChampion != null) {
+            for (int i = 0; i < 3 && i < mostChampion.size(); i++) {
                 JSONObject champ = (JSONObject) mostChampion.get(i);
                 if (i == 0) {
                     dto.setMostOneChamp((Long) champ.get("championId"));
@@ -215,7 +273,7 @@ public class LolApiService {
         log.info(matchIdRequestUrl);
 
         // 매치 ID 정보를 List 에 저장
-        if(matchIdEntries != null) {
+        if (matchIdEntries != null) {
             for (Object entryObject : matchIdEntries) {
                 String matchId = (String) entryObject;
                 matchIdList.add(matchId);
@@ -246,7 +304,7 @@ public class LolApiService {
 
         // QueueId 가 420 이면 솔로 랭크, QueueId 가 440 이면 자유 랭크
         Long queueId = (Long) matchInfo.get("queueId");
-        if(queueId == 420) {
+        if (queueId == 420) {
             dto.setGameMode("SOLO");
         } else if (queueId == 440) {
             dto.setGameMode("FLEX");
@@ -258,7 +316,7 @@ public class LolApiService {
         for (Object entryObject : matchDetails) {
             JSONObject entry = (JSONObject) entryObject;
 
-            if(entry.get("puuid").equals(puuid)) {
+            if (entry.get("puuid").equals(puuid)) {
                 dto.setChampion((String) entry.get("championName"));
                 dto.setChampionId((Long) entry.get("championId"));
                 dto.setKills((Long) entry.get("kills"));

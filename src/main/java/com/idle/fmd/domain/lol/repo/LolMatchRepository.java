@@ -13,4 +13,7 @@ public interface LolMatchRepository extends JpaRepository<LolMatchEntity, Intege
 
     // 특정 유저의 매치 id가 있는지 판별
     boolean existsByLolAccountAccountIdAndMatchId(String accountId, String matchId);
+
+    // 특정 유저의 특정 게임 모드의 데이터의 수 반환
+    long countByLolAccount_IdAndGameMode(Long lolAccountId, String gameMode);
 }
