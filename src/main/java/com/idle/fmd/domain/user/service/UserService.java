@@ -270,8 +270,20 @@ public class UserService {
         return boardDto;
     }
 
+    // 아이디 중복 확인
+    public boolean existsByAccountId(String accountId) {
+        log.info(repository.existsByAccountId(accountId).toString());
+        return repository.existsByAccountId(accountId);
+    }
+
     // 닉네임 중복 확인
-    public Boolean existsByNickname(String nickname) {
+    public boolean existsByNickname(String nickname) {
         return repository.existsByNickname(nickname);
+    }
+
+    // 이메일 중복 확인
+    public boolean existsByEmail(String email) {
+        log.info(repository.existsByEmail(email).toString());
+        return repository.existsByEmail(email);
     }
 }
