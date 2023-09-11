@@ -48,7 +48,7 @@
                 </div>
                 <input type="text" class="form-control" v-model="message" v-on:keypress.enter="sendMessage">
                 <div class="input-group-append text-right">
-                    <button class="btn btn-default" type="button">디스코드 서버 연결</button>
+                    <button class="btn btn-default" type="button" @click="connectDiscord">디스코드 서버 연결</button>
                     <button class="btn btn-primary" type="button" @click="sendMessage">보내기</button>
                 </div>
             </div>

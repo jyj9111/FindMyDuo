@@ -21,6 +21,7 @@ new Vue({
         mostThree:'',
         totalWins: '',
         totalLoses: '',
+        discordUrl: '',
         matches: []
     },
     async created() {
@@ -75,6 +76,7 @@ new Vue({
                         }, 2000000)
                     } else {
                         localStorage.setItem('roomId', data.roomId);
+                        localStorage.setItem('discordUrl', data.discordUrl)
                         const url = "http://localhost:8080" + data.url;
                         window.open('/chat/room/enter','_blank', 'scrollbars=yes, resizable=yes, location=no, width=800,height=800');
                     }
@@ -84,7 +86,6 @@ new Vue({
                     const message = document.createElement("p")
                     // message.innerText = data.username + ": " + data.message
                     message.innerText = data;
-                    ;
 
                     chatMessage.appendChild(message)
                     document.getElementById("div-matching").appendChild(chatMessage)
