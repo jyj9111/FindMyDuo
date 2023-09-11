@@ -3,8 +3,6 @@ package com.idle.fmd.domain.board.entity;
 import com.idle.fmd.domain.user.entity.UserEntity;
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
@@ -20,12 +18,10 @@ public class BookmarkEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "board_id", nullable = false)
-    @OnDelete(action = OnDeleteAction.CASCADE)
     private BoardEntity board;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
-    @OnDelete(action = OnDeleteAction.CASCADE)
     private UserEntity user;
 
     // true = 즐겨찾기, false = 즐겨찾기 취소

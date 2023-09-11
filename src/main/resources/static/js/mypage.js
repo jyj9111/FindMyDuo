@@ -1,4 +1,6 @@
-const token = localStorage.getItem('token');
+import {isValidateToken,jwtExpireTime,reissueJwt} from "./keep-access-token.js";
+
+let token = localStorage.getItem('token');
 
 new Vue({
     el: '#app',
@@ -22,6 +24,7 @@ new Vue({
         }
 
         // 마이페이지 조회 요청
+        token = await isValidateToken()
         await axios.get('/users/mypage', {
             // 헤더 설정
             headers: {
@@ -52,11 +55,10 @@ new Vue({
                 accountId: this.accountId,
                 email: this.email,
                 nickname: this.nickname,
-                password: this.password,
-                passwordCheck: this.passwordCheck,
             };
 
             // 마이페이지 정보 수정 요청
+            token = await isValidateToken()
             await axios.put('/users/mypage', updateData, {
                 headers: {
                     'Authorization': `Bearer ${token}`
@@ -72,9 +74,35 @@ new Vue({
 
                 })
         },
+        // 비밀번호 변경
+        async changePassword() {
+            const changePasswordData = {
+                password: this.password,
+                passwordCheck: this.passwordCheck
+            };
+
+            // 비밀번호 변경 요청
+            token = await isValidateToken()
+            await axios.put('/users/mypage/change-password', changePasswordData, {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            })
+
+                .then(response => {
+                    alert('비밀번호가 변경되었습니다.');
+                    console.log(response.data);
+                })
+                .catch(error => {
+                    alert('수정이 실패하였습니다.');
+                    console.error('비밀번호 변경 에러: ', error);
+
+                })
+        },
         // 롤 계정 연동 기능
         async linkLolAccount() {
             // 계정 연동 요청
+            token = await isValidateToken()
             await axios.post('/lol/save', null, {
                 params: {
                     lolNickname: this.lolNickname.replaceAll(" ", "")
@@ -101,6 +129,7 @@ new Vue({
             formData.append('image', this.profileImage);
 
             // 프로필 이미지 업로드 요청
+            token = await isValidateToken()
             await axios.put('/users/mypage/profile-image', formData, {
                 headers: {
                     'Authorization': `Bearer ${token}`,
@@ -123,6 +152,7 @@ new Vue({
         async deleteAccount() {
             if (confirm('정말로 회원을 탈퇴하시겠습니까?')) {
                 // 탈퇴 요청
+                token = await isValidateToken()
                 await axios.delete('/users/mypage', {
                     headers: {
                         'Authorization': `Bearer ${token}`
@@ -136,6 +166,23 @@ new Vue({
                     .catch(error => {
                         alert('회원 탈퇴 실패: ' + error);
                     })
+            }
+        },
+        async checkNickname() {
+            token = await isValidateToken()
+            const nickname = this.nickname;
+            const response = await axios.get('/users/check-nickname', {
+                params: {nickname},
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                }
+            });
+
+            console.log(response.data);
+            if(!response.data) {
+                alert('사용 가능한 닉네임입니다.');
+            } else {
+                alert('이미 사용 중인 닉네임입니다.');
             }
         }
     }

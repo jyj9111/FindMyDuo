@@ -1,4 +1,6 @@
-const token = localStorage.getItem('token');
+import {isValidateToken} from "./keep-access-token.js";
+
+let token = localStorage.getItem('token');
 const dataTransfer = new DataTransfer()
 
 new Vue({
@@ -25,7 +27,7 @@ new Vue({
         document.title = this.board.title
     },
     methods: {
-        updateBoard() {
+        async updateBoard() {
             const formData = new FormData();
 
             const dto = {
@@ -41,7 +43,8 @@ new Vue({
             formData.append("dto", new Blob([JSON.stringify(dto)], {type: "application/json"}))
 
             if (confirm('게시글을 수정하시겠습니까?'))
-                axios.put('/board/' + this.boardId, formData, {
+                token = await isValidateToken()
+                await axios.put('/board/' + this.boardId, formData, {
                     headers: {
                         'Authorization': `Bearer ${token}`,
                         'Content-Type': 'multipart/form-data'

@@ -1,6 +1,7 @@
 import {jwtToAccountId} from "./jwt-to-accountid.js";
+import {isValidateToken} from "./keep-access-token.js";
 
-const token = localStorage.getItem('token');
+let token = localStorage.getItem('token');
 
 new Vue({
     el: "#board-app",
@@ -11,13 +12,15 @@ new Vue({
         images: [],
         accountId: '',
         isAuthorizedUser: false, // 작성자인지 체크
+        isUnAuthorizedUser: false, // 작성자 아닌지 체크(신고)
         isLike: '',
         isBookmark: '',
         nickname: ''
     },
-    created() {
+    async created() {
         const url = window.location.href.split("/");
         this.boardId = url[url.length - 1];
+
         axios.get('/board/' + this.boardId)
             .then(response => {
                 this.board = response.data;
@@ -30,10 +33,13 @@ new Vue({
                     this.isAuthorizedUser = true;
                 }
 
-                // console.log(this.board);
+                if (this.accountId !== jwtToAccountId() && jwtToAccountId() !== null) {
+                    this.isUnAuthorizedUser = true;
+                }
             })
             .catch((error) => {
-                console.error(error)
+                alert(error.response.data.message);
+                location.href = '/board/view';
             });
     },
     methods: {
@@ -44,6 +50,7 @@ new Vue({
         // 게시판 삭제
         async deleteBoard() {
             if (confirm('게시글을 삭제하시겠습니까?')) {
+                token = await isValidateToken()
                 await axios.delete('/board/' + this.boardId, {
                     headers: {
                         'Authorization': `Bearer ${token}`
@@ -61,6 +68,7 @@ new Vue({
         // 좋아요
         async likeBoard() {
             const url = '/board/' + this.boardId + '/like';
+            token = await isValidateToken()
             await axios.post(url,{}, {
                 headers: {
                     'Authorization': `Bearer ${token}`
@@ -77,13 +85,11 @@ new Vue({
                         alert('좋아요 취소 완료');
                     }
                 })
-                .catch(error => {
-                    alert('에러' + error);
-                })
         },
         // 즐겨찾기
         async bookmarkBoard() {
             const url = '/board/' + this.boardId + '/bookmark';
+            token = await isValidateToken()
             await axios.post(url,{}, {
                 headers: {
                     'Authorization': `Bearer ${token}`
@@ -100,14 +106,12 @@ new Vue({
                         alert('즐겨찾기 취소완료');
                     }
                 })
-                .catch(error => {
-                    alert('에러' + error);
-                })
         },
         // 신고
         async reportBoard() {
             const url = '/board/' + this.boardId + '/report';
             const message = prompt();
+            token = await isValidateToken()
             await axios.post(url,{'content': message}, {
                 headers: {
                     'Authorization': `Bearer ${token}`
@@ -118,15 +122,12 @@ new Vue({
                     console.log(url);
                     alert('신고');
                 })
-                .catch(error => {
-                    // alert('에러' + error);
-                    alert('작성자를 제외한 유저만 신고를 할 수 있습니다.');
-                })
         },
         // 댓글 작성
         async inputComment() {
             const url = '/board/' + this.boardId + '/comment';
             const content = document.getElementById("content").value
+            token = await isValidateToken()
             await axios.post(url, {'content': content}, {
                 headers: {
                     'Authorization': `Bearer ${token}`
@@ -143,6 +144,7 @@ new Vue({
             const url = '/board/' + this.boardId + '/comment/' + commentId;
 
             if (confirm('댓글을 삭제하시겠습니까?')) {
+                token = await isValidateToken()
                 await axios.delete(url, {
                     headers: {
                         'Authorization': `Bearer ${token}`
@@ -155,11 +157,12 @@ new Vue({
                             location.href = '/board/view/' + this.boardId;
                         }
                     })
-                    .catch(error => {
-                        // alert('에러' + error);
-                        alert('댓글 작성자만 삭제 가능합니다.');
-                    })
             }
+        },
+        isCommentAuthor(commentNickname) {
+            const userNickname = localStorage.getItem('sender');
+            console.log(userNickname);
+            return userNickname === commentNickname;
         }
     },
 });

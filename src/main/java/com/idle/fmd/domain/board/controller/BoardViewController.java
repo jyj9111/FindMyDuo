@@ -34,4 +34,10 @@ public class BoardViewController {
     public String board(){
         return "board/board-list";
     }
+
+    // 북마크 게시물 조회
+    @GetMapping("/bookmark")
+    public String bookmark(){
+        return "/board/board-bookmark";
+    }
 }

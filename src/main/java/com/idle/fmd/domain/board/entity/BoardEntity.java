@@ -41,12 +41,20 @@ public class BoardEntity extends BaseTimeEntity {
     @Column(nullable = false)
     private Integer view;
 
-
-    @OneToMany(mappedBy = "board")
+    @OneToMany(mappedBy = "board", cascade = CascadeType.REMOVE)
     private List<FileEntity> files = new ArrayList<>();
 
-    @OneToMany(mappedBy = "board")
+    @OneToMany(mappedBy = "board", cascade = CascadeType.REMOVE)
     private List<CommentEntity> comments = new ArrayList<>();
+
+    @OneToMany(mappedBy = "board", cascade = CascadeType.REMOVE)
+    private List<BookmarkEntity> bookmarks = new ArrayList<>();
+
+    @OneToMany(mappedBy = "board", cascade = CascadeType.REMOVE)
+    private List<LikeBoardEntity> likeBoards = new ArrayList<>();
+
+    @OneToMany(mappedBy = "board", cascade = CascadeType.REMOVE)
+    private List<ReportEntity> reports = new ArrayList<>();
 
     public static BoardEntity createBoard(BoardCreateDto dto, UserEntity user) {
         return BoardEntity.builder()

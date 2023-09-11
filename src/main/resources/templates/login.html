@@ -24,22 +24,24 @@
             <div class="row">
                 <div class="form-group">
                     <label for="accountId">아이디: </label>
-                    <input class="form-control" id="accountId" v-model="accountId"
+                    <input class="form-control" id="accountId" v-model="accountId" v-on:keypress.enter="login"
                            placeholder="ID를 입력하세요.">
                 </div>
                 <div class="form-group">
                     <label for="password">비밀번호: </label>
-                    <input class="form-control" type="password" id="password" v-model="password"
+                    <input class="form-control" type="password" id="password" v-model="password" v-on:keypress.enter="login"
                            placeholder="password를 입력하세요.">
                 </div>
                 <div class="form-group">
-                    <button class="btn btn-default" type="button" id="login-button">로그인</button>
+                    <button class="btn btn-custom" type="button" @click="login">로그인</button>
+                    <a class="btn btn-custom" type="button" href="/signup">회원가입</a>
                 </div>
                 <div>
-                    <!-- 소셜 로그인 -->
-                    <a class="btn btn-success" href="/oauth2/authorization/naver">네이버 로그인</a>
-                    <a class="btn btn-warning" href="/oauth2/authorization/kakao">카카오 로그인</a>
-                    <a class="btn btn-danger" href="/oauth2/authorization/google">구글 로그인</a>
+                    <hr class="my-2">
+                    <p class="h5 login"> <b>간편 로그인</b></p>
+                    <a href="/oauth2/authorization/naver"><img class="img login" src="/static/css/images/naver_login.png"></a><br>
+                    <a href="/oauth2/authorization/kakao"><img class="img login" src="/static/css/images/kakao_login.png"></a><br>
+                    <a href="/oauth2/authorization/google"><img class="img login" src="/static/css/images/google_login.png"></a><br>
                 </div>
             </div>
         </form>
@@ -55,6 +57,6 @@
         $('#header-bar').html(data);
     })
 </script>
-<script src="/static/js/login.js"></script>
+<script src="/static/js/login.js" type = "module"></script>
 </body>
 </html>

@@ -18,7 +18,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import com.idle.fmd.domain.user.entity.CustomUserDetails;
@@ -79,24 +78,36 @@ public class UserService {
         redisUtil.delete(dto.getEmail());
     }
 
+    // 로그인 메서드
     public UserLoginResponseDto loginUser(UserLoginRequestDto dto) {
 
         log.info("로그인 : " + manager.userExists(dto.getAccountId()));
 
-        if (!manager.userExists(dto.getAccountId())) {
+        if (!manager.userExists(dto.getAccountId()))
             throw new BusinessException(BusinessExceptionCode.NOT_EXIST_USER_ERROR);
-        }
 
         CustomUserDetails userDetails = (CustomUserDetails)manager.loadUserByUsername(dto.getAccountId());
 
-        if (!passwordEncoder.matches(dto.getPassword(), userDetails.getPassword())) {
+        if (!passwordEncoder.matches(dto.getPassword(), userDetails.getPassword()))
             throw new BusinessException(BusinessExceptionCode.LOGIN_PASSWORD_CHECK_ERROR);
-        }
 
         // 새로운 액세스 토큰과 리프레쉬 토큰 생성
         String token = jwtTokenUtils.generateToken(userDetails);
         redisUtil.issueRefreshToken(token);
 
+        return new UserLoginResponseDto(token, userDetails.getNickname());
+    }
+
+    // Oauth 로그인 유저를 위한 메서드
+    public UserLoginResponseDto loginForOauthUser(String token) {
+        // 전달 받은 jwt Token 유효성 검사
+        if (!jwtTokenUtils.validate(token)) {
+            throw new BusinessException(BusinessExceptionCode.TOKEN_ACCOUNT_MISMATCH_ERROR);
+        }
+        // 전달 받은 jwt 토큰에서 accountId 값 추출
+        String accountId = jwtTokenUtils.parseClaims(token).getSubject();
+        // UserDetails에서 nickname 추출
+        CustomUserDetails userDetails = (CustomUserDetails)manager.loadUserByUsername(accountId);
         return new UserLoginResponseDto(token, userDetails.getNickname());
     }
 
@@ -139,28 +150,49 @@ public class UserService {
     // 유저 정보 수정 메서드
     public UserMyPageRequestDto update(String accountId, UserMyPageRequestDto dto) {
         String checkAccountId = dto.getAccountId();
-        String password = dto.getPassword();
-        String passwordCheck = dto.getPasswordCheck();
 
         // 토큰에 있는 accountId 와 현재 바디에 담긴 accountId 정보가 다를 때 예외 발생
         if(!accountId.equals(checkAccountId))
             throw new BusinessException(BusinessExceptionCode.TOKEN_ACCOUNT_MISMATCH_ERROR);
 
-        // 비밀번호와 비밀번호 확인 데이터가 다르면 예외 발생 (회원가입에 사용한 에러 사용)
-        if(!password.equals(passwordCheck))
-            throw new BusinessException(BusinessExceptionCode.PASSWORD_CHECK_ERROR);
-
         CustomUserDetails updateUserDetails =
                 CustomUserDetails.builder()
                         .email(dto.getEmail())
                         .nickname(dto.getNickname())
-                        .password(passwordEncoder.encode(dto.getPassword()))
                         .build();
 
         // CustomUserDetailsManager 의 updateUser 메서드를 호출해서 유저를 등록 (UserDetails 객체 전달 필요)
         manager.updateUser(updateUserDetails, dto.getAccountId());
 
         return dto;
+    }
+
+    // 비밀번호 변경 메서드
+    public void changePassword(String accountId, ChangePasswordRequestDto dto) {
+        String password = dto.getPassword();
+        String passwordCheck = dto.getPasswordCheck();
+
+        // 비밀번호와 비밀번호 확인 데이터가 다르면 예외 발생 (회원가입에 사용한 에러 사용)
+        if(!password.equals(passwordCheck))
+            throw new BusinessException(BusinessExceptionCode.PASSWORD_CHECK_ERROR);
+
+        // 비밀번호 값이 null 일 경우 (입력하지 않고 요청을 보냈을 경우)
+        if(password == null || password.trim().isEmpty()) {
+            throw new BusinessException(BusinessExceptionCode.EMPTY_PASSWORD_ERROR);
+        }
+
+        // 비밀번호 길이 검증 후 8자리 미만 시 예외 발생
+        if(password.length() < 8) {
+            throw new BusinessException(BusinessExceptionCode.PASSWORD_LENGTH_ERROR);
+        }
+
+        CustomUserDetails userDetails =
+                CustomUserDetails.builder()
+                        .password(passwordEncoder.encode(dto.getPassword()))
+                        .build();
+
+        // CustomUserDetailsManager 의 updateUser 메서드를 호출해서 유저를 등록 (UserDetails 객체 전달 필요)
+        manager.changePassword(accountId, userDetails.getPassword());
     }
 
     // User 삭제 메서드
@@ -200,5 +232,22 @@ public class UserService {
         Page<BoardAllResponseDto> boardDto = board.map(BoardAllResponseDto::fromBookmarkEntity);
 
         return boardDto;
+    }
+
+    // 아이디 중복 확인
+    public boolean existsByAccountId(String accountId) {
+        log.info(repository.existsByAccountId(accountId).toString());
+        return repository.existsByAccountId(accountId);
+    }
+
+    // 닉네임 중복 확인
+    public boolean existsByNickname(String nickname) {
+        return repository.existsByNickname(nickname);
+    }
+
+    // 이메일 중복 확인
+    public boolean existsByEmail(String email) {
+        log.info(repository.existsByEmail(email).toString());
+        return repository.existsByEmail(email);
     }
 }

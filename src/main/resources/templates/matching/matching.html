@@ -30,13 +30,13 @@
                     <div class="col-sm-7 text-left">
                         <div class="radio">
                             <label>
-                                <input type="radio" name="mode" value="solo" checked> 솔로랭크
+                                <input type="radio" v-model="mode" name = "mode" value="solo" checked> 솔로랭크
                             </label>
                             <label>
-                                <input type="radio" name="mode" value="flex"> 자유랭크
+                                <input type="radio" v-model="mode" name = "mode" value="flex"> 자유랭크
                             </label>
                             <label>
-                                <input type="radio" name="mode" value="wind"> 칼바람
+                                <input type="radio" v-model="mode" name = "mode" value="wind"> 칼바람
                             </label>
                         </div>
                     </div>
@@ -46,19 +46,19 @@
                     <div class="col-sm-7 text-left">
                         <div class="radio">
                             <label>
-                                <input type="radio" name="myLine" value="top" checked> 탑
+                                <input type="radio" v-model="myLine" name = "myLine" value="TOP" checked> 탑
                             </label>
                             <label>
-                                <input type="radio" name="myLine" value="mid"> 미드
+                                <input type="radio" v-model="myLine" name = "myLine" value="MIDDLE"> 미드
                             </label>
                             <label>
-                                <input type="radio" name="myLine" value="jungle"> 정글
+                                <input type="radio" v-model="myLine" name = "myLine" value="JUNGLE"> 정글
                             </label>
                             <label>
-                                <input type="radio" name="myLine" value="ad"> 원딜
+                                <input type="radio" v-model="myLine" name = "myLine" value="BOTTOM"> 원딜
                             </label>
                             <label>
-                                <input type="radio" name="myLine" value="sup"> 서폿
+                                <input type="radio" v-model="myLine" name = "myLine" value="UTILITY"> 서폿
                             </label>
                         </div>
                     </div>
@@ -68,19 +68,19 @@
                     <div class="col-sm-7 text-left">
                         <div class="radio">
                             <label>
-                                <input type="radio" name="duoLine" value="top" checked> 탑
+                                <input type="radio" v-model="duoLine" name = "duoLine" value="TOP" checked> 탑
                             </label>
                             <label>
-                                <input type="radio" name="duoLine" value="mid"> 미드
+                                <input type="radio" v-model="duoLine" name = "duoLine" value="MIDDLE"> 미드
                             </label>
                             <label>
-                                <input type="radio" name="duoLine" value="jungle"> 정글
+                                <input type="radio" v-model="duoLine" name = "duoLine" value="JUNGLE"> 정글
                             </label>
                             <label>
-                                <input type="radio" name="duoLine" value="ad"> 원딜
+                                <input type="radio" v-model="duoLine" name = "duoLine" value="BOTTOM"> 원딜
                             </label>
                             <label>
-                                <input type="radio" name="duoLine" value="sup"> 서폿
+                                <input type="radio" v-model="duoLine" name = "duoLine" value="UTILITY"> 서폿
                             </label>
                         </div>
                     </div>
@@ -88,17 +88,17 @@
             </form>
             <div class="form-group text-center col-sm-12">
 <!--                id="btn-start-matching"-->
-                <button class="btn btn-default btn-lg" type="button" @click="toggleMatching">{{ matchingButtonLabel }}</button>
+                <button class="btn btn-default btn-lg" type="button" @click="startMatching">매칭시작</button>
             </div>
         </div>
         <!-- 추가 구현 필요 -->
-        <div class="matching-block">
+        <div class="matching-block" id ="div-matching">
             <p>여기에 매칭된 전적 요소가 나옵니다.</p>
         </div>
         <div>
             <button class="btn btn-default" id="btn-matching-accept"
-                    onclick="window.open('/chat','_blank', 'scrollbars=yes, resizable=yes, location=no, width=800,height=800');">수락</button>
-            <button class="btn btn-default" id="btn-matching-reject">거절</button>
+                    @click="matchingAccept">수락</button>
+            <button class="btn btn-default" id="btn-matching-reject" @click="matchingReject">거절</button>
         </div>
 
 
@@ -114,6 +114,6 @@
         $('#header-bar').html(data);
     })
 </script>
-<script src="/static/js/matching.js"></script>
+<script src="/static/js/matching.js" type="module"></script>
 </body>
 </html>

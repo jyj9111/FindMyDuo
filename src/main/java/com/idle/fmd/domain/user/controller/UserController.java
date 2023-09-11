@@ -44,8 +44,7 @@ public class UserController {
     // OAuth 로그인 유저 토큰 발급
     @GetMapping("/oauth")
     public UserLoginResponseDto oauthLogin(@RequestParam("token") String token) {
-        return new UserLoginResponseDto(token);
-
+        return userService.loginForOauthUser(token);
     }
 
     // 인증 메일 발송
@@ -93,6 +92,15 @@ public class UserController {
         return userService.update(accountId, dto);
     }
 
+    // 비밀번호 변경
+    @PutMapping("/mypage/change-password")
+    public String changePassword(
+            Authentication authentication,
+            @RequestBody ChangePasswordRequestDto dto) {
+        userService.changePassword(authentication.getName(), dto);
+        return "변경이 완료되었습니다.";
+    }
+
     // 마이페이지 회원 탈퇴 (유저 정보 삭제)
     @DeleteMapping("/mypage")
     public void UserDelete(Authentication authentication) {
@@ -114,5 +122,23 @@ public class UserController {
     @GetMapping("/bookmark")
     public Page<BoardAllResponseDto> findBookmark(Authentication authentication, @PageableDefault(size = 20, sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
         return userService.findBookmark(authentication.getName(), pageable);
+    }
+
+    // 아이디 중복 확인
+    @GetMapping("/check/accountId")
+    public boolean existsByAccountId(@RequestParam("accountId") String accountId) {
+        return userService.existsByAccountId(accountId);
+    }
+
+    // 닉네임 중복 확인
+    @GetMapping("/check/nickname")
+    public boolean existsByNickname(@RequestParam("nickname") String nickname) {
+        return userService.existsByNickname(nickname);
+    }
+
+    // 이메일 중복 확인
+    @GetMapping("/check/email")
+    public boolean existsByEmail(@RequestParam("email") String email) {
+        return userService.existsByEmail(email);
     }
 }

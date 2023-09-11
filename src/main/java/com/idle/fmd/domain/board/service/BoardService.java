@@ -3,8 +3,6 @@ package com.idle.fmd.domain.board.service;
 import com.idle.fmd.domain.board.dto.*;
 import com.idle.fmd.domain.board.entity.*;
 import com.idle.fmd.domain.board.repo.*;
-import com.idle.fmd.domain.comment.entity.CommentEntity;
-import com.idle.fmd.domain.comment.repo.CommentRepository;
 import com.idle.fmd.domain.user.entity.UserEntity;
 import com.idle.fmd.domain.user.repo.UserRepository;
 import com.idle.fmd.global.utils.FileHandler;
@@ -13,12 +11,14 @@ import com.idle.fmd.global.error.exception.BusinessExceptionCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 
@@ -29,12 +29,8 @@ public class BoardService {
 
     private final BoardRepository boardRepository;
     private final UserRepository userRepository;
-    private final CommentRepository commentRepository;
     private final FileHandler fileHandler;
     private final FileRepository fileRepository;
-    private final LikeBoardRepository likeBoardRepository;
-    private final BookmarkRepository bookmarkRepository;
-    private final ReportRepository reportRepository;
 
     public void boardCreate(BoardCreateDto dto, List<MultipartFile> images, String accountId) {
 
@@ -132,25 +128,6 @@ public class BoardService {
             throw new BusinessException(BusinessExceptionCode.NOT_MATCHES_USER_ERROR);
         }
 
-        List<FileEntity> files = fileRepository.findAllByBoardId(boardId);
-        fileRepository.deleteAll(files);
-
-        // 게시글 삭제 전에 해당 게시글의 댓글들을 삭제
-        List<CommentEntity> commentsToDelete = commentRepository.findAllByBoardId(boardId);
-        commentRepository.deleteAll(commentsToDelete);
-
-        // 게시글 삭제 전에 해당 좋아요 삭제
-        List<LikeBoardEntity> likeBoard = likeBoardRepository.findAllByBoardId(boardId);
-        likeBoardRepository.deleteAll(likeBoard);
-
-        // 게시글 삭제 전에 해당 즐겨찾기 삭제
-        List<BookmarkEntity> bookmarkBoard = bookmarkRepository.findAllByBoardId(boardId);
-        bookmarkRepository.deleteAll(bookmarkBoard);
-
-        // 게시글 삭제 전에 신고 삭제
-        List<ReportEntity> reports = reportRepository.findAllByBoardId(boardId);
-        reportRepository.deleteAll(reports);
-
         // 경로에 있는 파일 삭제
         deleteBoardImageDirectory(boardId);
         log.info("게시글이 삭제되었습니다.");
@@ -175,7 +152,8 @@ public class BoardService {
         UserEntity user = userRepository.findByNickname(nickname);
         if (user == null) {
             log.info("존재 하지 않는 사용자 입니다.");
-            throw new BusinessException(BusinessExceptionCode.NOT_EXIST_USER_ERROR);
+            List<BoardAllResponseDto> emptyList = Collections.emptyList();
+            return new PageImpl<>(emptyList, pageable, 0);
         }
         Page<BoardEntity> searchUserResult = boardRepository.findByUser(user, pageable);
         return searchUserResult.map(BoardAllResponseDto::fromBoardEntity);
@@ -219,6 +197,9 @@ public class BoardService {
 
     // 조회수 카운팅
     public void boardView(Long id) {
+        if (!boardRepository.existsById(id)) {
+            throw new BusinessException(BusinessExceptionCode.NOT_EXISTS_BOARD_ERROR);
+        }
         BoardEntity boardEntity = boardRepository.findById(id).get();
         boardRepository.updateViewCount(boardEntity.getView() + 1, boardEntity.getId());
     }
@@ -230,8 +211,4 @@ public class BoardService {
         Page<BoardAllResponseDto> boardAllResponseDtos = boardEntities.map(BoardAllResponseDto::fromBoardEntity);
         return boardAllResponseDtos;
     }
-
-
-
-
 }

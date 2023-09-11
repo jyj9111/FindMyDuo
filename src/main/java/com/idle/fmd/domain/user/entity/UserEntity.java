@@ -1,6 +1,10 @@
 package com.idle.fmd.domain.user.entity;
 
 
+import com.idle.fmd.domain.board.entity.BookmarkEntity;
+import com.idle.fmd.domain.board.entity.LikeBoardEntity;
+import com.idle.fmd.domain.board.entity.ReportEntity;
+import com.idle.fmd.domain.comment.entity.CommentEntity;
 import com.idle.fmd.domain.lol.entity.LolAccountEntity;
 import com.idle.fmd.domain.board.entity.BoardEntity;
 
@@ -50,8 +54,20 @@ public class UserEntity {
     @OneToOne(mappedBy = "user", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private LolAccountEntity lolAccount;
 
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<BoardEntity> boards = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE)
+    private List<CommentEntity> comments = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE)
+    private List<BookmarkEntity> bookmarks = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE)
+    private List<LikeBoardEntity> likeBoards = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE)
+    private List<ReportEntity> reports = new ArrayList<>();
 
     // CustomUserDetails -> UserEntity 변환 정적 팩토리 메소드
     public static UserEntity fromCustomUserDetails(CustomUserDetails userDetails) {
@@ -66,10 +82,14 @@ public class UserEntity {
     }
 
     // UserEntity 업데이트 메소드
-    public void updateUser(String password, String email, String nickname) {
-        this.password = password;
+    public void updateUser(String email, String nickname) {
         this.email = email;
         this.nickname = nickname;
+    }
+
+    // UserEntity 비밀번호 변경 메소드
+    public void changePassword(String password) {
+        this.password = password;
     }
 
     // User 프로필 업데이트 메소드
