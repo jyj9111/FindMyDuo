@@ -9,4 +9,6 @@ public interface LolAccountRepository extends JpaRepository<LolAccountEntity, In
     Optional<LolAccountEntity> findBySummonerId(String summonerId);
 
     Optional<LolAccountEntity> findByPuuid(String puuid);
+
+    Boolean existsByName(String name);
 }
