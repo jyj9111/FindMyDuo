@@ -68,4 +68,18 @@ public class FileHandler {
             }
         }
     }
+
+    // 챔피언 이름을 입력받아 해당 챔피언 이미지 url경로 반환 메서드
+    public String getChampionImgPath(String champ) {
+        String path = "/images/lol/champion/" + champ + ".png";
+        String url = "";
+        try {
+            url = awsS3Service.download(path);
+        } catch (Exception error) {
+            log.error(error.getMessage());
+            error.printStackTrace();
+            throw new BusinessException(BusinessExceptionCode.CANNOT_BRING_CHAMPION_IMAGE_ERROR);
+        }
+        return url;
+    }
 }
