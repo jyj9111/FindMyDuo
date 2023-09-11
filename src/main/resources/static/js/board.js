@@ -15,7 +15,7 @@ new Vue({
         isUnAuthorizedUser: false, // 작성자 아닌지 체크(신고)
         isLike: '',
         isBookmark: '',
-        nickname: ''
+        nickName: ''
     },
     async created() {
         const url = window.location.href.split("/");
@@ -24,7 +24,7 @@ new Vue({
         axios.get('/board/' + this.boardId)
             .then(response => {
                 this.board = response.data;
-                this.nickname = response.data.nickname;
+                this.nickName = response.data.nickName;
                 this.comments = response.data.comments;
                 this.images = response.data.images;
                 this.accountId = response.data.accountId;
@@ -160,7 +160,7 @@ new Vue({
             }
         },
         isCommentAuthor(commentNickname) {
-            const userNickname = localStorage.getItem('sender');
+            const userNickname = localStorage.getItem('nickname');
             console.log(userNickname);
             return userNickname === commentNickname;
         }
