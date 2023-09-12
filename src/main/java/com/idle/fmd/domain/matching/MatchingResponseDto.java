@@ -16,6 +16,7 @@ public class MatchingResponseDto {
     private String myLine;
     private String tier;
     private String rank;
+    private String tierImg;
     private String mostOne;
     private String mostTwo;
     private String mostThree;

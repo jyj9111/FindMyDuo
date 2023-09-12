@@ -86,7 +86,6 @@ public class MatchingHandler extends TextWebSocketHandler {
             session.close();
         } else {
             session.getAttributes().remove("destination");
-            destination.getAttributes().remove("answer");
             TextMessage textMessage = new TextMessage("continue");
             session.sendMessage(textMessage);
         }
@@ -198,6 +197,8 @@ public class MatchingHandler extends TextWebSocketHandler {
             attributes.put("mostThree", 0);
         }
 
+        attributes.put("tierImg", fileHandler.getTierImgPath(session.getAttributes().get("tier").toString()));
+
         // 매칭 대기열에 추가
         sessions.add(session);
 
@@ -245,8 +246,12 @@ public class MatchingHandler extends TextWebSocketHandler {
         if (myEntity.getLolAccount() != null) {
             List<LolMatchEntity> lolMatchEntities = myEntity.getLolAccount().getLolMatch();
             for (LolMatchEntity match : lolMatchEntities) {
-                if(match.getGameMode().equals(mySession.getAttributes().get("mode")))
-                myMatchList.add(match.entityToDto());
+                if(match.getGameMode().equals(mySession.getAttributes().get("mode"))){
+                    LolMatchDto lolMatchDto = match.entityToDto();
+                    lolMatchDto.setChampion(fileHandler.getChampionImgPath(lolMatchDto.getChampion()));
+                    lolMatchDto.setTeamPosition(fileHandler.getTierImgPath(lolMatchDto.getTeamPosition()));
+                    myMatchList.add(lolMatchDto);
+                }
             }
         }
 
@@ -259,6 +264,7 @@ public class MatchingHandler extends TextWebSocketHandler {
                 mySession.getAttributes().get("myLine").toString(),
                 mySession.getAttributes().get("tier").toString(),
                 mySession.getAttributes().get("rank").toString(),
+                mySession.getAttributes().get("tierImg").toString(),
                 mySession.getAttributes().get("mostOne").toString(),
                 mySession.getAttributes().get("mostTwo").toString(),
                 mySession.getAttributes().get("mostThree").toString(),
