@@ -107,6 +107,9 @@ new Vue({
 
             // 계정 연동 요청
             token = await isValidateToken()
+
+            alert('롤 계정 연동하는 데 최대 1분의 시간이 소요될 수 있습니다. \n' +
+                '확인을 누른 후, 연동하는 동안 다른 작업을 수행하지 마십시오.');
             await axios.post('/lol/save', null, {
                 params: {
                     lolNickname: this.lolNickname.replaceAll(" ", "")
@@ -179,11 +182,8 @@ new Vue({
         async checkNickname() {
             token = await isValidateToken()
             const nickname = this.nickname;
-            const response = await axios.get('/users/check-nickname', {
+            const response = await axios.get('/users/check/nickname', {
                 params: {nickname},
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                }
             });
 
             console.log(response.data);

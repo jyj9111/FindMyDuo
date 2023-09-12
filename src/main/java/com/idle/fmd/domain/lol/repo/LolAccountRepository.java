@@ -10,5 +10,5 @@ public interface LolAccountRepository extends JpaRepository<LolAccountEntity, In
 
     Optional<LolAccountEntity> findByPuuid(String puuid);
 
-    Boolean existsByName(String name);
+    boolean existsByAccountId(String accountId);
 }
