@@ -11,6 +11,12 @@ new Vue({
         images: []
     },
     async created() {
+        if (!token) {
+            alert('로그인 후 이용해주세요.')
+            location.href = '/login';
+            return;
+        }
+
         const url = window.location.href.split("/");
         this.boardId = url[url.length - 1];
 
