@@ -14,6 +14,7 @@ new Vue({
                 password: this.password
             }).then(response => {
                 const token = response.data.token
+                const profileImage = response.data.profileImage
                 if (token == null) {
                     alert(response.data)
                     // 로그인에 실패하면 login 페이지로 다시 이동
@@ -21,6 +22,11 @@ new Vue({
                 } else {
                     localStorage.setItem("token", token);
                     localStorage.setItem("nickname", response.data.nickname);
+                    if(profileImage != null) {
+                        localStorage.setItem("profileImage", profileImage);
+                    } else {
+                        localStorage.setItem("profileImage", "/static/css/images/profile.png")
+                    }
                     location.href = "/main";
                 }
             }).catch(error => {
