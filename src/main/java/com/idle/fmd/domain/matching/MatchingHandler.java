@@ -140,6 +140,7 @@ public class MatchingHandler extends TextWebSocketHandler {
         attributes.put("mode", mode);
         attributes.put("myLine", myLine);
         attributes.put("duoLine", duoLine);
+        attributes.put("profileImg", userEntity.getProfileImage());
 
         if (userEntity.getLolAccount() != null) {
             attributes.put("lolNickname", userEntity.getLolAccount().getName());
@@ -252,6 +253,7 @@ public class MatchingHandler extends TextWebSocketHandler {
         // 매칭 성공 시 응답 DTO 를 통해서 상대방에게 전달할 데이터를 준비
         MatchingResponseDto myInfo = new MatchingResponseDto(
                 mySession.getAttributes().get("nickname").toString(),
+                mySession.getAttributes().get("profileImg").toString(),
                 mySession.getAttributes().get("lolNickname").toString(),
                 mySession.getAttributes().get("mode").toString(),
                 mySession.getAttributes().get("myLine").toString(),

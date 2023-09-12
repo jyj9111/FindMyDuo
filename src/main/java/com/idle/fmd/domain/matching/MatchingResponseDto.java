@@ -10,6 +10,7 @@ import java.util.List;
 @AllArgsConstructor
 public class MatchingResponseDto {
     private String nickname;
+    private String profileImg;
     private String lolNickname;
     private String mode;
     private String myLine;
