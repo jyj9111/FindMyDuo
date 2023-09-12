@@ -6,28 +6,42 @@ let token = localStorage.getItem('token');
 new Vue({
     el: "#board-app",
     data: {
-        board: {},
         boardId: '',
         comments: [],
         images: [],
         accountId: '',
+        title: '',
+        content: '',
         isAuthorizedUser: false, // 작성자인지 체크
         isUnAuthorizedUser: false, // 작성자 아닌지 체크(신고)
         isLike: '',
         isBookmark: '',
-        nickname: ''
+        nickName: '',
+        modifiedAt: ''
     },
     async created() {
         const url = window.location.href.split("/");
         this.boardId = url[url.length - 1];
 
-        axios.get('/board/' + this.boardId)
+        await axios.get('/board/' + this.boardId)
             .then(response => {
-                this.board = response.data;
-                this.nickname = response.data.nickname;
+                this.title = response.data.title;
+                document.title = `${response.data.title}`;
+                this.content = response.data.content;
+                this.nickName = response.data.nickName;
                 this.comments = response.data.comments;
                 this.images = response.data.images;
                 this.accountId = response.data.accountId;
+                this.modifiedAt = processDate(response.data.modifiedAt);
+
+                console.log('게시판 수정시간 : ' + this.modifiedAt);
+
+                // 댓글시간 포맷팅
+                for (let i = 0; i < this.comments.length; i++) {
+                    console.log(this.comments[i].modifiedAt);
+                    let temp = processDate(this.comments[i].modifiedAt);
+                    this.comments[i].modifiedAt = temp;
+                }
 
                 if (this.accountId === jwtToAccountId() && jwtToAccountId !== null) {
                     this.isAuthorizedUser = true;
@@ -41,6 +55,9 @@ new Vue({
                 alert(error.response.data.message);
                 location.href = '/board/view';
             });
+    },
+    mounted() {
+        document.title = this.title;
     },
     methods: {
         // 게시판 수정버튼 클릭시 수정페이지로
@@ -160,9 +177,17 @@ new Vue({
             }
         },
         isCommentAuthor(commentNickname) {
-            const userNickname = localStorage.getItem('sender');
+            const userNickname = localStorage.getItem('nickname');
             console.log(userNickname);
             return userNickname === commentNickname;
         }
     },
 });
+
+function processDate (data) {
+    const splitDate = data.split('T');
+    const date = splitDate[0].split('-');
+    const time = splitDate[1].split('.');
+
+    return date[0]+'년 '+date[1]+'월 '+date[2]+'일 '+time[0];
+}

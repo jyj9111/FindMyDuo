@@ -39,8 +39,10 @@ new Vue({
                 alert("같은 역할군 간의 매칭은 불가능합니다.")
                 return
             }
-
-            webSocket = await new WebSocket(`ws://localhost:8080/ws/matching?Authorization=${token}&mode=${this.mode}&myLine=${this.myLine}&duoLine=${this.duoLine}`);
+            const host = window.location.hostname;
+            const port = window.location.port;
+            const wsUrl = 'ws://'+host+':'+port+'/ws/matching?Authorization='+token+'&mode='+this.mode+'&myLine='+this.myLine+'&duoLine='+this.duoLine;
+            webSocket = await new WebSocket(wsUrl);
 
             webSocket.onmessage = (msg) => {
                 console.log(msg)
@@ -77,14 +79,16 @@ new Vue({
                     } else {
                         localStorage.setItem('roomId', data.roomId);
                         localStorage.setItem('discordUrl', data.discordUrl)
-                        const url = "http://localhost:8080" + data.url;
+                        const rName = data.roomName;
+                        const other = rName.replace(localStorage.getItem('nickname'), "").replace("-","");
+                        console.log('other: '+ other);
+                        localStorage.setItem('other', other);
                         window.open('/chat/room/enter','_blank', 'scrollbars=yes, resizable=yes, location=no, width=800,height=800');
                     }
                 } catch (e) {
                     const data = msg.data
-                    const chatMessage = document.createElement("div")
-                    const message = document.createElement("p")
-                    // message.innerText = data.username + ": " + data.message
+                    const chatMessage = document.createElement("div");
+                    const message = document.createElement("p");
                     message.innerText = data;
 
                     chatMessage.appendChild(message)
