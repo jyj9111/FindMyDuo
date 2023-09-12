@@ -138,6 +138,7 @@ new Vue({
                     console.log(this.boardId);
                     console.log(url);
                     alert('신고');
+                    location.href = '/board/view';
                 })
         },
         // 댓글 작성
