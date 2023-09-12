@@ -21,6 +21,11 @@ new Vue({
                 .then(res => {
                     this.content = res.data.content;
                     this.totalPages = res.data.totalPages; // 전체 페이지 수 업데이트
+                    for (let i = 0; i < this.content.length; i++) {
+                        console.log(this.content[i].modifiedAt);
+                        let temp = processDate(this.content[i].modifiedAt);
+                        this.content[i].modifiedAt = temp;
+                    }
                 })
                 .catch(error => console.error(error));
         },
@@ -52,3 +57,11 @@ new Vue({
         this.fetchContent();
     }
 });
+
+function processDate (data) {
+    const splitDate = data.split('T');
+    const date = splitDate[0].split('-');
+    const time = splitDate[1].split('.');
+
+    return date[0]+'년 '+date[1]+'월 '+date[2]+'일 '+time[0];
+}
