@@ -31,6 +31,8 @@ public class BoardResponseDto {
 
     private Integer view;
 
+    private Integer reported;
+
     public static BoardResponseDto fromEntity(BoardEntity board) {
         BoardResponseDto boardResponseDto = new BoardResponseDto();
         boardResponseDto.setId(board.getId());
@@ -41,6 +43,7 @@ public class BoardResponseDto {
         boardResponseDto.setLiked(board.getLiked());
         boardResponseDto.setContent(board.getContent());
         boardResponseDto.setView(board.getView());
+        boardResponseDto.setReported(board.getReported());
 
         List<String> images = new ArrayList<>();
         for (FileEntity entity : board.getFiles()) {

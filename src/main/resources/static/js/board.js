@@ -17,7 +17,8 @@ new Vue({
         isLike: '',
         isBookmark: '',
         nickName: '',
-        modifiedAt: ''
+        modifiedAt: '',
+        reported: ''
     },
     async created() {
         const url = window.location.href.split("/");
@@ -33,6 +34,7 @@ new Vue({
                 this.images = response.data.images;
                 this.accountId = response.data.accountId;
                 this.modifiedAt = processDate(response.data.modifiedAt);
+                this.reported = response.data.reported;
 
                 console.log('게시판 수정시간 : ' + this.modifiedAt);
 
@@ -135,10 +137,13 @@ new Vue({
                 },
             })
                 .then(response => {
+                    this.reported = response.data.reported;
                     console.log(this.boardId);
                     console.log(url);
                     alert('신고');
-                    location.href = '/board/view';
+                    if (this.reported > 1) {
+                        location.href = '/board/view';
+                    }
                 })
         },
         // 댓글 작성
