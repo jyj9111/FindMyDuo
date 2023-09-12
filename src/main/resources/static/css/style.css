@@ -1,29 +1,28 @@
-/*. {*/
-/*    overflow: auto;*/
-/*}*/
-
 /* 사이드바 */
 .sidenav {
-    background-color: #f1f1f1;
     position: fixed;
-    width: 200px;
+    width: 250px;
     height: 100%;
-    margin-left: -20px;
-    margin-top: 50px;
+    margin-top: 70px;
     display: flex;
     flex-direction: column;
     align-items: center;
+    font-family: 'Noto Sans KR', sans-serif;
 }
 
 /* 본문 */
 .page {
-    margin-top: 50px;
-    margin-left: 250px;
+    margin-top: 120px;
+    margin-left: 280px;
+    margin-bottom: 50px;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    height: calc(100vh - 50px);
+    /*height: calc(100vh - 50px);*/
+
+    font-family: 'Noto Sans KR', sans-serif;
+    font-size: 17px;
 }
 
 .table-page {
@@ -35,15 +34,38 @@
     justify-content: center;
 }
 
-.btn {
+.profile-container {
+    border: 1px lightgray solid;
+    border-radius: 10px; /* 모서리 둥글게 */
+    padding: 10px;
+}
+
+.profile-block {
+    height: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 10px;
     margin-bottom: 10px;
 }
+
+.form-horizontal {
+    margin: 10px;
+}
+
 
 .btn-custom {
     color: black;
     margin-bottom: 10px;
     padding: 10px 30px;
     background: #f1f0f0;
+}
+
+.btn-login-custom {
+    color: black;
+    /*background-color: aliceblue;*/
+    border: 1px lightgray solid;
+    border-radius: 10px; /* 모서리 둥글게 */
 }
 
 .title-btn {
@@ -107,4 +129,10 @@
 .h5.login{
     text-align: center;
     margin-bottom: 16px;
+}
+
+.info-text {
+    background-color: #F5F5F5;
+    font-size: 25px;
+    margin-bottom: 30px;
 }

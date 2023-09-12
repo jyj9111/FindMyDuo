@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 public class UserLoginResponseDto {
     private String token;
     private String nickname;
+    private String profileImage;
 
     public UserLoginResponseDto(String token) {
         this.token = token;
