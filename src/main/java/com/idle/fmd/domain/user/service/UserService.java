@@ -102,7 +102,7 @@ public class UserService {
         String token = jwtTokenUtils.generateToken(userDetails);
         redisUtil.issueRefreshToken(token);
 
-        return new UserLoginResponseDto(token, userDetails.getNickname());
+        return new UserLoginResponseDto(token, userDetails.getNickname(), userDetails.getProfileImage());
     }
 
     // Oauth 로그인 유저를 위한 메서드
@@ -115,7 +115,7 @@ public class UserService {
         String accountId = jwtTokenUtils.parseClaims(token).getSubject();
         // UserDetails에서 nickname 추출
         CustomUserDetails userDetails = (CustomUserDetails)manager.loadUserByUsername(accountId);
-        return new UserLoginResponseDto(token, userDetails.getNickname());
+        return new UserLoginResponseDto(token, userDetails.getNickname(), userDetails.getProfileImage());
     }
 
     // 이메일 인증 메일을 보내는 메서드
@@ -227,9 +227,10 @@ public class UserService {
     }
 
     // 프로필 이미지 변경 메서드
-    public void uploadProfileImage(String accountId, MultipartFile image) {
+    public String uploadProfileImage(String accountId, MultipartFile image) {
         String imageUrl = fileHandler.getProfileFilePath(accountId, image);
         manager.updateProfileImage(accountId, imageUrl);
+        return imageUrl;
     }
 
     // 회원 탈퇴 시 프로필 이미지 디렉토리 삭제 메서드
