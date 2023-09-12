@@ -33,7 +33,6 @@ new Vue({
                 title: '로그인 후 이용해 주세요',
                 confirmButtonText: '확인'
             }).then((result) => {
-                /* Read more about isConfirmed, isDenied below */
                 if (result.isConfirmed) {
                     Swal.fire('Saved!', '', 'success')
                 }

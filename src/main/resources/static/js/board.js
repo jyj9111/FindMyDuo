@@ -267,7 +267,6 @@ new Vue({
             })
                 .then(response => {
                     this.nickname = response.data.nickname;
-                    alert(this.nickname + '님 댓글 작성 완료');
                     location.href = '/board/view/' + this.boardId;
                 })
         },
@@ -275,22 +274,40 @@ new Vue({
         async deleteComment(commentId, nickname) {
             const url = '/board/' + this.boardId + '/comment/' + commentId;
 
-                if (confirm('댓글을 삭제하시겠습니까?')) {
-                    token = await isValidateToken()
+            const result = await Swal.fire({
+                title: '댓글 삭제',
+                text: '댓글을 삭제하시겠습니까?',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: '삭제',
+                cancelButtonText: '취소',
+            });
+
+            if (result.isConfirmed) {
+                try {
+                    token = await isValidateToken();
                     await axios.delete(url, {
                         headers: {
                             'Authorization': `Bearer ${token}`
                         },
-                    })
-                        .then(response => {
-                            if (this.nickname === nickname && jwtToAccountId !== null) {
-                                console.log('댓글 삭제 완료');
-                                alert('댓글 삭제 완료');
+                    });
+
+                    if (this.nickname === nickname && jwtToAccountId !== null) {
+                        console.log('댓글 삭제 완료');
+                        Swal.fire({
+                            icon: 'success',
+                            title: '댓글 삭제완료'
+                        }).then((result) => {
+                            if (result.isConfirmed) {
                                 location.href = '/board/view/' + this.boardId;
                             }
-                        })
+                        });
+                    }
+                } catch (error) {
+                    console.error(error.message);
                 }
-            },
+            }
+        },
             isCommentAuthor(commentNickname) {
                 const userNickname = localStorage.getItem('nickname');
                 console.log(userNickname);
