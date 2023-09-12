@@ -1,3 +1,5 @@
+let token = localStorage.getItem('token');
+
 new Vue({
     el: '#board-list-app',
     data: {
@@ -43,7 +45,13 @@ new Vue({
             this.fetchContent(); // 검색 수행
         },
         async redirectToWritePage() {
-            location.href = "/board/form/write"; // 게시판 작성페이지로 이동
+            console.log('token 확인 : ' + token);
+            if (!token) {
+                alert('게시물 작성은 로그인 후 사용 가능합니다.');
+                location.href = "/login";
+            } else {
+                location.href = "/board/form/write"; // 게시판 작성페이지로 이동
+            }
         },
         // 페이지 이동 함수 추가
         goToPage(page) {
