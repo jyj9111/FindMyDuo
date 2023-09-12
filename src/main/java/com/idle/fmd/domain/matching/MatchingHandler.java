@@ -145,7 +145,7 @@ public class MatchingHandler extends TextWebSocketHandler {
             attributes.put("lolNickname", userEntity.getLolAccount().getName());
 
             // 모드에 따라 티어 속성을 다르게 설정 ( 솔랭 또는 자유랭 티어 )
-            if (mode.equals("solo")) {
+            if (mode.equals("SOLO")) {
                 attributes.put("tier", userEntity.getLolAccount().getLolInfo().getSoloTier());
                 if(tierReader.soloTierToNumber(attributes.get("tier").toString()) == -1){
                     throw new RuntimeException("마스터 이상의 티어는 듀오를 할 수 없습니다.");
@@ -155,7 +155,7 @@ public class MatchingHandler extends TextWebSocketHandler {
                 attributes.put("totalLoses", userEntity.getLolAccount().getLolInfo().getSoloLosses());
             }
 
-            if (mode.equals("flex")) {
+            if (mode.equals("FLEX")) {
                 attributes.put("tier", userEntity.getLolAccount().getLolInfo().getFlexTier());
                 attributes.put("rank", userEntity.getLolAccount().getLolInfo().getFlexRank());
                 attributes.put("totalWins", userEntity.getLolAccount().getLolInfo().getFlexWins());
@@ -220,8 +220,8 @@ public class MatchingHandler extends TextWebSocketHandler {
                 String mode = session.getAttributes().get("mode").toString();
 
                 // 솔로랭크 모드이면 솔로랭크티어, 자유랭크 모드이면 자유랭크 티어를 찾아서 티어조건이 맞는지 확인
-                if (mode.equals("solo")) tierInRange = tierReader.soloTierInRange(myTier, duoTier);
-                if (mode.equals("flex")) tierInRange = tierReader.flexTierInRange(myTier, duoTier);
+                if (mode.equals("SOLO")) tierInRange = tierReader.soloTierInRange(myTier, duoTier);
+                if (mode.equals("FLEX")) tierInRange = tierReader.flexTierInRange(myTier, duoTier);
 
                 // 티어조건이 맞을 때 실행
                 if (tierInRange) {
@@ -244,6 +244,7 @@ public class MatchingHandler extends TextWebSocketHandler {
         if (myEntity.getLolAccount() != null) {
             List<LolMatchEntity> lolMatchEntities = myEntity.getLolAccount().getLolMatch();
             for (LolMatchEntity match : lolMatchEntities) {
+                if(match.getGameMode().equals(mySession.getAttributes().get("mode")))
                 myMatchList.add(match.entityToDto());
             }
         }
