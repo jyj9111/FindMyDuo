@@ -2,7 +2,7 @@
 <html xmlns:v-bind="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="UTF-8">
-    <title>게시판 단일조회</title>
+    <title v-bind:text="title"></title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
     <link rel="stylesheet" href="/static/css/style.css"/>
@@ -19,16 +19,17 @@
 <!--        <div class="board-container">-->
             <div class="form-group col-sm-12">
                 <div class="board-title row">
-                    <p class="form-control-static col-sm-10"><strong>{{board.title}}</strong></p>
+                    <p class="form-control-static col-sm-10"><strong>{{title}}</strong></p>
                     <div class="col-sm-2" v-if="isAuthorizedUser">
                         <button class="btn btn-default title-btn" @click="redirectToEditPage">수정</button>
                         <button class="btn btn-default title-btn" @click="deleteBoard">삭제</button>
                     </div>
                 </div>
-                <p class="help-block col-sm-10"> {{ board.nickName }}님의 게시물</p>
+                <p class="help-block col-sm-10"> {{ nickName }}님의 게시물</p>
+                <p class="help-block col-sm-10"> 수정시간 : {{ modifiedAt }}</p>
             </div>
             <div class="form-group col-sm-12 board-text">
-                <p>{{board.content}}</p>
+                <p>{{content}}</p>
                 <img v-for="name in images" v-bind:src="name" alt="이미지">
             </div>
             <div class="form-group">
