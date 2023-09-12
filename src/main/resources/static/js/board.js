@@ -18,7 +18,8 @@ new Vue({
         isBookmark: '',
         nickName: '',
         modifiedAt: '',
-        reported: ''
+        reported: '',
+        isCommentAuthorizedUser: false
     },
     async created() {
         const url = window.location.href.split("/");
@@ -51,6 +52,11 @@ new Vue({
 
                 if (this.accountId !== jwtToAccountId() && jwtToAccountId() !== null) {
                     this.isUnAuthorizedUser = true;
+                }
+
+                if (jwtToAccountId() !== null) {
+                    this.isCommentAuthorizedUser = true;
+                    console.log('댓글 작성자 여부: ' + this.isCommentAuthorizedUser);
                 }
             })
             .catch((error) => {
