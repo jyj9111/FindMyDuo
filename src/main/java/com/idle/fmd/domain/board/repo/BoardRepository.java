@@ -10,6 +10,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 
 public interface BoardRepository extends JpaRepository<BoardEntity, Long> {
     Page<BoardEntity> findByTitleContainingIgnoreCase(String title, Pageable pageable);
@@ -22,5 +24,6 @@ public interface BoardRepository extends JpaRepository<BoardEntity, Long> {
     @Transactional
     int updateViewCount(@Param("view") Integer view, @Param("id") Long id);
 
+    List<BoardEntity> findAllByUser(UserEntity user);
 }
 

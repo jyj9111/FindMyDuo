@@ -82,4 +82,18 @@ public class FileHandler {
         }
         return url;
     }
+
+    // 티어 이름을 입력받아 해당 티어 이미지 url경로 반환 메서드
+    public String getTierImgPath(String tier) {
+        String path = "/images/lol/tier/" + tier + ".png";
+        String url = "";
+        try {
+            url = awsS3Service.download(path);
+        } catch (Exception error) {
+            log.error(error.getMessage());
+            error.printStackTrace();
+            throw new BusinessException(BusinessExceptionCode.CANNOT_BRING_TIER_IMAGE_ERROR);
+        }
+        return url;
+    }
 }

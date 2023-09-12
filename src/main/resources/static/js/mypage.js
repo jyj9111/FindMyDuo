@@ -38,7 +38,7 @@ new Vue({
                 this.accountId = response.data.accountId;
                 this.email = response.data.email;
                 this.nickname = response.data.nickname;
-                this.createdAt = response.data.createdAt;
+                this.createdAt = processDate(response.data.createdAt);
                 this.lolNickname = response.data.lolNickname;
                 this.profileImage = response.data.profileImage;
             })
@@ -195,3 +195,11 @@ new Vue({
         }
     }
 });
+
+function processDate (data) {
+    const splitDate = data.split('T');
+    const date = splitDate[0].split('-');
+    const time = splitDate[1].split('.');
+
+    return date[0]+'년 '+date[1]+'월 '+date[2]+'일 '+time[0];
+}
