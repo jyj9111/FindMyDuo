@@ -3,9 +3,11 @@ package com.idle.fmd.domain.matching;
 import com.google.gson.Gson;
 import com.idle.fmd.domain.lol.dto.LolMatchDto;
 import com.idle.fmd.domain.lol.entity.LolMatchEntity;
+import com.idle.fmd.domain.lol.repo.LolChampDataRepository;
 import com.idle.fmd.domain.user.entity.UserEntity;
 import com.idle.fmd.domain.user.service.CustomUserDetailsManager;
 import com.idle.fmd.global.auth.jwt.JwtTokenUtils;
+import com.idle.fmd.global.utils.FileHandler;
 import io.jsonwebtoken.Claims;
 
 import jakarta.transaction.Transactional;
@@ -30,6 +32,8 @@ public class MatchingHandler extends TextWebSocketHandler {
     private final JwtTokenUtils jwtTokenUtils;
     private final TierReader tierReader;
     private final MatchingService matchingService;
+    private final LolChampDataRepository lolChampDataRepository;
+    private final FileHandler fileHandler;
     private final Gson gson = new Gson();
     private final List<WebSocketSession> sessions = new ArrayList<>();
 
@@ -159,9 +163,27 @@ public class MatchingHandler extends TextWebSocketHandler {
             }
 
             // 모스트 1/2/3 챔피언 저장
-            attributes.put("mostOne", userEntity.getLolAccount().getLolInfo().getMostOneChamp());
-            attributes.put("mostTwo", userEntity.getLolAccount().getLolInfo().getMostTwoChamp());
-            attributes.put("mostThree", userEntity.getLolAccount().getLolInfo().getMostThreeChamp());
+            String mostOne = fileHandler.getChampionImgPath(
+                    lolChampDataRepository.findByChampCode(
+                            userEntity.getLolAccount().getLolInfo().getMostOneChamp()
+                    ).getChampName()
+            );
+            log.info(mostOne);
+            attributes.put("mostOne", mostOne);
+
+            String mostTwo = fileHandler.getChampionImgPath(
+                    lolChampDataRepository.findByChampCode(
+                            userEntity.getLolAccount().getLolInfo().getMostTwoChamp()
+                    ).getChampName()
+            );
+            attributes.put("mostTwo", mostTwo);
+
+            String mostThree = fileHandler.getChampionImgPath(
+                    lolChampDataRepository.findByChampCode(
+                            userEntity.getLolAccount().getLolInfo().getMostThreeChamp()
+                    ).getChampName()
+            );
+            attributes.put("mostThree", mostThree);
         }
         // 롤 계정이 연동되어 있지 않을 때 속성 설정
         else {
@@ -234,9 +256,9 @@ public class MatchingHandler extends TextWebSocketHandler {
                 mySession.getAttributes().get("myLine").toString(),
                 mySession.getAttributes().get("tier").toString(),
                 mySession.getAttributes().get("rank").toString(),
-                Long.parseLong(mySession.getAttributes().get("mostOne").toString()),
-                Long.parseLong(mySession.getAttributes().get("mostTwo").toString()),
-                Long.parseLong(mySession.getAttributes().get("mostThree").toString()),
+                mySession.getAttributes().get("mostOne").toString(),
+                mySession.getAttributes().get("mostTwo").toString(),
+                mySession.getAttributes().get("mostThree").toString(),
                 Long.parseLong(mySession.getAttributes().get("totalWins").toString()),
                 Long.parseLong(mySession.getAttributes().get("totalLoses").toString()),
                 myMatchList

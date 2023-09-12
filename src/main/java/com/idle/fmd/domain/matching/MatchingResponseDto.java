@@ -15,9 +15,9 @@ public class MatchingResponseDto {
     private String myLine;
     private String tier;
     private String rank;
-    private Long mostOne;
-    private Long mostTwo;
-    private Long mostThree;
+    private String mostOne;
+    private String mostTwo;
+    private String mostThree;
     private Long totalWins;
     private Long totalLoses;
     private List<LolMatchDto> matchList;
