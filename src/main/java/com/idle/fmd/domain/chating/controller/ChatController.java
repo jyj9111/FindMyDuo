@@ -19,7 +19,7 @@ public class ChatController {
     // 채팅방 입장 화면
     @GetMapping("/room/enter")
     public String roomDetail() {
-        return "/matching/chat";
+        return "matching/chat";
     }
 
     // 채팅(STOMP)방 입장, 대화
