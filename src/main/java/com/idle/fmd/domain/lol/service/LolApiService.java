@@ -96,16 +96,18 @@ public class LolApiService {
             throw new BusinessException(BusinessExceptionCode.NOT_EXIST_USER_ERROR);
         }
 
-        // DB에 이미 등록된 닉네임일 경우 예외 발생
-        if (lolAccountRepository.existsByName(summonerName)) {
-            throw new BusinessException(BusinessExceptionCode.DUPLICATED_LOL_NICKNAME_ERROR);
-        }
-
         // 토큰에 있는 유저 정보를 가져옴
         UserEntity user = userRepository.findByAccountId(accountId).get();
 
         // 롤 계정 정보를 가져오는 메서드 호출해서 dto 에 저장
         LolAccountDto lolAccountDto = getSummoner(summonerName);
+
+
+        // DB에 이미 등록된 아이디일 경우 예외 발생
+        String dtoAccountId = lolAccountDto.getAccountId();
+        if (lolAccountRepository.existsByAccountId(dtoAccountId)) {
+            throw new BusinessException(BusinessExceptionCode.DUPLICATED_USER_ERROR);
+        };
 
         // 이미 연동되어 있는 롤 계정이 있다면 연동되어 있던 기존 롤 계정을 지워줌
         if (user.getLolAccount() != null) {
@@ -136,9 +138,6 @@ public class LolApiService {
         Long lolAccountId = lolAccountEntity.getId();
         List<String> matchList = getUserLolMatchId(puuid);
 
-        boolean countSolo = false;
-        boolean countFlex = false;
-
         // 모든 매치 ID를 읽어온다.
         try {
             for (String matchId : matchList) {
@@ -166,7 +165,7 @@ public class LolApiService {
                 lolMatchRepository.save(lolMatchEntity);
             }
         } catch (InterruptedException e) {
-            // 나중에 수정할 것
+            // thread 예외
             e.printStackTrace();
         }
 
