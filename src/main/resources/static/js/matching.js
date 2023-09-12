@@ -15,7 +15,6 @@ new Vue({
         nickname:'',
         lolNickname: '',
         tier:'',
-        rank: '',
         mostOne:'',
         mostTwo: '',
         mostThree:'',
@@ -44,6 +43,9 @@ new Vue({
             const wsUrl = 'ws://'+host+':'+port+'/ws/matching?Authorization='+token+'&mode='+this.mode+'&myLine='+this.myLine+'&duoLine='+this.duoLine;
             webSocket = await new WebSocket(wsUrl);
 
+            document.getElementById("btn-matching-start").style.display = "none"
+            document.getElementById("btn-matching-stop").style.display = ""
+
             webSocket.onmessage = (msg) => {
                 console.log(msg)
                 try {
@@ -52,6 +54,18 @@ new Vue({
                     const message = document.createElement("p")
                     const matches = document.createElement("p")
                     if (data.roomId == undefined) {
+                        this.nickname = data.nickname
+                        this.lolNickname = data.lolNickname
+                        this.tier = data.tier + data.rank
+                        this.mode = data.mode
+                        this.mostOne = data.mostOne
+                        this.mostTwo = data.mostTwo
+                        this.mostThree = data.mostThree
+                        this.totalWins = data.totalWins
+                        this.totalLoses = data.totalLoses
+                        for(let i = 0; i < data.matchList.length; i++){
+                            this.matches.push(data.matchList[i])
+                        }
                         message.innerText = data.username + ": " + data.message
                         message.innerText = "---------- 상대방 정보 ----------\n" +
                             "닉네임: " + data.nickname + "\n" +
@@ -73,6 +87,7 @@ new Vue({
                         chatMessage.appendChild(message)
                         chatMessage.appendChild(matches)
                         document.getElementById("div-matching").appendChild(chatMessage)
+                        document.getElementById("div-answer").style.display = ""
                         timeoutId = setTimeout(function(){
                             webSocket.send("reject")
                         }, 2000000)
@@ -95,6 +110,11 @@ new Vue({
                     document.getElementById("div-matching").appendChild(chatMessage)
                 }
             }
+        },
+        async stopMatching(){
+          webSocket.close();
+            document.getElementById("btn-matching-start").style.display = ""
+            document.getElementById("btn-matching-stop").style.display = "none"
         },
         async matchingAccept(){
             clearTimeout(timeoutId);

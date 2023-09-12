@@ -35,9 +35,6 @@
                             <label>
                                 <input type="radio" v-model="mode" name = "mode" value="flex"> 자유랭크
                             </label>
-                            <label>
-                                <input type="radio" v-model="mode" name = "mode" value="wind"> 칼바람
-                            </label>
                         </div>
                     </div>
                 </div>
@@ -88,20 +85,28 @@
             </form>
             <div class="form-group text-center col-sm-12">
 <!--                id="btn-start-matching"-->
-                <button class="btn btn-default btn-lg" type="button" @click="startMatching">매칭시작</button>
+                <button class="btn btn-default btn-lg" type="button" id = "btn-matching-start" @click="startMatching">매칭시작</button>
+                <button class="btn btn-default btn-lg" type="button" id = "btn-matching-stop" @click="stopMatching" style="display: none;">매칭취소</button>
             </div>
         </div>
         <!-- 추가 구현 필요 -->
-        <div class="matching-block" id ="div-matching">
+        <div class="matching-block" id="div-matching">
+            <div style="display: none" id = "div-info">
+                닉네임: <p>{{nickname}}</p>
+                롤 닉네임: <p>{{lolNickname}}</p>
+                티어: <p v-model="tier">{{tier}}</p>
+                M1: <img> {{mostOne}}
+                M2: <p></p>
+                M3: <p></p>
+                승리: <p>{{totalWins}}</p>
+                패배: <p>{{totalLoses}}</p>
+            </div>
             <p>여기에 매칭된 전적 요소가 나옵니다.</p>
         </div>
-        <div>
-            <button class="btn btn-default" id="btn-matching-accept"
-                    @click="matchingAccept">수락</button>
+        <div id = "div-answer" style="display: none">
+            <button class="btn btn-default" id="btn-matching-accept" @click="matchingAccept">수락</button>
             <button class="btn btn-default" id="btn-matching-reject" @click="matchingReject">거절</button>
         </div>
-
-
     </div>
 </div>
 <script>
