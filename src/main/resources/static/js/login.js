@@ -21,12 +21,15 @@ new Vue({
                 } else {
                     localStorage.setItem("token", token);
                     localStorage.setItem("nickname", response.data.nickname);
-                    alert("로그인에 성공했습니다.")
                     location.href = "/main";
                 }
             }).catch(error => {
                 const message=error.message;
-                alert(message);
+                Swal.fire({
+                    icon: 'error',
+                    title: '로그인 실패',
+                    text: '입력된 정보가 잘못되었습니다.',
+                });
                 console.log('login error='+message);
             })
         }

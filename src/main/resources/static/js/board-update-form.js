@@ -42,23 +42,41 @@ new Vue({
 
             formData.append("dto", new Blob([JSON.stringify(dto)], {type: "application/json"}))
 
-            if (confirm('게시글을 수정하시겠습니까?'))
-                token = await isValidateToken()
-                await axios.put('/board/' + this.boardId, formData, {
-                    headers: {
-                        'Authorization': `Bearer ${token}`,
-                        'Content-Type': 'multipart/form-data'
-                    }
-                })
-                    .then(response => {
-                        // 수정 성공 시 처리
-                        alert('게시글 수정 완료')
-                        location.href = '/board/view/' + this.boardId;
-                    })
-                    .catch(error => {
-                        alert('게시글 수정에 실패했습니다.');
-                        console.log(error.message)
-                    })
+            const result = await Swal.fire({
+                title: '게시글 수정',
+                text: '게시글을 수정하시겠습니까?',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: '예',
+                cancelButtonText: '아니요'
+            });
+
+            if (result.isConfirmed) {
+                try {
+                    token = await isValidateToken();
+                    const response = await axios.put('/board/' + this.boardId, formData, {
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                            'Content-Type': 'multipart/form-data'
+                        }
+                    });
+
+                    // SweetAlert2를 사용하여 수정 성공 메시지 표시
+                    await Swal.fire({
+                        icon: 'success',
+                        title: '게시글 수정 완료',
+                    });
+
+                    location.href = '/board/view/' + this.boardId;
+                } catch (error) {
+                    // SweetAlert2를 사용하여 오류 메시지 표시
+                    await Swal.fire({
+                        icon: 'error',
+                        title: '게시글 수정에 실패했습니다.',
+                    });
+                    console.error(error.message);
+                }
+            }
         },
         handleFileUpload(event){
             let files = event.target.files
