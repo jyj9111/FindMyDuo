@@ -26,23 +26,24 @@ new Vue({
 
             formData.append("dto", new Blob([JSON.stringify(dto)], {type: "application/json"}))
 
-            if (confirm('게시글을 작성하시겠습니까?'))
-                token = await isValidateToken()
+            try {
+                token = await isValidateToken();
 
-                await axios.post('/board', formData, {
+                const response = await axios.post('/board', formData, {
                     headers: {
                         'Authorization': `Bearer ${token}`,
                         'Content-Type': 'multipart/form-data'
                     }
-                })
-                    .then(response => {
-                        alert('게시글 작성 완료')
-                        location.href = '/board/view';
-                    })
-                    .catch(error => {
-                        alert('게시글 작성에 실패했습니다.');
-                        console.log(error.message)
-                    })
+                });
+                location.href = `/board/view`;
+            } catch (error) {
+                // SweetAlert2를 사용하여 오류 메시지 표시
+                await Swal.fire({
+                    icon: 'error',
+                    title: '게시글 작성 실패',
+                });
+                console.error(error.message);
+            }
         },
         handleFileUpload(event){
             let files = event.target.files
