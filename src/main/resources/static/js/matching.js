@@ -93,6 +93,7 @@ new Vue({
                             webSocket.send("reject")
                         }, 120000)
 
+                        document.getElementById("time").innerText = time
                         intervalId = setInterval(  function(){
                             document.getElementById("time").innerText = --time;
                         }, 1000);
@@ -103,6 +104,7 @@ new Vue({
                         const other = rName.replace(localStorage.getItem('nickname'), "").replace("-","");
                         console.log('other: '+ other);
                         localStorage.setItem('other', other);
+                        clearInterval(intervalId);
                         window.open('/chat/room/enter','_blank', 'scrollbars=yes, resizable=yes, location=no, width=800,height=800');
                         setTimeout(function () {
                             location.href = "/matching"
@@ -135,8 +137,6 @@ new Vue({
         },
         async matchingAccept(){
             await clearTimeout(timeoutId);
-            await clearInterval(intervalId);
-            time = 120;
             webSocket.send("accept")
         },
         async matchingReject(){
