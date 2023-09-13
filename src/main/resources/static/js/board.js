@@ -22,7 +22,9 @@ new Vue({
         isBookmark: '',
         nickName: '',
         modifiedAt: '',
-        isReported: false
+        isReported: false,
+        reported: '',
+        isCommentAuthorizedUser: false
     },
     async created() {
         const url = window.location.href.split("/");
@@ -38,7 +40,11 @@ new Vue({
                 this.images = response.data.images;
                 this.accountId = response.data.accountId;
                 this.modifiedAt = processDate(response.data.modifiedAt);
+                this.reported = response.data.reported;
 
+                if (this.reported > 1) {
+                    location.href = '/board/view';
+                }
 
                 console.log('게시판 수정시간 : ' + this.modifiedAt);
 
@@ -55,6 +61,11 @@ new Vue({
 
                 if (this.accountId !== jwtToAccountId() && jwtToAccountId() !== null) {
                     this.isUnAuthorizedUser = true;
+                }
+
+                if (jwtToAccountId() !== null) {
+                    this.isCommentAuthorizedUser = true;
+                    console.log('댓글 작성자 여부: ' + this.isCommentAuthorizedUser);
                 }
             })
             .catch((error) => {
@@ -219,15 +230,23 @@ new Vue({
                     headers: {
                         'Authorization': `Bearer ${token}`
                     },
-                });
+                })
+                    .then(response => {
+                        this.reported = response.data.reported;
+                        console.log(this.boardId);
+                        console.log(url);
+                        Swal.fire({
+                            icon: 'success',
+                            title: '신고 완료',
+                            text: '게시글이 성공적으로 신고되었습니다.',
+                        }).then((result) => {
+                            this.isReported = true;
+                            if (this.reported > 1) {
+                                location.href = '/board/view';
+                            }
+                        })
+                    })
 
-                await Swal.fire({
-                    icon: 'success',
-                    title: '신고 완료',
-                    text: '게시글이 성공적으로 신고되었습니다.',
-                });
-
-                this.isReported = true;
             } catch (error) {
                 console.error(error.message);
             }
