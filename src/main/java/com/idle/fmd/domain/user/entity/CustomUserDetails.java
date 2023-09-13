@@ -17,6 +17,8 @@ public class CustomUserDetails implements UserDetails {
     private String email;
     @Getter
     private String nickname;
+    @Getter
+    private String profileImage;
 
     @Override
     public String getPassword() {
@@ -59,6 +61,7 @@ public class CustomUserDetails implements UserDetails {
                 .password(entity.getPassword())
                 .email(entity.getEmail())
                 .nickname(entity.getNickname())
+                .profileImage(entity.getProfileImage())
                 .build();
     }
 

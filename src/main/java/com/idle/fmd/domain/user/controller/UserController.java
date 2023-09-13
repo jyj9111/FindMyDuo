@@ -111,11 +111,11 @@ public class UserController {
     // 마이페이지 프로필 이미지 등록 및 변경
     @PutMapping(value = "/mypage/profile-image",
             consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public void uploadProfileImage(
+    public String uploadProfileImage(
             Authentication authentication,
             @RequestParam("image") MultipartFile image) {
         String accountId = authentication.getName();
-        userService.uploadProfileImage(accountId, image);
+        return userService.uploadProfileImage(accountId, image);
     }
 
     // 즐겨찾기 한 글 조회

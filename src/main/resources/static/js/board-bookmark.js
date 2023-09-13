@@ -8,6 +8,9 @@ new Vue({
         currentPage: 1,
         totalPages: 1
     },
+    created() {
+      document.title = localStorage.getItem('nickname') + "의 북마크 - Find My Duo";
+    },
     methods: {
         async fetchBoards() {
             token = await isValidateToken()
