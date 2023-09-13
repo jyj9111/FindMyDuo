@@ -165,11 +165,11 @@ new Vue({
                 // 계정 연동 요청
                 token = await isValidateToken();
 
-                // Show a loading modal
                 const loadingModal = Swal.fire({
                     title: '로딩 중',
                     text: '계정 연동 중입니다...',
                     allowOutsideClick: false,
+                    showConfirmButton: false,
                     onBeforeOpen: () => {
                         Swal.showLoading();
                     },
@@ -182,23 +182,24 @@ new Vue({
                     headers: {
                         'Authorization': `Bearer ${token}`
                     }
+                }).then(response => {
+                    loadingModal.close();
+                    Swal.fire({
+                        icon: 'success',
+                        title: '계정 연동 완료',
+                        text: '계정이 성공적으로 연동되었습니다.',
+                    });
+                })
+                    .catch(error => {
+                    loadingModal.close();
+                    Swal.fire({
+                        icon: 'error',
+                        title: '계정 연동 실패',
+                        text: error.response.data.message,
+                    });
                 });
-
-                loadingModal.close();
-                Swal.fire({
-                    icon: 'success',
-                    title: '계정 연동 완료',
-                    text: '계정이 성공적으로 연동되었습니다.',
-                });
-            } catch (error) {
-                loadingModal.close();
-                Swal.fire({
-                    icon: 'error',
-                    title: '계정 연동 실패',
-                    text: '계정 연동 중에 오류가 발생했습니다.',
-                });
-                console.error('계정 연동 실패: ', error);
-            } finally {
+            }
+            finally {
                 // 롤 계정 연동 종료 시 로딩 상태 비활성화
                 this.linkingLolAccount = false;
             }
