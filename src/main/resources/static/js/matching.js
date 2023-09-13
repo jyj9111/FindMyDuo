@@ -2,14 +2,16 @@ import {isValidateToken} from "./keep-access-token.js";
 
 let token = localStorage.getItem('token');
 let webSocket;
+let time = 120;
 let timeoutId;
+let intervalId;
 
 new Vue({
     el: '#matching-app',
     data: {
-        mode: '',
-        myLine: '',
-        duoLine: '',
+        mode: 'SOLO',
+        myLine: 'TOP',
+        duoLine: 'TOP',
         nickname:'',
         profileImg:'',
         lolNickname: '',
@@ -90,6 +92,10 @@ new Vue({
                         timeoutId = setTimeout(function(){
                             webSocket.send("reject")
                         }, 120000)
+
+                        intervalId = setInterval(  function(){
+                            document.getElementById("time").innerText = --time;
+                        }, 1000);
                     } else {
                         localStorage.setItem('roomId', data.roomId);
                         localStorage.setItem('discordUrl', data.discordUrl)
@@ -108,6 +114,9 @@ new Vue({
                         location.href = "/matching"
                     }
                     else if(data == 'continue'){
+                        clearTimeout(timeoutId);
+                        clearInterval(intervalId);
+                        time = 120;
                         document.getElementById("btn-matching-stop").style.display = ""
                         document.getElementById("div-info").style.display = "none"
                         document.getElementById("div-loading").style.display = ""
@@ -116,17 +125,24 @@ new Vue({
             }
         },
         async stopMatching(){
-          webSocket.close();
+            await clearTimeout(timeoutId);
+            await clearInterval(intervalId);
+            time = 120;
+            webSocket.close();
             document.getElementById("div-loading").style.display = "none"
             document.getElementById("btn-matching-start").style.display = ""
             document.getElementById("btn-matching-stop").style.display = "none"
         },
         async matchingAccept(){
             await clearTimeout(timeoutId);
+            await clearInterval(intervalId);
+            time = 120;
             webSocket.send("accept")
         },
         async matchingReject(){
             await clearTimeout(timeoutId);
+            await clearInterval(intervalId);
+            time = 120;
             webSocket.send("reject")
         }
     }
