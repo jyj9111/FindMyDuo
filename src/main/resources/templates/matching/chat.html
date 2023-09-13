@@ -19,12 +19,13 @@
         <!--채팅창 -->
         <div class="text-center" id ="div-chatting">
             <h3 class="text-right"><strong>{{other}} 님과의 채팅</strong></h3>
-            <div class="chat-container row">
-                    <ul class="list-group">
-                        <li class="list-group-item" v-for="message in messages">
-                            {{message.sender}} - {{message.message}}
-                        </li>
-                    </ul>
+            <div class="chat-container" ref="chatContainer">
+                    <div class="list-group">
+                        <div v-for="message in messages" v-bind:class="{ 'me' : message.sender === sender, 'you' : message.sender === other }">
+                            <strong>{{message.sender}}</strong>
+                            <div>{{message.message}}</div>
+                        </div>
+                    </div>
             </div>
 
             <!-- 메시지 입력창 -->
