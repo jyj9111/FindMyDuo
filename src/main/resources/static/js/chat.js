@@ -22,6 +22,7 @@ var vm = new Vue({
         this.sender = localStorage.getItem('nickname');
         this.discordUrl = localStorage.getItem('discordUrl');
         this.other = localStorage.getItem('other');
+        document.title = `${this.other}` + "와의 채팅방 - Find My Duo";
         this.findRoom();
     },
     methods: {

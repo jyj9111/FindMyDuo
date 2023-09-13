@@ -14,6 +14,15 @@ new Vue({
         password: '',
         passwordCheck: '',
         linkingLolAccount: false, // 롤 계정 연동 중인지 여부를 나타내는 변수
+        nicknameErrorMessage: '', // 닉네임 오류 메시지를 표시할 데이터
+        emailErrorMessage: '', // 이메일 오류 메시지를 표시할 데이터
+        isFormValid: false, // 수정 버튼
+    },
+    watch: {
+        nickname: 'checkFormValidity',
+        nicknameErrorMessage: 'checkFormValidity',
+        email: 'checkFormValidity',
+        emailErrorMessage: 'checkFormValidity',
     },
     // 페이지 방문시 조회 기능
     async created() {
@@ -37,10 +46,10 @@ new Vue({
                 console.log(response.data);
                 this.accountId = response.data.accountId;
                 this.email = response.data.email;
-                this.nickname = response.data.nickname;
+                this.nickname = localStorage.getItem('nickname');
                 this.createdAt = processDate(response.data.createdAt);
                 this.lolNickname = response.data.lolNickname;
-                this.profileImage = response.data.profileImage;
+                this.profileImage = localStorage.getItem('profileImage');
             })
             .catch(error => {
                 console.error('마이페이지 조회 에러: ', error);
@@ -49,6 +58,42 @@ new Vue({
             });
     },
     methods: {
+        // 닉네임 중복 확인 메서드
+        async checkExistingNickname() {
+            const nickname = this.nickname;
+            const response = await axios.get('/users/check/nickname', {
+                params: {nickname},
+            })
+
+            if(response.data){
+                this.nicknameErrorMessage = '이미 등록된 회원의 닉네임입니다.';
+            } else {
+                this.nicknameErrorMessage = '';
+            }
+        },
+        // 이메일 폼 확인 메서드
+        async checkEmailFormat() {
+            // 이메일 형식 검사
+            const emailRegex = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}$/;
+            if(!emailRegex.test(this.email)) {
+                this.emailErrorMessage = '올바른 이메일 형식을 입력하세요.';
+            } else {
+                this.emailErrorMessage = '';
+            }
+        },
+        // 이메일 중복 확인 메서드
+        async checkExistingEmail() {
+            const email = this.email;
+            const response = await axios.get('/users/check/email', {
+                params: {email},
+            })
+
+            console.log(response.data);
+
+            if(response.data) {
+                this.emailErrorMessage = '이미 등록된 회원의 이메일입니다.';
+            }
+        },
         // 회원 정보 수정
         async updateData() {
             // 수정된 데이터를 서버로 수정 요청
@@ -68,6 +113,7 @@ new Vue({
                 .then(response => {
                     alert('수정되었습니다.');
                     console.log(response.data);
+                    localStorage.setItem('nickname', this.nickname);
                 })
                 .catch(error => {
                     alert('수정이 실패하였습니다.');
@@ -150,7 +196,7 @@ new Vue({
             })
                 .then(response => {
                     alert('프로필 이미지가 업로드되었습니다.')
-                    localStorage.setItem('profileImage', response.data.profileImage);
+                    localStorage.setItem('profileImage', response.data);
                     // 프로필 이미지 등록시 마이페이지 재로드해서 변경사항 확인
                     location.href = '/mypage';
                 })
@@ -179,19 +225,13 @@ new Vue({
                     })
             }
         },
-        async checkNickname() {
-            token = await isValidateToken()
-            const nickname = this.nickname;
-            const response = await axios.get('/users/check/nickname', {
-                params: {nickname},
-            });
-
-            console.log(response.data);
-            if(!response.data) {
-                alert('사용 가능한 닉네임입니다.');
-            } else {
-                alert('이미 사용 중인 닉네임입니다.');
-            }
+        // 모든 입력 필드가 유효한지 확인하는 메서드
+        checkFormValidity() {
+            this.isFormValid =
+                this.email.length > 0 &&
+                this.nickname.length > 0 &&
+                this.emailErrorMessage === '' &&
+                this.nicknameErrorMessage === '';
         }
     }
 });
