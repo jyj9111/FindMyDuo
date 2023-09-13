@@ -71,6 +71,11 @@ public class DiscordConfig {
         String channelUrl = "";
         try {
             VoiceChannel voiceChannel = category.createVoiceChannel(channelName)
+                    .addPermissionOverride(
+                            guild.getPublicRole(),
+                            EnumSet.of(Permission.VOICE_CONNECT, Permission.VIEW_CHANNEL),
+                            null
+                    )
                     .reason("음성 채널 생성").submit().get();
             voiceChannel.getManager().setUserLimit(limit).queue();
             channelUrl = voiceChannel.createInvite().setMaxAge(300).submit().get().getUrl();
