@@ -1,0 +1,25 @@
+<script src="/static/js/navbar.js" type="module"></script>
+<!-- 헤더 네브바 시작 -->
+<nav class="navbar navbar-inverse navbar-fixed-top">
+  <div class="container-fluid">
+    <div class="navbar-header">
+      <a class="navbar-brand" href="/main">Find My Duo</a>
+    </div>
+    <ul class="nav navbar-nav">
+      <li class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown" href="#">League of Legends<span
+              class="caret"></span></a>
+        <ul class="dropdown-menu">
+          <li><a href="#">League of Legends</a></li>
+        </ul>
+      </li>
+    </ul>
+    <ul class="nav navbar-nav navbar-right" id="navbar-app">
+      <!-- 로그인 여부에 따라 보여지는 메뉴가 다르도록 설정-->
+      <li><a v-if="!loggedIn" href="/signup"><span class="glyphicon glyphicon-user"></span> Sign Up</a></li>
+      <li><a v-if="!loggedIn" href="/login"><span class="glyphicon glyphicon-log-in"></span> Login</a></li>
+      <li><a v-if="loggedIn" href="/mypage"><span class="glyphicon glyphicon-user"></span> My Page</a></li>
+      <li><a v-if="loggedIn" @click="logout"><span class="glyphicon glyphicon-log-out" ></span> Logout</a></li>
+    </ul>
+  </div>
+</nav>
+<!-- 헤더 끝 -->

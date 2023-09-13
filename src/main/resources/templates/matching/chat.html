@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>채팅방 - Find My Duo</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/css/matching.css"/>
+</head>
+<body>
+<script src="/webjars/vue/2.6.14/dist/vue.js"></script>
+<script src="/webjars/axios/0.21.1/dist/axios.js"></script>
+<script src="/webjars/jquery/3.6.4/jquery.js"></script>
+<script src="/webjars/sockjs-client/1.5.1/sockjs.js"></script>
+<script src="/webjars/stomp-websocket/2.3.4/stomp.js"></script>
+
+<div class="matching-chat">
+    <div class="container">
+        <!--채팅창 -->
+        <div class="text-center" id ="div-chatting">
+            <h3 class="text-right"><strong>{{other}} 님과의 채팅</strong></h3>
+            <div class="chat-container row">
+                    <ul class="list-group">
+                        <li class="list-group-item" v-for="message in messages">
+                            {{message.sender}} - {{message.message}}
+                        </li>
+                    </ul>
+            </div>
+
+            <!-- 메시지 입력창 -->
+            <div class="input-group col-sm-12">
+                <div class="input-group-prepend text-left">
+                </div>
+                <input type="text" class="form-control" v-model="message" v-on:keypress.enter="sendMessage">
+                <div class="input-group-append text-right">
+                    <button class="btn btn-default" type="button" @click="connectDiscord">디스코드 서버 연결</button>
+                    <button class="btn btn-primary" type="button" @click="sendMessage">보내기</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="/static/js/chat.js"></script>
+</body>
+</html>

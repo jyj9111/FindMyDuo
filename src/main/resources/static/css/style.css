@@ -1,0 +1,138 @@
+/* 사이드바 */
+.sidenav {
+    position: fixed;
+    width: 250px;
+    height: 100%;
+    margin-top: 70px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-family: 'Noto Sans KR', sans-serif;
+}
+
+/* 본문 */
+.page {
+    margin-top: 120px;
+    margin-left: 280px;
+    margin-bottom: 50px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    /*height: calc(100vh - 50px);*/
+
+    font-family: 'Noto Sans KR', sans-serif;
+    font-size: 17px;
+}
+
+.table-page {
+    margin-top: 50px;
+    margin-left: 250px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.profile-container {
+    border: 1px lightgray solid;
+    border-radius: 10px; /* 모서리 둥글게 */
+    padding: 10px;
+}
+
+.profile-block {
+    height: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+.form-horizontal {
+    margin: 10px;
+}
+
+
+.btn-custom {
+    color: black;
+    margin-bottom: 10px;
+    padding: 10px 30px;
+    background: #f1f0f0;
+}
+
+.btn-login-custom {
+    color: black;
+    /*background-color: aliceblue;*/
+    border: 1px lightgray solid;
+    border-radius: 10px; /* 모서리 둥글게 */
+}
+
+.title-btn {
+    margin-top: 10px;
+}
+
+.sidebar-block {
+    height: 20%;
+}
+
+.board-container {
+    display: inline-block;
+}
+
+.board-title {
+    margin-top: 20px;
+    padding: 10px;
+    font-size: 35px;
+    /*border: 1px lightgray solid;*/
+}
+
+.board-text {
+    padding: 20px;
+    border-radius: 10px; /* 말풍선 모서리 둥글게 */
+    font-size: 16px;
+    border: 1px lightgray solid;
+    display: inline-block;
+}
+
+.board-text img {
+    width: 400px;
+    height: 340px;
+    object-fit: contain;
+}
+
+.comment-block {
+    padding: 20px;
+    border-radius: 10px; /* 말풍선 모서리 둥글게 */
+    font-size: 16px;
+    background-color: #F5F5F5;
+    margin-bottom: 10px;
+}
+
+.comment-text {
+    padding: 10px;
+    border-radius: 10px; /* 말풍선 모서리 둥글게 */
+    font-size: 16px;
+    background-color: white;
+    margin-bottom: 20px;
+}
+
+.table td, .table th {
+    text-align: center;
+}
+
+.img.login{
+    text-align: center;
+    margin-bottom: 10px;
+    height: 52px;
+}
+.h5.login{
+    text-align: center;
+    margin-bottom: 16px;
+}
+
+.info-text {
+    background-color: #F5F5F5;
+    font-size: 25px;
+    margin-bottom: 30px;
+}

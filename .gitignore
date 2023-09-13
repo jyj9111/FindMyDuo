@@ -1,7 +1,7 @@
 HELP.md
 .gradle
 build/
-!gradle/wrapper/gradle-wrapper.jar
+!/gradle/wrapper/gradle-wrapper.jar
 !**/src/main/**/build/
 !**/src/test/**/build/
 
@@ -154,3 +154,10 @@ hs_err_pid*
 replay_pid*
 
 # End of https://www.toptal.com/developers/gitignore/api/intellij+all,java
+
+# profile별 .yaml 파일 제외
+/src/main/resources/application-oauth.yaml
+/src/main/resources/application-prod.yaml
+/src/main/resources/application-dev.yaml
+/src/main/resources/application-common.yaml
+/src/main/resources/application-local.yaml
