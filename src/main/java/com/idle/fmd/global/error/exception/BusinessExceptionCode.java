@@ -22,7 +22,8 @@ public enum BusinessExceptionCode {
     NOT_VALID_EMAIL_AUTH_CODE_ERROR(HttpStatus.BAD_REQUEST, "올바른 인증코드가 아닙니다."),
     // 회원가입 시 존재하는 이메일로 회원가입을 시도했을 때의 예외코드
     DUPLICATED_EMAIL_ERROR(HttpStatus.BAD_REQUEST, "이미 존재하는 이메일입니다."),
-
+    // 회원가입 시 기본프로필 이미지 경로를 불러오지 못했을 경우의 예외코드
+    CANNOT_BRING_BASIC_IMAGE_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "기본 프로필 이미지를 불러오지 못했습니다."),
 
     // 로그인 관련 예외 ---------------------------------------------------------------------------------------------------
     // 로그인시 존재하지 않는 아이디를 입력할시 예외코드
