@@ -35,11 +35,19 @@ var vm = new Vue({
             this.message = '';
         },
         recvMessage: function(recv) {
-            this.messages.unshift({"type":recv.type,"sender":recv.type=='ENTER'?'[알림]':recv.sender,"message":recv.message})
+            this.messages.push({"type":recv.type,"sender":recv.type=='ENTER'?'[알림]':recv.sender,"message":recv.message})
+            this.$nextTick(function () {
+                this.scrollToBottom();
+            })
         },
         connectDiscord: function (){
             window.open(this.discordUrl);
-        }
+        },
+        // 메시지를 추가할 때마다 스크롤을 아래로 이동시키는 함수
+        scrollToBottom() {
+            const chatContainer = this.$refs.chatContainer;
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        },
     }
 });
 
