@@ -31,7 +31,7 @@
                     <div class="col-sm-7 text-left">
                         <div class="radio">
                             <label>
-                                <input type="radio" v-model="mode" name="mode" value="SOLO" checked> 솔로랭크
+                                <input type="radio" v-model="mode" name="mode" value="SOLO"> 솔로랭크
                             </label>
                             <label>
                                 <input type="radio" v-model="mode" name="mode" value="FLEX"> 자유랭크
@@ -44,7 +44,7 @@
                     <div class="col-sm-7 text-left">
                         <div class="radio">
                             <label>
-                                <input type="radio" v-model="myLine" name="myLine" value="TOP" checked> 탑
+                                <input type="radio" v-model="myLine" name="myLine" value="TOP"> 탑
                             </label>
                             <label>
                                 <input type="radio" v-model="myLine" name="myLine" value="MIDDLE"> 미드
@@ -66,7 +66,7 @@
                     <div class="col-sm-7 text-left">
                         <div class="radio">
                             <label>
-                                <input type="radio" v-model="duoLine" name="duoLine" value="TOP" checked> 탑
+                                <input type="radio" v-model="duoLine" name="duoLine" value="TOP"> 탑
                             </label>
                             <label>
                                 <input type="radio" v-model="duoLine" name="duoLine" value="MIDDLE"> 미드
@@ -96,7 +96,7 @@
         </div>
         <!-- 추가 구현 필요 -->
         <div class="matching-block col-sm-12" id="div-matching">
-            <div id="div-loading" style="display: none;">로딩 중...</div>
+            <div class="col-sm-12 matching-container" id ="div-loading" style="height: 200px; display: none;">로딩 중...</div>
             <div id="div-info" style="display: none;">
                 <!-- 구해듀오 정보 -->
                 <div class="text-center col-sm-12">

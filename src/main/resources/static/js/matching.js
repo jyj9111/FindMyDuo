@@ -7,9 +7,9 @@ let timeoutId;
 new Vue({
     el: '#matching-app',
     data: {
-        mode: '',
-        myLine: '',
-        duoLine: '',
+        mode: 'SOLO',
+        myLine: 'TOP',
+        duoLine: 'TOP',
         nickname:'',
         profileImg:'',
         lolNickname: '',
