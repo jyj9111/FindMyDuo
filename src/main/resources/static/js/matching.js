@@ -7,20 +7,20 @@ let timeoutId;
 new Vue({
     el: '#matching-app',
     data: {
-        isMatching: false, // 매칭 됐는지 여부
-        matchingButtonLabel: '매칭 시작',
         mode: '',
         myLine: '',
         duoLine: '',
         nickname:'',
+        profileImg:'',
         lolNickname: '',
         tier:'',
-        rank: '',
+        tierImg:'',
         mostOne:'',
         mostTwo: '',
         mostThree:'',
         totalWins: '',
         totalLoses: '',
+        totalRate: '',
         discordUrl: '',
         matches: []
     },
@@ -33,7 +33,6 @@ new Vue({
                 title: '로그인 후 이용해 주세요',
                 confirmButtonText: '확인'
             }).then((result) => {
-                /* Read more about isConfirmed, isDenied below */
                 if (result.isConfirmed) {
                     Swal.fire('Saved!', '', 'success')
                 }
@@ -58,38 +57,40 @@ new Vue({
             const wsUrl = 'ws://'+host+':'+port+'/ws/matching?Authorization='+token+'&mode='+this.mode+'&myLine='+this.myLine+'&duoLine='+this.duoLine;
             webSocket = await new WebSocket(wsUrl);
 
+            document.getElementById("div-loading").style.display = ""
+            document.getElementById("btn-matching-start").style.display = "none"
+            document.getElementById("btn-matching-stop").style.display = ""
+
             webSocket.onmessage = (msg) => {
                 console.log(msg)
                 try {
                     const data = JSON.parse(msg.data)
-                    const chatMessage = document.createElement("div")
-                    const message = document.createElement("p")
-                    const matches = document.createElement("p")
                     if (data.roomId == undefined) {
-                        message.innerText = data.username + ": " + data.message
-                        message.innerText = "---------- 상대방 정보 ----------\n" +
-                            "닉네임: " + data.nickname + "\n" +
-                            "롤 닉네임: " + data.lolNickname + "\n" +
-                            "티어: " + data.tier + data.rank + "\n" +
-                            "모드: " + data.mode + "\n" +
-                            "모스트1: " + data.mostOne + "\n" +
-                            "모스트2: " + data.mostTwo + "\n" +
-                            "모스트3: " + data.mostThree + "\n" +
-                            "승리: " + data.totalWins + "\n" +
-                            "패배: " + data.totalLoses + "\n"
-                        ;
-
-                        matches.innerText = "--------------- 전적 -------------------\n"
+                        this.nickname = data.nickname
+                        this.profileImg = data.profileImg
+                        this.lolNickname = data.lolNickname
+                        this.tier = data.tier + data.rank
+                        this.tierImg = data.tierImg
+                        this.mode = data.mode
+                        this.mostOne = data.mostOne
+                        this.mostTwo = data.mostTwo
+                        this.mostThree = data.mostThree
+                        this.totalWins = data.totalWins
+                        this.totalLoses = data.totalLoses
+                        this.totalRate =
+                            parseFloat(data.totalWins) + parseFloat(data.totalLoses) == 0  ? "0%" : Math.round(parseFloat(data.totalWins) / (parseFloat(data.totalWins) + parseFloat(data.totalLoses)) * 100) + "%"
 
                         for(let i = 0; i < data.matchList.length; i++){
-                            matches.innerText += `${data.matchList[i].gameMode}  ${data.matchList[i].champion}  ${data.matchList[i].teamPosition} ${data.matchList[i].kills} ${data.matchList[i].deaths} ${data.matchList[i].assists} ${data.matchList[i].win} \n`
+                            this.matches.push(data.matchList[i])
                         }
-                        chatMessage.appendChild(message)
-                        chatMessage.appendChild(matches)
-                        document.getElementById("div-matching").appendChild(chatMessage)
+
+                        document.getElementById("btn-matching-stop").style.display = "none"
+                        document.getElementById("div-loading").style.display = "none"
+                        document.getElementById("div-info").style.display =""
+                        document.getElementById("div-answer").style.display = ""
                         timeoutId = setTimeout(function(){
                             webSocket.send("reject")
-                        }, 2000000)
+                        }, 20000)
                     } else {
                         localStorage.setItem('roomId', data.roomId);
                         localStorage.setItem('discordUrl', data.discordUrl)
@@ -97,25 +98,34 @@ new Vue({
                         const other = rName.replace(localStorage.getItem('nickname'), "").replace("-","");
                         console.log('other: '+ other);
                         localStorage.setItem('other', other);
+                        location.href = "/matching"
                         window.open('/chat/room/enter','_blank', 'scrollbars=yes, resizable=yes, location=no, width=800,height=800');
                     }
                 } catch (e) {
                     const data = msg.data
-                    const chatMessage = document.createElement("div");
-                    const message = document.createElement("p");
-                    message.innerText = data;
-
-                    chatMessage.appendChild(message)
-                    document.getElementById("div-matching").appendChild(chatMessage)
+                    if(data == 'stop'){
+                        location.href = "/matching"
+                    }
+                    else if(data == 'continue'){
+                        document.getElementById("btn-matching-stop").style.display = ""
+                        document.getElementById("div-info").style.display = "none"
+                        document.getElementById("div-loading").style.display = ""
+                    }
                 }
             }
         },
+        async stopMatching(){
+          webSocket.close();
+            document.getElementById("div-loading").style.display = "none"
+            document.getElementById("btn-matching-start").style.display = ""
+            document.getElementById("btn-matching-stop").style.display = "none"
+        },
         async matchingAccept(){
-            clearTimeout(timeoutId);
+            await clearTimeout(timeoutId);
             webSocket.send("accept")
         },
         async matchingReject(){
-            clearTimeout(timeoutId);
+            await clearTimeout(timeoutId);
             webSocket.send("reject")
         }
     }

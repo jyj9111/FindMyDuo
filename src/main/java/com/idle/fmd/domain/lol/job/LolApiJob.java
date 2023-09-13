@@ -55,7 +55,7 @@ public class LolApiJob {
     private final LolMatchItemWriter matchItemWriter;
 
     // 주기적으로 잡을 실행하기 위한 스케줄러 설정
-    @Scheduled(fixedDelay = 1800000) // 30분마다 실행
+    /*@Scheduled(fixedDelay = 1800000) // 30분마다 실행
     public void runJob() throws Exception {
         JobExecution jobExecution = jobLauncher.run(lolAccountJob(), new JobParameters());
         // 잡을 실행했을 때 성공적이면 로그에 성공 출력, 실패하면 실패 출력
@@ -64,7 +64,7 @@ public class LolApiJob {
         } else if (jobExecution.getStatus() == BatchStatus.FAILED) {
             log.info("Job을 실행하는데 실패했습니다.");
         }
-    }
+    }*/
 
     @Bean
     public Job lolAccountJob() {
