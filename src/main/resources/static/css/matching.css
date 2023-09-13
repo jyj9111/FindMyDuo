@@ -90,3 +90,11 @@
 .btn {
     margin-top: 10px;
 }
+
+.loading{
+    display: flex;
+    height: 200px;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
