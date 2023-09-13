@@ -34,6 +34,18 @@ public class FileHandler {
         return imageUrl;
     }
 
+    public String getBasicProfilePath(){
+        String url = "";
+        try {
+            url = awsS3Service.download("/images/profile/basic.png");
+        } catch (Exception error) {
+            log.error(error.getMessage());
+            error.printStackTrace();
+            throw new BusinessException(BusinessExceptionCode.CANNOT_BRING_BASIC_IMAGE_ERROR);
+        }
+        return url;
+    }
+
     public String getProfileFilePath(String accountId, MultipartFile image) {
         // 이미지 이름 생성
         String originalImageName = image.getOriginalFilename();
