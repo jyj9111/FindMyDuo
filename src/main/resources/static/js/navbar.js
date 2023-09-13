@@ -19,10 +19,15 @@ new Vue({
                 .then(() => {
                     // 로그아웃 성공 시 로컬 스토리지의 토큰 삭제
                     localStorage.clear();
-                    alert("로그아웃 되었습니다.")
+                    Swal.fire({
+                        icon: 'success',
+                        title: '로그아웃 되었습니다.'
+                    });
                     // 로그인 상태 업데이트
                     this.loggedIn = false;
-                    location.href = '/main';
+                    setTimeout(() => {
+                        location.href = '/main';
+                    }, 2000);
                 })
                 .catch(error => {
                     console.error('로그아웃 실패: ', error);
