@@ -24,7 +24,7 @@ new Vue({
         modifiedAt: '',
         isReported: false,
         reported: '',
-        isCommentAuthorizedUser: false
+        isLoginAuthorizedUser: false  //로그인 한 유저인지 체크
     },
     async created() {
         const url = window.location.href.split("/");
@@ -64,8 +64,8 @@ new Vue({
                 }
 
                 if (jwtToAccountId() !== null) {
-                    this.isCommentAuthorizedUser = true;
-                    console.log('댓글 작성자 여부: ' + this.isCommentAuthorizedUser);
+                    this.isLoginAuthorizedUser = true;
+                    console.log('로그인 유저 여부: ' + this.isLoginAuthorizedUser);
                 }
             })
             .catch((error) => {
@@ -120,6 +120,12 @@ new Vue({
         },
         // 좋아요
         async likeBoard() {
+
+            if (!token) {
+                location.href = '/login';
+                return;
+            }
+
             const url = '/board/' + this.boardId + '/like';
             token = await isValidateToken()
             await axios.post(url,{}, {
@@ -149,6 +155,12 @@ new Vue({
         },
         // 즐겨찾기
         async bookmarkBoard() {
+
+            if (!token) {
+                location.href = '/login';
+                return;
+            }
+
             const url = '/board/' + this.boardId + '/bookmark';
             token = await isValidateToken()
             await axios.post(url, {}, {
