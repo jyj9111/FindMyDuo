@@ -52,6 +52,9 @@ public enum BusinessExceptionCode {
     // 라이엇 API 관련 예외 -----------------------------------------------------------------------------------------------
     // 롤 계정 연동 시 이미 연동된 닉네임으로 시도했을 때 예외코드
     DUPLICATED_LOL_NICKNAME_ERROR(HttpStatus.BAD_REQUEST, "이미 등록된 롤 계정입니다."),
+    // 챔피언 이미지를 불러오지 못할 경우 예외처리
+    CANNOT_BRING_CHAMPION_IMAGE_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "해당 챔피언 이미지를 가져올수 없습니다."),
+    CANNOT_BRING_TIER_IMAGE_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "해당 티어 이미지를 가져올수 없습니다."),
 
 
     // 자유게시판 관련 예외 -----------------------------------------------------------------------------------------------

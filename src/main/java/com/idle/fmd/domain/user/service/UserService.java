@@ -252,7 +252,6 @@ public class UserService {
 
     // 아이디 중복 확인
     public boolean existsByAccountId(String accountId) {
-        log.info(repository.existsByAccountId(accountId).toString());
         return repository.existsByAccountId(accountId);
     }
 
@@ -263,7 +262,6 @@ public class UserService {
 
     // 이메일 중복 확인
     public boolean existsByEmail(String email) {
-        log.info(repository.existsByEmail(email).toString());
         return repository.existsByEmail(email);
     }
 }

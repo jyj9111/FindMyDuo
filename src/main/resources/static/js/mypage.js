@@ -13,6 +13,7 @@ new Vue({
         profileImage: '',
         password: '',
         passwordCheck: '',
+        linkingLolAccount: false, // 롤 계정 연동 중인지 여부를 나타내는 변수
     },
     // 페이지 방문시 조회 기능
     async created() {
@@ -101,8 +102,14 @@ new Vue({
         },
         // 롤 계정 연동 기능
         async linkLolAccount() {
+            // 롤 계정 연동 시작 시 로딩 상태 활성화
+            this.linkingLolAccount = true;
+
             // 계정 연동 요청
             token = await isValidateToken()
+
+            alert('롤 계정 연동하는 데 최대 1분의 시간이 소요될 수 있습니다. \n' +
+                '확인을 누른 후, 연동하는 동안 다른 작업을 수행하지 마십시오.');
             await axios.post('/lol/save', null, {
                 params: {
                     lolNickname: this.lolNickname.replaceAll(" ", "")
@@ -117,6 +124,10 @@ new Vue({
                 .catch(error => {
                     alert('계정 연동이 실패하였습니다.');
                     console.error('계정 연동 실패: ', error);
+                })
+                .finally(() => {
+                    // 롤 계정 연동 종료 시 로딩 상태 비활성화
+                    this.linkingLolAccount = false;
                 })
         },
         async selectImage(event) {
@@ -171,11 +182,8 @@ new Vue({
         async checkNickname() {
             token = await isValidateToken()
             const nickname = this.nickname;
-            const response = await axios.get('/users/check-nickname', {
+            const response = await axios.get('/users/check/nickname', {
                 params: {nickname},
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                }
             });
 
             console.log(response.data);
