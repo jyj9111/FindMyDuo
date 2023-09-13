@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns="http://www.w3.org/1999/html">
 <head>
     <meta charset="UTF-8">
     <title>매칭(lol) - Find My Duo</title>
@@ -95,57 +95,56 @@
             </div>
         </div>
         <!-- 추가 구현 필요 -->
-        <div class="matching-block" id="div-matching">
-            <div id = "div-loading" style="display: none;">로딩 중...</div>
-            <div id = "div-info" style="display: none;">
-
+        <div class="matching-block col-sm-12" id="div-matching">
+            <div id="div-loading" style="display: none;">로딩 중...</div>
+            <div id="div-info" style="display: none;">
                 <!-- 구해듀오 정보 -->
-                <div>
-                    프로필 이미지 <img :src="profileImg">
-                    닉네임: <p>{{nickname}}</p>
+                <div class="text-center col-sm-12">
+                    <div><img class="img-circle" :src="profileImg" width="50" height="50">
+                        <strong>{{nickname}}</strong> 님
+                    </div>
                 </div>
 
                 <!-- 롤 정보 -->
-                <div>
-                    롤 닉네임: <p>{{lolNickname}}</p>
-                    티어 이미지<img :src="tierImg">
-                    티어: <p>{{tier}}</p>
+                <div class="col-sm-12 matching-container">
+                    <div class="col-sm-4">
+                        <img :src="tierImg" width="270">
+                    </div>
+                    <div class="col-sm-8">
+                        <strong style="font-size: 25px;">{{ lolNickname }}</strong>
+                        <!-- 모스트 정보 -->
+                        <div>{{ tier }}</div>
+                        <div>
+                            <strong>모스트 정보</strong>
+                            <img class="img-circle" :src="mostOne" width="50" height="50">
+                            <img class="img-circle" :src="mostTwo" width="50" height="50">
+                            <img class="img-circle" :src="mostThree" width="50" height="50">
+                        </div>
+                        <!-- 승리/패배 정보 -->
+                        <div>
+                            <strong>승리:</strong> {{totalWins}}
+                            <strong>패배:</strong> {{totalLoses}}
+                            <strong>승률:</strong> {{totalRate}}
+                        </div>
+                    </div>
                 </div>
-
-                <!-- 모스트 정보 -->
-                <div>
-                    M1: <img :src="mostOne">
-                    M2: <img :src="mostTwo">
-                    M3: <img :src="mostThree">
+                <!-- 수락/거절 -->
+                <div class="col-sm-12 text-center" id="div-answer" style="display: none">
+                    <button class="btn btn-default" id="btn-matching-accept" @click="matchingAccept">수락</button>
+                    <button class="btn btn-default" id="btn-matching-reject" @click="matchingReject">거절</button>
                 </div>
-
-                <!-- 승리/패배 정보 -->
-                <div>
-                    승리: <p>{{totalWins}}</p>
-                    패배: <p>{{totalLoses}}</p>
-                    승률: <p>{{totalRate}}</p>
-                </div>
-
-
-                <table>
-                    <tr v-for="match in matches" style="width: 100%">
-                        <td v-if="match.win" style="background: aqua">{{match.gameMode}}</td>
-                        <td v-else style="background: lightcoral">{{match.gameMode}}</td>
-                        <td v-if="match.win" style="background: aqua"><img :src="match.champion"></td>
-                        <td v-else style="background: lightcoral"><img :src="match.champion"></td>
-                        <td v-if="match.win" style="background: aqua"><img :src="match.teamPosition"></td>
-                        <td v-else style="background: lightcoral"><img :src="match.teamPosition"></td>
-                        <td v-if="match.win" style="background: aqua">{{match.kills}} / {{match.deaths}} / {{match.assists}}</td>
-                        <td v-else style="background: lightcoral">{{match.kills}} / {{match.deaths}} / {{match.assists}}</td>
-                        <td v-if="match.win" style="background: aqua">승리</td>
-                        <td v-else style="background: lightcoral">패배</td>
+                <!-- 전적 -->
+                <table class="col-sm-12 matching-container">
+                    <tr class="col-sm-12" v-for="match in matches"
+                        v-bind:class="{ 'win-row' : match.win, 'lose-row' : !match.win }">
+                        <td class="col-sm-1">{{ match.gameMode }}</td>
+                        <td class="col-sm-2"><img class="img-circle" :src="match.champion" width="50" height="50"></td>
+                        <td class="col-sm-2"><img :src="match.teamPosition" width="50"></td>
+                        <td class="col-sm-6 text-center">{{match.kills}} / {{match.deaths}} / {{match.assists}}</td>
+                        <td class="col-sm-1 text-light"><strong>{{ match.win ? '승리' : '패배' }}</strong></td>
                     </tr>
                 </table>
             </div>
-        </div>
-        <div id="div-answer" style="display: none">
-            <button class="btn btn-default" id="btn-matching-accept" @click="matchingAccept">수락</button>
-            <button class="btn btn-default" id="btn-matching-reject" @click="matchingReject">거절</button>
         </div>
     </div>
 </div>
