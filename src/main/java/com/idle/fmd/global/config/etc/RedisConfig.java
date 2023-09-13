@@ -17,8 +17,6 @@ public class RedisConfig {
     private String host;
     @Value("${spring.cache.redis.port}")
     private int port;
-    @Value("${spring.cache.redis.password}")
-    private String password;
 
     // Redis 연결 정보 설정
     @Bean
@@ -29,8 +27,6 @@ public class RedisConfig {
         redisConfiguration.setHostName(host);
         // 포트번호 설정
         redisConfiguration.setPort(port);
-
-        redisConfiguration.setPassword(password);
 
         // Redis 연결 객체생성 후 위의 설정 삽입
         LettuceConnectionFactory lettuceConnectionFactory = new LettuceConnectionFactory(redisConfiguration);
