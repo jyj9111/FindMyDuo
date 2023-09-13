@@ -57,9 +57,10 @@ public class AwsS3Service {
 
     // 경로를 가지고 해당 파일 url 반환 메서드
     public String download(String imgDir) {
+        String path = dir + imgDir;
         String url = "";
         try {
-            url = amazonS3.getUrl(bucket, imgDir).toString();
+            url = amazonS3.getUrl(bucket, path).toString();
         } catch (Exception error) {
             log.error(error.getMessage());
             error.printStackTrace();

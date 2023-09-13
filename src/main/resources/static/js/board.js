@@ -1,5 +1,9 @@
-import {jwtToAccountId} from "./jwt-to-accountid.js";
-import {isValidateToken} from "./keep-access-token.js";
+import {
+    jwtToAccountId
+} from "./jwt-to-accountid.js";
+import {
+    isValidateToken
+} from "./keep-access-token.js";
 
 let token = localStorage.getItem('token');
 
@@ -17,7 +21,8 @@ new Vue({
         isLike: '',
         isBookmark: '',
         nickName: '',
-        modifiedAt: ''
+        modifiedAt: '',
+        isReported: false
     },
     async created() {
         const url = window.location.href.split("/");
@@ -33,6 +38,7 @@ new Vue({
                 this.images = response.data.images;
                 this.accountId = response.data.accountId;
                 this.modifiedAt = processDate(response.data.modifiedAt);
+
 
                 console.log('게시판 수정시간 : ' + this.modifiedAt);
 
@@ -66,20 +72,39 @@ new Vue({
         },
         // 게시판 삭제
         async deleteBoard() {
-            if (confirm('게시글을 삭제하시겠습니까?')) {
-                token = await isValidateToken()
-                await axios.delete('/board/' + this.boardId, {
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    },
-                })
-                    .then(response => {
-                        alert('게시글이 삭제되었습니다.');
-                        location.href = '/board/view';
-                    })
-                    .catch(error => {
-                        alert('게시글 삭제 실패' + error);
-                    })
+            const result = await Swal.fire({
+                title: '게시글 삭제',
+                text: '게시글을 삭제하시겠습니까?',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: '예',
+                cancelButtonText: '아니요'
+            });
+            if (result.isConfirmed) {
+                try {
+                    token = await isValidateToken();
+                    await axios.delete('/board/' + this.boardId, {
+                        headers: {
+                            'Authorization': `Bearer ${token}`
+                        },
+                    });
+
+                    // SweetAlert2를 사용하여 삭제 성공 메시지 표시
+                    await Swal.fire({
+                        icon: 'success',
+                        title: '게시글 삭제 완료',
+                    });
+                    location.href = '/board/view';
+
+                } catch (error) {
+                    // SweetAlert2를 사용하여 삭제 실패 메시지 표시
+                    await Swal.fire({
+                        icon: 'error',
+                        title: '게시글 삭제 실패',
+                        text: '게시글 삭제에 실패했습니다.',
+                    });
+                    console.error(error.message);
+                }
             }
         },
         // 좋아요
@@ -95,11 +120,19 @@ new Vue({
                     this.isLike = response.data.message;
 
                     if (this.isLike == '좋아요 처리 완료') {
-                        alert('좋아요 처리 완료');
+                        Swal.fire({
+                            icon: 'success',
+                            title: '좋아요 처리 완료',
+                            timer: 1000
+                        });
                     }
 
                     if (this.isLike == '좋아요 취소 완료') {
-                        alert('좋아요 취소 완료');
+                        Swal.fire({
+                            icon: 'success',
+                            title: '좋아요 취소 완료',
+                            timer: 1000
+                        });
                     }
                 })
         },
@@ -107,7 +140,7 @@ new Vue({
         async bookmarkBoard() {
             const url = '/board/' + this.boardId + '/bookmark';
             token = await isValidateToken()
-            await axios.post(url,{}, {
+            await axios.post(url, {}, {
                 headers: {
                     'Authorization': `Bearer ${token}`
                 },
@@ -116,29 +149,111 @@ new Vue({
                     this.isBookmark = response.data.message;
 
                     if (this.isBookmark == '즐겨찾기 처리완료') {
-                        alert('즐겨찾기 처리완료');
+                        Swal.fire({
+                            icon: 'success',
+                            title: '즐겨찾기 처리 완료',
+                            timer: 1000
+                        });
                     }
 
                     if (this.isBookmark == '즐겨찾기 취소완료') {
-                        alert('즐겨찾기 취소완료');
+                        Swal.fire({
+                            icon: 'success',
+                            title: '즐겨찾기 취소 완료',
+                            timer: 1000
+                        });
                     }
                 })
         },
         // 신고
         async reportBoard() {
-            const url = '/board/' + this.boardId + '/report';
-            const message = prompt();
-            token = await isValidateToken()
-            await axios.post(url,{'content': message}, {
-                headers: {
-                    'Authorization': `Bearer ${token}`
+            if (this.isReported) {
+                await this.showReportCancelDialog();
+            } else {
+                await this.showReportDialog();
+            }
+        },
+
+        async showReportDialog() {
+            const { value: message } = await Swal.fire({
+                title: '게시글 신고',
+                input: 'text',
+                inputLabel: '신고 내용',
+                inputPlaceholder: '신고 내용을 입력하세요...',
+                inputValidator: (value) => {
+                    if (!value) {
+                        return '신고 내용을 입력해 주세요';
+                    }
                 },
-            })
-                .then(response => {
-                    console.log(this.boardId);
-                    console.log(url);
-                    alert('신고');
-                })
+                showCancelButton: true,
+                confirmButtonText: '신고',
+                cancelButtonText: '취소',
+            });
+
+            if (message) {
+                await this.sendReportRequest(message);
+            }
+        },
+
+        async showReportCancelDialog() {
+            const result = await Swal.fire({
+                icon: 'info',
+                title: '게시글 신고 취소',
+                text: '게시글 신고를 취소하시겠습니까?',
+                showCancelButton: true,
+                confirmButtonText: '예',
+                cancelButtonText: '아니요',
+            });
+
+            if (result.isConfirmed) {
+                await this.cancelReportRequest();
+            }
+        },
+
+        async sendReportRequest(message) {
+            const url = '/board/' + this.boardId + '/report';
+            token = await isValidateToken();
+
+            try {
+                await axios.post(url, { 'content': message }, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    },
+                });
+
+                await Swal.fire({
+                    icon: 'success',
+                    title: '신고 완료',
+                    text: '게시글이 성공적으로 신고되었습니다.',
+                });
+
+                this.isReported = true;
+            } catch (error) {
+                console.error(error.message);
+            }
+        },
+
+        async cancelReportRequest() {
+            const url = '/board/' + this.boardId + '/report';
+            token = await isValidateToken();
+
+            try {
+                await axios.post(url, {}, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    },
+                });
+
+                await Swal.fire({
+                    icon: 'success',
+                    title: '게시글 신고 취소 완료',
+                    text: '게시글 신고가 취소되었습니다.',
+                });
+
+                this.isReported = false;
+            } catch (error) {
+                console.error(error.message);
+            }
         },
         // 댓글 작성
         async inputComment() {
@@ -152,7 +267,6 @@ new Vue({
             })
                 .then(response => {
                     this.nickname = response.data.nickname;
-                    alert(this.nickname + '님 댓글 작성 완료');
                     location.href = '/board/view/' + this.boardId;
                 })
         },
@@ -160,34 +274,53 @@ new Vue({
         async deleteComment(commentId, nickname) {
             const url = '/board/' + this.boardId + '/comment/' + commentId;
 
-            if (confirm('댓글을 삭제하시겠습니까?')) {
-                token = await isValidateToken()
-                await axios.delete(url, {
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    },
-                })
-                    .then(response => {
-                        if (this.nickname === nickname && jwtToAccountId !== null) {
-                            console.log('댓글 삭제 완료');
-                            alert('댓글 삭제 완료');
-                            location.href = '/board/view/' + this.boardId;
-                        }
-                    })
+            const result = await Swal.fire({
+                title: '댓글 삭제',
+                text: '댓글을 삭제하시겠습니까?',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: '삭제',
+                cancelButtonText: '취소',
+            });
+
+            if (result.isConfirmed) {
+                try {
+                    token = await isValidateToken();
+                    await axios.delete(url, {
+                        headers: {
+                            'Authorization': `Bearer ${token}`
+                        },
+                    });
+
+                    if (this.nickname === nickname && jwtToAccountId !== null) {
+                        console.log('댓글 삭제 완료');
+                        Swal.fire({
+                            icon: 'success',
+                            title: '댓글 삭제완료'
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                location.href = '/board/view/' + this.boardId;
+                            }
+                        });
+                    }
+                } catch (error) {
+                    console.error(error.message);
+                }
             }
         },
-        isCommentAuthor(commentNickname) {
-            const userNickname = localStorage.getItem('nickname');
-            console.log(userNickname);
-            return userNickname === commentNickname;
-        }
-    },
-});
+            isCommentAuthor(commentNickname) {
+                const userNickname = localStorage.getItem('nickname');
+                console.log(userNickname);
+                return userNickname === commentNickname;
+            }
+        },
+    }
+);
 
-function processDate (data) {
+        function processDate(data) {
     const splitDate = data.split('T');
     const date = splitDate[0].split('-');
     const time = splitDate[1].split('.');
 
-    return date[0]+'년 '+date[1]+'월 '+date[2]+'일 '+time[0];
+    return date[0] + '년 ' + date[1] + '월 ' + date[2] + '일 ' + time[0];
 }

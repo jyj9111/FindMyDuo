@@ -92,7 +92,7 @@ public class BoardController {
 
     // 신고 기능 현재는 2회 이상 신고이면 게시글 삭제로 해놓음(테스트 용이)
     @PostMapping("/{boardId}/report")
-    public ReportResponseDto reportBoard(Authentication authentication, @PathVariable Long boardId, @RequestBody @Valid ReportDto dto) {
+    public ReportResponseDto reportBoard(Authentication authentication, @PathVariable Long boardId, @RequestBody ReportDto dto) {
         return reportService.updateOfReportBoard(authentication.getName(), boardId, dto);
     }
 

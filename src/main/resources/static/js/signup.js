@@ -160,7 +160,6 @@ document.addEventListener("DOMContentLoaded", function () {
                         title: '회원가입이 완료되었습니다.\n' + '구해듀오의 회원이 되신 것을 환영합니다.',
                         showConfirmButton: true,
                     }).then((result) => {
-                        /* Read more about isConfirmed, isDenied below */
                         if (result.isConfirmed) {
                             location.href = "/login";
                         }

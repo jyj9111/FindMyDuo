@@ -3,9 +3,11 @@ package com.idle.fmd.domain.matching;
 import com.google.gson.Gson;
 import com.idle.fmd.domain.lol.dto.LolMatchDto;
 import com.idle.fmd.domain.lol.entity.LolMatchEntity;
+import com.idle.fmd.domain.lol.repo.LolChampDataRepository;
 import com.idle.fmd.domain.user.entity.UserEntity;
 import com.idle.fmd.domain.user.service.CustomUserDetailsManager;
 import com.idle.fmd.global.auth.jwt.JwtTokenUtils;
+import com.idle.fmd.global.utils.FileHandler;
 import io.jsonwebtoken.Claims;
 
 import jakarta.transaction.Transactional;
@@ -30,6 +32,8 @@ public class MatchingHandler extends TextWebSocketHandler {
     private final JwtTokenUtils jwtTokenUtils;
     private final TierReader tierReader;
     private final MatchingService matchingService;
+    private final LolChampDataRepository lolChampDataRepository;
+    private final FileHandler fileHandler;
     private final Gson gson = new Gson();
     private final List<WebSocketSession> sessions = new ArrayList<>();
 
@@ -82,7 +86,6 @@ public class MatchingHandler extends TextWebSocketHandler {
             session.close();
         } else {
             session.getAttributes().remove("destination");
-            destination.getAttributes().remove("answer");
             TextMessage textMessage = new TextMessage("continue");
             session.sendMessage(textMessage);
         }
@@ -136,12 +139,13 @@ public class MatchingHandler extends TextWebSocketHandler {
         attributes.put("mode", mode);
         attributes.put("myLine", myLine);
         attributes.put("duoLine", duoLine);
+        attributes.put("profileImg", userEntity.getProfileImage());
 
         if (userEntity.getLolAccount() != null) {
             attributes.put("lolNickname", userEntity.getLolAccount().getName());
 
             // 모드에 따라 티어 속성을 다르게 설정 ( 솔랭 또는 자유랭 티어 )
-            if (mode.equals("solo")) {
+            if (mode.equals("SOLO")) {
                 attributes.put("tier", userEntity.getLolAccount().getLolInfo().getSoloTier());
                 if(tierReader.soloTierToNumber(attributes.get("tier").toString()) == -1){
                     throw new RuntimeException("마스터 이상의 티어는 듀오를 할 수 없습니다.");
@@ -151,7 +155,7 @@ public class MatchingHandler extends TextWebSocketHandler {
                 attributes.put("totalLoses", userEntity.getLolAccount().getLolInfo().getSoloLosses());
             }
 
-            if (mode.equals("flex")) {
+            if (mode.equals("FLEX")) {
                 attributes.put("tier", userEntity.getLolAccount().getLolInfo().getFlexTier());
                 attributes.put("rank", userEntity.getLolAccount().getLolInfo().getFlexRank());
                 attributes.put("totalWins", userEntity.getLolAccount().getLolInfo().getFlexWins());
@@ -159,9 +163,27 @@ public class MatchingHandler extends TextWebSocketHandler {
             }
 
             // 모스트 1/2/3 챔피언 저장
-            attributes.put("mostOne", userEntity.getLolAccount().getLolInfo().getMostOneChamp());
-            attributes.put("mostTwo", userEntity.getLolAccount().getLolInfo().getMostTwoChamp());
-            attributes.put("mostThree", userEntity.getLolAccount().getLolInfo().getMostThreeChamp());
+            String mostOne = fileHandler.getChampionImgPath(
+                    lolChampDataRepository.findByChampCode(
+                            userEntity.getLolAccount().getLolInfo().getMostOneChamp()
+                    ).getChampName()
+            );
+            log.info(mostOne);
+            attributes.put("mostOne", mostOne);
+
+            String mostTwo = fileHandler.getChampionImgPath(
+                    lolChampDataRepository.findByChampCode(
+                            userEntity.getLolAccount().getLolInfo().getMostTwoChamp()
+                    ).getChampName()
+            );
+            attributes.put("mostTwo", mostTwo);
+
+            String mostThree = fileHandler.getChampionImgPath(
+                    lolChampDataRepository.findByChampCode(
+                            userEntity.getLolAccount().getLolInfo().getMostThreeChamp()
+                    ).getChampName()
+            );
+            attributes.put("mostThree", mostThree);
         }
         // 롤 계정이 연동되어 있지 않을 때 속성 설정
         else {
@@ -174,6 +196,8 @@ public class MatchingHandler extends TextWebSocketHandler {
             attributes.put("mostTwo", 0);
             attributes.put("mostThree", 0);
         }
+
+        attributes.put("tierImg", fileHandler.getTierImgPath(session.getAttributes().get("tier").toString()));
 
         // 매칭 대기열에 추가
         sessions.add(session);
@@ -198,8 +222,8 @@ public class MatchingHandler extends TextWebSocketHandler {
                 String mode = session.getAttributes().get("mode").toString();
 
                 // 솔로랭크 모드이면 솔로랭크티어, 자유랭크 모드이면 자유랭크 티어를 찾아서 티어조건이 맞는지 확인
-                if (mode.equals("solo")) tierInRange = tierReader.soloTierInRange(myTier, duoTier);
-                if (mode.equals("flex")) tierInRange = tierReader.flexTierInRange(myTier, duoTier);
+                if (mode.equals("SOLO")) tierInRange = tierReader.soloTierInRange(myTier, duoTier);
+                if (mode.equals("FLEX")) tierInRange = tierReader.flexTierInRange(myTier, duoTier);
 
                 // 티어조건이 맞을 때 실행
                 if (tierInRange) {
@@ -222,21 +246,28 @@ public class MatchingHandler extends TextWebSocketHandler {
         if (myEntity.getLolAccount() != null) {
             List<LolMatchEntity> lolMatchEntities = myEntity.getLolAccount().getLolMatch();
             for (LolMatchEntity match : lolMatchEntities) {
-                myMatchList.add(match.entityToDto());
+                if(match.getGameMode().equals(mySession.getAttributes().get("mode"))){
+                    LolMatchDto lolMatchDto = match.entityToDto();
+                    lolMatchDto.setChampion(fileHandler.getChampionImgPath(lolMatchDto.getChampion()));
+                    lolMatchDto.setTeamPosition(fileHandler.getTierImgPath(lolMatchDto.getTeamPosition()));
+                    myMatchList.add(lolMatchDto);
+                }
             }
         }
 
         // 매칭 성공 시 응답 DTO 를 통해서 상대방에게 전달할 데이터를 준비
         MatchingResponseDto myInfo = new MatchingResponseDto(
                 mySession.getAttributes().get("nickname").toString(),
+                mySession.getAttributes().get("profileImg").toString(),
                 mySession.getAttributes().get("lolNickname").toString(),
                 mySession.getAttributes().get("mode").toString(),
                 mySession.getAttributes().get("myLine").toString(),
                 mySession.getAttributes().get("tier").toString(),
                 mySession.getAttributes().get("rank").toString(),
-                Long.parseLong(mySession.getAttributes().get("mostOne").toString()),
-                Long.parseLong(mySession.getAttributes().get("mostTwo").toString()),
-                Long.parseLong(mySession.getAttributes().get("mostThree").toString()),
+                mySession.getAttributes().get("tierImg").toString(),
+                mySession.getAttributes().get("mostOne").toString(),
+                mySession.getAttributes().get("mostTwo").toString(),
+                mySession.getAttributes().get("mostThree").toString(),
                 Long.parseLong(mySession.getAttributes().get("totalWins").toString()),
                 Long.parseLong(mySession.getAttributes().get("totalLoses").toString()),
                 myMatchList
