@@ -34,9 +34,8 @@ new Vue({
                 confirmButtonText: '확인'
             }).then((result) => {
                 if (result.isConfirmed) {
-                    Swal.fire('Saved!', '', 'success')
+                    location.href = '/login';
                 }
-                location.href = '/login';
             });
             return;
         }
