@@ -192,9 +192,9 @@ public class MatchingHandler extends TextWebSocketHandler {
             attributes.put("rank", "");
             attributes.put("totalWins", 0);
             attributes.put("totalLoses", 0);
-            attributes.put("mostOne", 0);
-            attributes.put("mostTwo", 0);
-            attributes.put("mostThree", 0);
+            attributes.put("mostOne", fileHandler.getChampionImgPath(lolChampDataRepository.findByChampCode(0l).getChampName()));
+            attributes.put("mostTwo", fileHandler.getChampionImgPath(lolChampDataRepository.findByChampCode(0l).getChampName()));
+            attributes.put("mostThree", fileHandler.getChampionImgPath(lolChampDataRepository.findByChampCode(0l).getChampName()));
         }
 
         attributes.put("tierImg", fileHandler.getTierImgPath(session.getAttributes().get("tier").toString()));
