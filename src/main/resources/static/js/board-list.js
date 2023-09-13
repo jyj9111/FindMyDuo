@@ -47,8 +47,15 @@ new Vue({
         async redirectToWritePage() {
             console.log('token 확인 : ' + token);
             if (!token) {
-                alert('게시물 작성은 로그인 후 사용 가능합니다.');
-                location.href = "/login";
+                Swal.fire({
+                    icon: 'error',
+                    title: '로그인 후 이용해 주세요',
+                    confirmButtonText: '확인'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        location.href = '/login';
+                    }
+                });
             } else {
                 location.href = "/board/form/write"; // 게시판 작성페이지로 이동
             }
