@@ -11,13 +11,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 @Slf4j
 @Controller
-@RequestMapping("/chat")
 @RequiredArgsConstructor
 public class ChatController {
     private final SimpMessageSendingOperations messagingTemplate;
 
     // 채팅방 입장 화면
-    @GetMapping("/room/enter")
+    @GetMapping("/chat/room/enter")
     public String roomDetail() {
         return "matching/chat";
     }

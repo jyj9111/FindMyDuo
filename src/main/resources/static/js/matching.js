@@ -90,7 +90,7 @@ new Vue({
                         document.getElementById("div-answer").style.display = ""
                         timeoutId = setTimeout(function(){
                             webSocket.send("reject")
-                        }, 20000)
+                        }, 120000)
                     } else {
                         localStorage.setItem('roomId', data.roomId);
                         localStorage.setItem('discordUrl', data.discordUrl)
@@ -98,8 +98,10 @@ new Vue({
                         const other = rName.replace(localStorage.getItem('nickname'), "").replace("-","");
                         console.log('other: '+ other);
                         localStorage.setItem('other', other);
-                        location.href = "/matching"
                         window.open('/chat/room/enter','_blank', 'scrollbars=yes, resizable=yes, location=no, width=800,height=800');
+                        setTimeout(function () {
+                            location.href = "/matching"
+                        }, 5000)
                     }
                 } catch (e) {
                     const data = msg.data

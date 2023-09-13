@@ -77,6 +77,7 @@ public class UserEntity {
                 .password(userDetails.getPassword())
                 .email(userDetails.getEmail())
                 .nickname(userDetails.getNickname())
+                .profileImage(userDetails.getProfileImage())
                 .createdAt(LocalDateTime.now())
                 .build();
     }
