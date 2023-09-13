@@ -101,11 +101,14 @@
         </div>
         <div id="div-info" style="display: none;">
             <!-- 구해듀오 정보 -->
-            <div class="text-center col-sm-12">
-                <div><img class="img-circle" :src="profileImg" width="50" height="50">
+            <div class="col-sm-12">
+                <div class="col-sm-5"><img class="img-circle" :src="profileImg" width="50" height="50">
                     <strong>{{nickname}}</strong> 님
                 </div>
-                <div id = "div-timer"><p id = "time"></p></div>
+                <div class="text-right" id = "div-timer" style="color: gray; margin-top: 10px">
+                    <strong id = "time" style="color: black; font-size: 20px;"></strong>
+                    초 뒤에 매칭이 취소됩니다.
+                </div>
             </div>
 
             <!-- 롤 정보 -->
