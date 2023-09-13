@@ -30,16 +30,18 @@
                 </div>
                 <p class="help-block col-sm-8"> {{ nickName }}님의 게시물</p>
                 <p class="help-block col-sm-4"> 수정시간 : {{ modifiedAt }}</p>
-                <button class="btn btn-default" @click="goBack">뒤로 가기</button>
             </div>
             <div class="form-group col-sm-12 board-text">
                 <p>{{content}}</p>
                 <img v-for="name in images" v-bind:src="name" alt="이미지">
             </div>
-            <div class="form-group">
+            <div class="form-group col-sm-10">
                 <button class="btn btn-info" @click="likeBoard">좋아요</button>
                 <button class="btn btn-warning" @click="bookmarkBoard">즐겨찾기</button>
                 <button v-if="isUnAuthorizedUser" class="btn btn-danger" @click="reportBoard">신고</button>
+            </div>
+            <div class="col-sm-2 text-right">
+                <button class="btn btn-default" @click="goBack">뒤로 가기</button>
             </div>
             <div class="form-group col-sm-12 board-text" v-if="isLoginAuthorizedUser">
                 <div class="form-group">
