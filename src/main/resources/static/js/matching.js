@@ -27,8 +27,17 @@ new Vue({
     async created() {
         if (!token) {
             // 토큰이 없는 경우 로그인 페이지로 이동
-            alert('로그인 후 이용해주세요.')
-            location.href = '/login';
+            // alert('로그인 후 이용해주세요.')
+            Swal.fire({
+                icon: 'error',
+                title: '로그인 후 이용해 주세요',
+                confirmButtonText: '확인'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    Swal.fire('Saved!', '', 'success')
+                }
+                location.href = '/login';
+            });
             return;
         }
     },
@@ -36,7 +45,11 @@ new Vue({
         async startMatching() {
             token = await isValidateToken();
             if(this.myLine == this.duoLine){
-                alert("같은 역할군 간의 매칭은 불가능합니다.")
+                Swal.fire({
+                    icon: 'error',
+                    title: '같은 역할군 같의 매칭은 불가능 합니다.',
+                    timer: 1500
+                });
                 return
             }
             const host = window.location.hostname;

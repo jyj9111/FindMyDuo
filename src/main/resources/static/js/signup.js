@@ -83,7 +83,10 @@ document.addEventListener("DOMContentLoaded", function () {
                 // 이메일 인증번호 보내기 요청
                 await axios.post('/users/email-auth', {email: this.email})
                     .then(response => {
-                        alert('이메일로 인증번호가 전송되었습니다.');
+                        Swal.fire({
+                            icon: 'success',
+                            title: '이메일로 인증번호가 전송되었습니다.'
+                        });
                     })
                     .catch(error => {
                         console.error('이메일 인증번호 요청 에러: ', error);
@@ -152,14 +155,23 @@ document.addEventListener("DOMContentLoaded", function () {
                         passwordCheck: this.passwordCheck
                     })
 
-                    alert('회원가입이 완료되었습니다.\n'
-                        + '구해듀오의 회원이 되신 것을 환영합니다.');
-                    location.href = '/login' // 회원가입 완료 후 로그인 페이지로 이동
+                    Swal.fire({
+                        icon: 'success',
+                        title: '회원가입이 완료되었습니다.\n' + '구해듀오의 회원이 되신 것을 환영합니다.',
+                        showConfirmButton: true,
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            location.href = "/login";
+                        }
+                    });
                 } catch (error) {
-                    alert('회원가입 실패: ' + error.response.data.message);
+                    Swal.fire({
+                        icon: 'error',
+                        title: '회원가입 실패',
+                        text: error.response.data.message
+                    });
                 }
             }
-
         }
     });
 });
