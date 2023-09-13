@@ -4,13 +4,19 @@ let token = localStorage.getItem('token');
 new Vue({
     el: '#navbar-app',
     data: {
-        loggedIn: false // 초기에는 로그인하지 않은 상태
+        loggedIn: false, // 초기에는 로그인하지 않은 상태
+        nickname: '',
+        navbarProfileImage: ''
     },
     methods: {
         async checkLoginStatus() {
             console.log(token);
             // 토큰이 존재하면 로그인 상태로 간주한다.
             this.loggedIn = token != null;
+            if(this.loggedIn) {
+                this.nickname = localStorage.getItem('nickname')
+                this.navbarProfileImage = localStorage.getItem('profileImage')
+            }
         },
         async logout() {
             token = await isValidateToken()
@@ -36,6 +42,5 @@ new Vue({
     },
     mounted: async function (){
         await this.checkLoginStatus(); // 페이지가 로드될 때 로그인 상태 확인
-
     }
 });
