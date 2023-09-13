@@ -4,19 +4,50 @@
 }
 
 .matching-block {
-    width: 100%;
-    height: 60%;
-    background-color: lightgray;
     margin-bottom:10px;
-    overflow: scroll;
 }
 
 .matching-chat {
-
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
+}
+
+.matching-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 1px lightgray solid;
+    border-radius: 10px;
+    margin: 10px;
+}
+
+.matching-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.matching-container img {
+    margin-left: 5px;
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+.win-row {
+    margin: 10px;
+    border-radius: 10px;
+    border: 2px #d5e3ff solid;
+    background-color: #ecf2ff;
+}
+
+.lose-row {
+    margin: 10px;
+    border-radius: 10px;
+    border: 2px #ffd8d9 solid;
+    background-color: #fff1f3;
 }
 
 .chat-container {
