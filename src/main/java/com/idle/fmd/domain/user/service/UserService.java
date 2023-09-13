@@ -79,6 +79,7 @@ public class UserService {
                         .email(dto.getEmail())
                         .nickname(dto.getNickname())
                         .password(passwordEncoder.encode(dto.getPassword()))
+                        .profileImage(fileHandler.getBasicProfilePath())
                         .build()
         );
 
