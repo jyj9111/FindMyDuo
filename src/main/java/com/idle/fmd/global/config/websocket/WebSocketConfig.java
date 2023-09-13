@@ -1,6 +1,6 @@
 package com.idle.fmd.global.config.websocket;
 
-import com.idle.fmd.domain.matching.MatchingHandler;
+import com.idle.fmd.domain.matching.service.MatchingHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.socket.config.annotation.EnableWebSocket;

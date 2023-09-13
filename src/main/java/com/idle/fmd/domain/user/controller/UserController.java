@@ -1,10 +1,12 @@
 package com.idle.fmd.domain.user.controller;
 
-import com.idle.fmd.domain.board.dto.BoardAllResponseDto;
-import com.idle.fmd.domain.user.dto.*;
+import com.idle.fmd.domain.board.dto.res.BoardAllResponseDto;
+import com.idle.fmd.domain.user.dto.req.*;
+import com.idle.fmd.domain.user.dto.res.UserLoginResponseDto;
+import com.idle.fmd.domain.user.dto.res.UserMyPageResponseDto;
 import com.idle.fmd.domain.user.service.UserService;
-import com.idle.fmd.global.error.exception.BusinessException;
-import com.idle.fmd.global.error.exception.BusinessExceptionCode;
+import com.idle.fmd.global.exception.BusinessException;
+import com.idle.fmd.global.exception.BusinessExceptionCode;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
