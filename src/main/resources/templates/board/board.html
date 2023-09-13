@@ -7,65 +7,68 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
     <link rel="stylesheet" href="/static/css/style.css"/>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.1.2/dist/sweetalert2.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Jua&family=Roboto+Mono&display=swap" rel="stylesheet">
 </head>
 <body>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.1.2/dist/sweetalert2.min.js"></script>
-
-<!-- 헤더 네브바 -->
-<div id="header-bar"></div>
-
-<div class="container-fluid">
-    <!-- 사이드바 -->
-    <div id="menu-bar"></div>
-    <!-- 본문 -->
-    <div class="col-sm-9 page board-container" id="board-app">
-<!--        <div class="board-container">-->
-            <div class="form-group col-sm-12">
-                <div class="board-title row">
-                    <p class="form-control-static col-sm-10"><strong>{{title}}</strong></p>
-                    <div class="col-sm-2" v-if="isAuthorizedUser">
-                        <button class="btn btn-default title-btn" @click="redirectToEditPage">수정</button>
-                        <button class="btn btn-default title-btn" @click="deleteBoard">삭제</button>
-                    </div>
-                </div>
-                <p class="help-block col-sm-8"> {{ nickName }}님의 게시물</p>
-                <p class="help-block col-sm-4"> 수정시간 : {{ modifiedAt }}</p>
-                <button class="btn btn-default" @click="goBack">뒤로 가기</button>
-            </div>
-            <div class="form-group col-sm-12 board-text">
-                <p>{{content}}</p>
-                <img v-for="name in images" v-bind:src="name" alt="이미지">
-            </div>
-            <div class="form-group">
-                <button class="btn btn-info" @click="likeBoard">좋아요</button>
-                <button class="btn btn-warning" @click="bookmarkBoard">즐겨찾기</button>
-                <button v-if="isUnAuthorizedUser" class="btn btn-danger" @click="reportBoard">신고</button>
-            </div>
-            <div class="form-group col-sm-12 board-text" v-if="isLoginAuthorizedUser">
-                <div class="form-group">
-                    <textarea class="form-control" name="content" id="content" placeholder="내용"></textarea>
-                </div>
-                <div class="from-group">
-                    <button class="btn btn-default" @click="inputComment">작성</button>
-                </div>
-            </div>
-            <div class="form-group col-sm-12 board-text">
-                <label class="control-label"><h4><strong>댓글</strong></h4></label>
-                <div v-for="comment in comments">
-                    <div class="comment-block">
-                        <div class="form-group">
-                            <label class="control-label">{{comment.nickname}}</label>
-                            <div class="comment-text">
-                                {{comment.content}}
-                            </div>
-                            <p class="help-block text-right">수정시간 : {{comment.modifiedAt}}</p>
-                        </div>
-                        <button class="btn btn-default" v-if="isCommentAuthor(comment.nickname)" @click="deleteComment(comment.id, nickname)">삭제</button>
-                    </div>
-                </div>
+<script src="https://kit.fontawesome.com/3bfc1f9b60.js" crossorigin="anonymous"></script>
+<!-- 헤더바, 사이드바 -->
+<div id="menu-bar"></div>
+<!-- 본문 -->
+<div class="col-sm-9 page board-container" id="board-app">
+    <div class="form-group col-sm-12">
+        <div class="board-title row">
+            <p class="form-control-static col-sm-10"><strong>{{title}}</strong></p>
+            <div class="col-sm-2" v-if="isAuthorizedUser">
+                <button class="btn btn-default title-btn" @click="redirectToEditPage">수정</button>
+                <button class="btn btn-default title-btn" @click="deleteBoard">삭제</button>
             </div>
         </div>
-<!--    </div>-->
+        <p class="help-block col-sm-8"> {{ nickName }}님의 게시물</p>
+        <p class="help-block col-sm-4"> 수정시간 : {{ modifiedAt }}</p>
+    </div>
+    <div class="form-group col-sm-12 board-text">
+        <p>{{content}}</p>
+        <img v-for="name in images" v-bind:src="name" alt="이미지">
+    </div>
+    <div class="form-group col-sm-10">
+        <button class="btn btn-info" @click="likeBoard">좋아요</button>
+        <button class="btn btn-warning" @click="bookmarkBoard">즐겨찾기</button>
+        <button v-if="isUnAuthorizedUser" class="btn btn-danger" @click="reportBoard">신고</button>
+    </div>
+    <div class="col-sm-2 text-right">
+        <button class="btn btn-default" @click="goBack">뒤로 가기</button>
+    </div>
+    <div class="form-group col-sm-12 board-text" v-if="isLoginAuthorizedUser">
+        <div class="form-group">
+            <textarea class="form-control" name="content" id="content" placeholder="내용"></textarea>
+        </div>
+        <div class="from-group">
+            <button class="btn btn-default" @click="inputComment">작성</button>
+        </div>
+    </div>
+    <div class="form-group col-sm-12 board-text">
+        <label class="control-label"><h4><strong>댓글</strong></h4></label>
+        <div v-for="comment in comments">
+            <div class="comment-block">
+                <div class="form-group">
+                    <label class="control-label">{{comment.nickname}}</label>
+                    <div class="comment-text">
+                        {{comment.content}}
+                    </div>
+                    <p class="help-block text-right">수정시간 : {{comment.modifiedAt}}</p>
+                </div>
+                <button class="btn btn-default" v-if="isCommentAuthor(comment.nickname)"
+                        @click="deleteComment(comment.id, nickname)">삭제
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- 헤더 사이드바에서 못닫은 div -->
+</div>
 </div>
 <script src="/webjars/axios/0.21.1/dist/axios.js"></script>
 <script src="/webjars/vue/2.6.14/dist/vue.js"></script>
@@ -73,11 +76,6 @@
 <script>
     $.get('/static/html/navbar.html', function (data) {
         $('#menu-bar').html(data);
-    })
-</script>
-<script>
-    $.get('/static/html/header.html', function (data) {
-        $('#header-bar').html(data);
     })
 </script>
 <script src="/static/js/board.js" type="module"></script>

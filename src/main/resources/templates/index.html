@@ -6,33 +6,35 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
     <link rel="stylesheet" href="/static/css/style.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.1.2/dist/sweetalert2.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Jua&family=Roboto+Mono&display=swap" rel="stylesheet">
 </head>
 <body>
-<!-- 헤더 네브바 -->
-<div id="header-bar"></div>
-
-<div class="container-fluid" id="home-app">
-    <!-- 사이드바 -->
-    <div id="menu-bar"></div>
-
-    <!-- 본문 -->
-    <div class="col-sm-9 page">
-        <h1><strong>구해듀오</strong></h1>
-    </div>
+<!-- 헤더바, 사이드바 -->
+<div id="menu-bar"></div>
+<!-- 본문 -->
+<div class="col-sm-9 page">
+    <h1 style="font-family: 'Jua', sans-serif;"><strong>구해DUO에서 DUO 구하자!</strong></h1>
+    <img src="/static/css/images/main.png" width="300" height="300">
+    <div>1. 로그인 후 마이페이지에서 본인의 롤 계정을 연동합니다.</div>
+    <div>2. 게임 모드, 본인이 원하는 라인, 매칭을 원하는 상대방 라인을 선택하고 매칭 시작 버튼을 누릅니다.</div>
+    <div>3. 매칭이 완료되고 상대방의 정보가 화면에 표시됩니다. 사용자는 이 정보를 이용해 상대방과 듀오를 할 것인지 정합니다.</div>
+    <div>4. 둘 모두가 수락을 누르면 채팅방이 열립니다. 디스코드 연결 버튼을 통해 음성채팅을 활용해도 좋습니다!</div>
+</div>
+<!-- 헤더바, 사이드바에서 못닫은 div 태그 -->
+</div>
 </div>
 <script src="/webjars/vue/2.6.14/dist/vue.js"></script>
 <script src="/webjars/axios/0.21.1/dist/axios.js"></script>
 <script src="/webjars/jquery/3.6.4/jquery.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.1.2/dist/sweetalert2.min.js"></script>
+<script src="https://kit.fontawesome.com/3bfc1f9b60.js" crossorigin="anonymous"></script>
 <script src="/static/js/index.js"></script>
-<!--<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>-->
 <script>
     $.get('/static/html/navbar.html', function (data) {
         $('#menu-bar').html(data);
-    })
-</script>
-<script>
-    $.get('/static/html/header.html', function (data) {
-        $('#header-bar').html(data);
     })
 </script>
 </body>

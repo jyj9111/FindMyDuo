@@ -9,157 +9,150 @@
     <link href="/static/css/style.css" rel="stylesheet"/>
     <link rel="stylesheet" href="/static/css/matching.css"/>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.1.2/dist/sweetalert2.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Jua&family=Roboto+Mono&display=swap" rel="stylesheet">
 </head>
 <body>
 <script src="/webjars/vue/2.6.14/dist/vue.js"></script>
 <script src="/webjars/axios/0.21.1/dist/axios.js"></script>
 <script src="/webjars/jquery/3.6.4/jquery.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.1.2/dist/sweetalert2.min.js"></script>
-<!-- 헤더 네브바 -->
-<div id="header-bar"></div>
-
-<div class="container-fluid">
-    <!-- 사이드바 -->
-    <div id="menu-bar"></div>
-
-    <!-- 본문 -->
-    <div class="col-sm-9 page" id="matching-app">
-        <div class="matching">
-            <form class="form-horizontal">
-                <div class="form-group">
-                    <label class="col-sm-5 control-label text-right"><strong>게임 모드 선택</strong></label>
-                    <div class="col-sm-7 text-left">
-                        <div class="radio">
-                            <label>
-                                <input type="radio" v-model="mode" name="mode" value="SOLO"> 솔로랭크
-                            </label>
-                            <label>
-                                <input type="radio" v-model="mode" name="mode" value="FLEX"> 자유랭크
-                            </label>
-                        </div>
+<script src="https://kit.fontawesome.com/3bfc1f9b60.js" crossorigin="anonymous"></script>
+<!-- 헤더바, 사이드바 -->
+<div id="menu-bar"></div>
+<!-- 본문 -->
+<div class="col-sm-9 page" id="matching-app">
+    <div class="matching">
+        <form class="form-horizontal">
+            <div class="form-group">
+                <label class="col-sm-5 control-label text-right"><strong>게임 모드 선택</strong></label>
+                <div class="col-sm-7 text-left">
+                    <div class="radio">
+                        <label>
+                            <input type="radio" v-model="mode" name="mode" value="SOLO" checked> 솔로랭크
+                        </label>
+                        <label>
+                            <input type="radio" v-model="mode" name="mode" value="FLEX"> 자유랭크
+                        </label>
                     </div>
                 </div>
-                <div class="form-group">
-                    <label class="col-sm-5 control-label text-right"><strong>본인 라인 선택</strong></label>
-                    <div class="col-sm-7 text-left">
-                        <div class="radio">
-                            <label>
-                                <input type="radio" v-model="myLine" name="myLine" value="TOP"> 탑
-                            </label>
-                            <label>
-                                <input type="radio" v-model="myLine" name="myLine" value="MIDDLE"> 미드
-                            </label>
-                            <label>
-                                <input type="radio" v-model="myLine" name="myLine" value="JUNGLE"> 정글
-                            </label>
-                            <label>
-                                <input type="radio" v-model="myLine" name="myLine" value="BOTTOM"> 원딜
-                            </label>
-                            <label>
-                                <input type="radio" v-model="myLine" name="myLine" value="UTILITY"> 서폿
-                            </label>
-                        </div>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label class="col-sm-5 control-label text-right"><strong>상대 라인 선택</strong></label>
-                    <div class="col-sm-7 text-left">
-                        <div class="radio">
-                            <label>
-                                <input type="radio" v-model="duoLine" name="duoLine" value="TOP"> 탑
-                            </label>
-                            <label>
-                                <input type="radio" v-model="duoLine" name="duoLine" value="MIDDLE"> 미드
-                            </label>
-                            <label>
-                                <input type="radio" v-model="duoLine" name="duoLine" value="JUNGLE"> 정글
-                            </label>
-                            <label>
-                                <input type="radio" v-model="duoLine" name="duoLine" value="BOTTOM"> 원딜
-                            </label>
-                            <label>
-                                <input type="radio" v-model="duoLine" name="duoLine" value="UTILITY"> 서폿
-                            </label>
-                        </div>
-                    </div>
-                </div>
-            </form>
-            <div class="form-group text-center col-sm-12">
-                <!--                id="btn-start-matching"-->
-                <button class="btn btn-default btn-lg" type="button" id="btn-matching-start" @click="startMatching">
-                    매칭시작
-                </button>
-                <button class="btn btn-default btn-lg" type="button" id="btn-matching-stop" @click="stopMatching"
-                        style="display: none;">매칭취소
-                </button>
             </div>
-        </div>
-        <!-- 추가 구현 필요 -->
-        <div class="matching-block col-sm-12" id="div-matching">
-            <div class="col-sm-12 text-center row matching-container loading" id ="div-loading"  style="display: none;">
-                <img src="/static/css/images/loading.gif" width="50">
-                <div>선택한 역할군에 따라 매칭 시간이 상이할 수 있습니다.</div>
+            <div class="form-group">
+                <label class="col-sm-5 control-label text-right"><strong>본인 라인 선택</strong></label>
+                <div class="col-sm-7 text-left">
+                    <div class="radio">
+                        <label>
+                            <input type="radio" v-model="myLine" name="myLine" value="TOP" checked> 탑
+                        </label>
+                        <label>
+                            <input type="radio" v-model="myLine" name="myLine" value="MIDDLE"> 미드
+                        </label>
+                        <label>
+                            <input type="radio" v-model="myLine" name="myLine" value="JUNGLE"> 정글
+                        </label>
+                        <label>
+                            <input type="radio" v-model="myLine" name="myLine" value="BOTTOM"> 원딜
+                        </label>
+                        <label>
+                            <input type="radio" v-model="myLine" name="myLine" value="UTILITY"> 서폿
+                        </label>
+                    </div>
+                </div>
             </div>
-            <div id="div-info" style="display: none;">
-                <!-- 구해듀오 정보 -->
-                <div class="text-center col-sm-12">
-                    <div><img class="img-circle" :src="profileImg" width="50" height="50">
-                        <strong>{{nickname}}</strong> 님
-                    </div>
-                    <div id = "div-timer"><p id = "time"></p></div>
-                </div>
-
-                <!-- 롤 정보 -->
-                <div class="col-sm-12 matching-container">
-                    <div class="col-sm-4">
-                        <img :src="tierImg" width="270">
-                    </div>
-                    <div class="col-sm-8">
-                        <strong style="font-size: 25px;">{{ lolNickname }}</strong>
-                        <!-- 모스트 정보 -->
-                        <div>{{ tier }}</div>
-                        <div>
-                            <strong>모스트 정보</strong>
-                            <img class="img-circle" :src="mostOne" width="50" height="50">
-                            <img class="img-circle" :src="mostTwo" width="50" height="50">
-                            <img class="img-circle" :src="mostThree" width="50" height="50">
-                        </div>
-                        <!-- 승리/패배 정보 -->
-                        <div>
-                            <strong>승리:</strong> {{totalWins}}
-                            <strong>패배:</strong> {{totalLoses}}
-                            <strong>승률:</strong> {{totalRate}}
-                        </div>
+            <div class="form-group">
+                <label class="col-sm-5 control-label text-right"><strong>상대 라인 선택</strong></label>
+                <div class="col-sm-7 text-left">
+                    <div class="radio">
+                        <label>
+                            <input type="radio" v-model="duoLine" name="duoLine" value="TOP" checked> 탑
+                        </label>
+                        <label>
+                            <input type="radio" v-model="duoLine" name="duoLine" value="MIDDLE"> 미드
+                        </label>
+                        <label>
+                            <input type="radio" v-model="duoLine" name="duoLine" value="JUNGLE"> 정글
+                        </label>
+                        <label>
+                            <input type="radio" v-model="duoLine" name="duoLine" value="BOTTOM"> 원딜
+                        </label>
+                        <label>
+                            <input type="radio" v-model="duoLine" name="duoLine" value="UTILITY"> 서폿
+                        </label>
                     </div>
                 </div>
-                <!-- 수락/거절 -->
-                <div class="col-sm-12 text-center" id="div-answer" style="display: none">
-                    <button class="btn btn-default" id="btn-matching-accept" @click="matchingAccept">수락</button>
-                    <button class="btn btn-default" id="btn-matching-reject" @click="matchingReject">거절</button>
-                </div>
-                <!-- 전적 -->
-                <table class="col-sm-12 matching-container">
-                    <tr class="col-sm-12" v-for="match in matches"
-                        v-bind:class="{ 'win-row' : match.win, 'lose-row' : !match.win }">
-                        <td class="col-sm-1">{{ match.gameMode }}</td>
-                        <td class="col-sm-2"><img class="img-circle" :src="match.champion" width="50" height="50"></td>
-                        <td class="col-sm-2"><img :src="match.teamPosition" width="50"></td>
-                        <td class="col-sm-6 text-center">{{match.kills}} / {{match.deaths}} / {{match.assists}}</td>
-                        <td class="col-sm-1 text-light"><strong>{{ match.win ? '승리' : '패배' }}</strong></td>
-                    </tr>
-                </table>
             </div>
+        </form>
+        <div class="form-group text-center col-sm-12">
+            <!--                id="btn-start-matching"-->
+            <button class="btn btn-default btn-lg" type="button" id="btn-matching-start" @click="startMatching">
+                매칭시작
+            </button>
+            <button class="btn btn-default btn-lg" type="button" id="btn-matching-stop" @click="stopMatching"
+                    style="display: none;">매칭취소
+            </button>
         </div>
     </div>
+    <!-- 추가 구현 필요 -->
+    <div class="matching-block col-sm-12" id="div-matching">
+        <div id="div-loading" style="display: none;">로딩 중...</div>
+        <div id="div-info" style="display: none;">
+            <!-- 구해듀오 정보 -->
+            <div class="text-center col-sm-12">
+                <div><img class="img-circle" :src="profileImg" width="50" height="50">
+                    <strong>{{nickname}}</strong> 님
+                </div>
+                <div id = "div-timer"><p id = "time"></p></div>
+            </div>
+
+            <!-- 롤 정보 -->
+            <div class="col-sm-12 matching-container">
+                <div class="col-sm-4">
+                    <img :src="tierImg" width="270">
+                </div>
+                <div class="col-sm-8">
+                    <strong style="font-size: 25px;">{{ lolNickname }}</strong>
+                    <!-- 모스트 정보 -->
+                    <div>{{ tier }}</div>
+                    <div>
+                        <strong>모스트 정보</strong>
+                        <img class="img-circle" :src="mostOne" width="50" height="50">
+                        <img class="img-circle" :src="mostTwo" width="50" height="50">
+                        <img class="img-circle" :src="mostThree" width="50" height="50">
+                    </div>
+                    <!-- 승리/패배 정보 -->
+                    <div>
+                        <strong>승리:</strong> {{totalWins}}
+                        <strong>패배:</strong> {{totalLoses}}
+                        <strong>승률:</strong> {{totalRate}}
+                    </div>
+                </div>
+            </div>
+            <!-- 수락/거절 -->
+            <div class="col-sm-12 text-center" id="div-answer" style="display: none">
+                <button class="btn btn-default" id="btn-matching-accept" @click="matchingAccept">수락</button>
+                <button class="btn btn-default" id="btn-matching-reject" @click="matchingReject">거절</button>
+            </div>
+            <!-- 전적 -->
+            <table class="col-sm-12 matching-container">
+                <tr class="col-sm-12" v-for="match in matches"
+                    v-bind:class="{ 'win-row' : match.win, 'lose-row' : !match.win }">
+                    <td class="col-sm-1">{{ match.gameMode }}</td>
+                    <td class="col-sm-2"><img class="img-circle" :src="match.champion" width="50" height="50"></td>
+                    <td class="col-sm-2"><img :src="match.teamPosition" width="50"></td>
+                    <td class="col-sm-6 text-center">{{match.kills}} / {{match.deaths}} / {{match.assists}}</td>
+                    <td class="col-sm-1 text-light"><strong>{{ match.win ? '승리' : '패배' }}</strong></td>
+                </tr>
+            </table>
+        </div>
+    </div>
+</div>
+<!-- 헤더 사이드바에서 못닫은 div 지우면 안됨!! -->
+</div>
 </div>
 <script>
     $.get('/static/html/navbar.html', function (data) {
         $('#menu-bar').html(data);
-    })
-</script>
-<script>
-    $.get('/static/html/header.html', function (data) {
-        $('#header-bar').html(data);
     })
 </script>
 <script src="/static/js/matching.js" type="module"></script>
