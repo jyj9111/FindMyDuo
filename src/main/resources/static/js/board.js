@@ -77,6 +77,9 @@ new Vue({
         document.title = this.title;
     },
     methods: {
+        goBack() {
+            history.back();
+        },
         // 게시판 수정버튼 클릭시 수정페이지로
         async redirectToEditPage() {
             location.href = '/board/form/' + this.boardId;
