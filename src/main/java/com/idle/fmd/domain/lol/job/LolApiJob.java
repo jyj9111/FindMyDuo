@@ -24,6 +24,7 @@ import org.springframework.batch.core.launch.JobLauncher;
 import org.springframework.batch.core.launch.support.RunIdIncrementer;
 import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.step.builder.StepBuilder;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
@@ -54,9 +55,12 @@ public class LolApiJob {
     private final LolMatchItemProcessor matchItemProcessor;
     private final LolMatchItemWriter matchItemWriter;
 
+    @Value("${riot-api.api-key}")
+    private String key;
     // 주기적으로 잡을 실행하기 위한 스케줄러 설정
     @Scheduled(fixedDelay = 1800000) // 30분마다 실행
     public void runJob() throws Exception {
+        log.info("Riot API key: " + key);
         JobExecution jobExecution = jobLauncher.run(lolAccountJob(), new JobParameters());
         // 잡을 실행했을 때 성공적이면 로그에 성공 출력, 실패하면 실패 출력
         if (jobExecution.getStatus() == BatchStatus.COMPLETED) {
