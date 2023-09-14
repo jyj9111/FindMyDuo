@@ -2,7 +2,7 @@ package com.idle.fmd.domain.comment.entity;
 
 import com.idle.fmd.domain.board.entity.BoardEntity;
 import com.idle.fmd.domain.user.entity.UserEntity;
-import com.idle.fmd.global.common.entity.BaseTimeEntity;
+import com.idle.fmd.global.common.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.*;
 

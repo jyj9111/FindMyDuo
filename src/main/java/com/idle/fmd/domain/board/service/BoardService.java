@@ -1,13 +1,16 @@
 package com.idle.fmd.domain.board.service;
 
-import com.idle.fmd.domain.board.dto.*;
+import com.idle.fmd.domain.board.dto.req.BoardCreateDto;
+import com.idle.fmd.domain.board.dto.req.BoardUpdateDto;
+import com.idle.fmd.domain.board.dto.res.BoardAllResponseDto;
+import com.idle.fmd.domain.board.dto.res.BoardResponseDto;
 import com.idle.fmd.domain.board.entity.*;
 import com.idle.fmd.domain.board.repo.*;
 import com.idle.fmd.domain.user.entity.UserEntity;
 import com.idle.fmd.domain.user.repo.UserRepository;
 import com.idle.fmd.global.utils.FileHandler;
-import com.idle.fmd.global.error.exception.BusinessException;
-import com.idle.fmd.global.error.exception.BusinessExceptionCode;
+import com.idle.fmd.global.exception.BusinessException;
+import com.idle.fmd.global.exception.BusinessExceptionCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;

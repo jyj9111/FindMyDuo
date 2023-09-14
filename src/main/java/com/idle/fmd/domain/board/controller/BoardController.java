@@ -1,11 +1,13 @@
 package com.idle.fmd.domain.board.controller;
 
-import com.idle.fmd.domain.board.dto.*;
+import com.idle.fmd.domain.board.dto.req.BoardCreateDto;
+import com.idle.fmd.domain.board.dto.req.BoardUpdateDto;
+import com.idle.fmd.domain.board.dto.req.ReportDto;
+import com.idle.fmd.domain.board.dto.res.*;
 import com.idle.fmd.domain.board.service.BoardService;
 import com.idle.fmd.domain.board.service.BookmarkService;
 import com.idle.fmd.domain.board.service.LikeBoardService;
 import com.idle.fmd.domain.board.service.ReportService;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;

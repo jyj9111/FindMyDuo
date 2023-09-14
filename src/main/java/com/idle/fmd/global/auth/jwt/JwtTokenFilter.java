@@ -1,7 +1,7 @@
 package com.idle.fmd.global.auth.jwt;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.idle.fmd.domain.user.dto.UserLoginResponseDto;
+import com.idle.fmd.domain.user.dto.res.UserLoginResponseDto;
 import com.idle.fmd.domain.user.entity.CustomUserDetails;
 import com.idle.fmd.global.utils.RedisUtil;
 import jakarta.servlet.FilterChain;

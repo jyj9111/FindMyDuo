@@ -1,15 +1,15 @@
 package com.idle.fmd.domain.board.service;
 
-import com.idle.fmd.domain.board.dto.ReportDto;
-import com.idle.fmd.domain.board.dto.ReportResponseDto;
+import com.idle.fmd.domain.board.dto.req.ReportDto;
+import com.idle.fmd.domain.board.dto.res.ReportResponseDto;
 import com.idle.fmd.domain.board.entity.*;
 import com.idle.fmd.domain.board.repo.*;
 import com.idle.fmd.domain.comment.entity.CommentEntity;
 import com.idle.fmd.domain.comment.repo.CommentRepository;
 import com.idle.fmd.domain.user.entity.UserEntity;
 import com.idle.fmd.domain.user.repo.UserRepository;
-import com.idle.fmd.global.error.exception.BusinessException;
-import com.idle.fmd.global.error.exception.BusinessExceptionCode;
+import com.idle.fmd.global.exception.BusinessException;
+import com.idle.fmd.global.exception.BusinessExceptionCode;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
