@@ -1,4 +1,8 @@
 FROM openjdk:17-jdk-alpine
 ARG JAR_FILE=build/libs/fmd-0.0.1-SNAPSHOT.jar
 COPY ${JAR_FILE} app.jar
+RUN apk --no-cache add tzdata && \
+	cp /usr/share/zoneinfo/Asia/Seoul /etc/localtime && \
+	echo "Asia/Seoul" > /etc/timezone \
+	apk del tzdata
 ENTRYPOINT ["java","-jar","-Dspring.profiles.active=dev","/app.jar"]
