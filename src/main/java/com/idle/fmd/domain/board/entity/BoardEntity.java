@@ -1,9 +1,9 @@
 package com.idle.fmd.domain.board.entity;
 
-import com.idle.fmd.domain.board.dto.BoardCreateDto;
+import com.idle.fmd.domain.board.dto.req.BoardCreateDto;
 import com.idle.fmd.domain.comment.entity.CommentEntity;
 import com.idle.fmd.domain.user.entity.UserEntity;
-import com.idle.fmd.global.common.entity.BaseTimeEntity;
+import com.idle.fmd.global.common.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.*;
 

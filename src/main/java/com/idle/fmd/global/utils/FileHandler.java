@@ -1,7 +1,7 @@
 package com.idle.fmd.global.utils;
 
-import com.idle.fmd.global.error.exception.BusinessException;
-import com.idle.fmd.global.error.exception.BusinessExceptionCode;
+import com.idle.fmd.global.exception.BusinessException;
+import com.idle.fmd.global.exception.BusinessExceptionCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
