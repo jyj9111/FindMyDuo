@@ -97,7 +97,7 @@
                 <input class="form-control" v-model="lolNickname">
                 <div class="help-blcok" style="color: gray; font-size: 15px">계정 연동시 약 1분의 시간이 소요될 수 있습니다.</div>
             </div>
-            <button class="btn btn-default" type="button" @click="linkLolAccount" :disabled="linkingLolAccount">
+            <button class="btn btn-default" type="button" @click="linkLolAccount" :disabled="linkingLolAccount || emptyLolNickname">
                 롤 계정 연동
                 <span v-if="linkingLolAccount" class="glyphicon glyphicon-refresh glyphicon-refresh-animate"></span>
             </button>
