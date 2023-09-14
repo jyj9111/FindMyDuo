@@ -17,9 +17,11 @@ new Vue({
         nicknameErrorMessage: '', // 닉네임 오류 메시지를 표시할 데이터
         emailErrorMessage: '', // 이메일 오류 메시지를 표시할 데이터
         isFormValid: false, // 수정 버튼
+        emptyLolNickname: null
     },
     watch: {
         nickname: 'checkFormValidity',
+        lolNickname: 'isEmptyLolNickname',
         nicknameErrorMessage: 'checkFormValidity',
         email: 'checkFormValidity',
         emailErrorMessage: 'checkFormValidity',
@@ -49,6 +51,7 @@ new Vue({
                 this.createdAt = processDate(response.data.createdAt);
                 this.lolNickname = response.data.lolNickname;
                 this.profileImage = localStorage.getItem('profileImage');
+                this.emptyLolNickname = this.lolNickname == '' || this.lolNickname == null ? true : false
             })
             .catch(error => {
                 console.error('마이페이지 조회 에러: ', error);
@@ -293,6 +296,13 @@ new Vue({
                 this.nickname.length > 0 &&
                 this.emailErrorMessage === '' &&
                 this.nicknameErrorMessage === '';
+        },
+        // 롤 계정 연동부분에서 롤 닉네임이 입력되었는지 확인하는 메서드
+        isEmptyLolNickname(){
+            if(this.lolNickname == '' || this.lolNickname == null){
+                this.emptyLolNickname = true
+            }
+            else this.emptyLolNickname = false
         }
     }
 });
