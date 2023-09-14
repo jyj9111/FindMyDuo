@@ -64,10 +64,10 @@ new Vue({
                 params: {nickname},
             })
 
-            if(response.data){
-                this.nicknameErrorMessage = '이미 등록된 회원의 닉네임입니다.';
-            } else {
+            if(!response.data || localStorage.getItem('nickname') == this.nickname){
                 this.nicknameErrorMessage = '';
+            } else {
+                this.nicknameErrorMessage = '이미 등록된 회원의 닉네임입니다.';
             }
         },
         // 이메일 폼 확인 메서드
