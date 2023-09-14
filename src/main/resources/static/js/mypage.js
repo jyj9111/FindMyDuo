@@ -17,9 +17,11 @@ new Vue({
         nicknameErrorMessage: '', // 닉네임 오류 메시지를 표시할 데이터
         emailErrorMessage: '', // 이메일 오류 메시지를 표시할 데이터
         isFormValid: false, // 수정 버튼
+        emptyLolNickname: null
     },
     watch: {
         nickname: 'checkFormValidity',
+        lolNickname: 'isEmptyLolNickname',
         nicknameErrorMessage: 'checkFormValidity',
         email: 'checkFormValidity',
         emailErrorMessage: 'checkFormValidity',
@@ -28,7 +30,6 @@ new Vue({
     async created() {
         if (!token) {
             // 토큰이 없는 경우 로그인 페이지로 이동
-            alert('로그인 후 이용해주세요.')
             location.href = '/login';
             return;
         }
@@ -50,6 +51,7 @@ new Vue({
                 this.createdAt = processDate(response.data.createdAt);
                 this.lolNickname = response.data.lolNickname;
                 this.profileImage = localStorage.getItem('profileImage');
+                this.emptyLolNickname = this.lolNickname == '' || this.lolNickname == null ? true : false
             })
             .catch(error => {
                 console.error('마이페이지 조회 에러: ', error);
@@ -65,10 +67,10 @@ new Vue({
                 params: {nickname},
             })
 
-            if(response.data){
-                this.nicknameErrorMessage = '이미 등록된 회원의 닉네임입니다.';
-            } else {
+            if(!response.data || localStorage.getItem('nickname') == this.nickname){
                 this.nicknameErrorMessage = '';
+            } else {
+                this.nicknameErrorMessage = '이미 등록된 회원의 닉네임입니다.';
             }
         },
         // 이메일 폼 확인 메서드
@@ -111,14 +113,19 @@ new Vue({
                 }
             })
                 .then(response => {
-                    alert('수정되었습니다.');
+                    Swal.fire({
+                        icon: 'success',
+                        title: '수정되었습니다',
+                    });
                     console.log(response.data);
                     localStorage.setItem('nickname', this.nickname);
                 })
                 .catch(error => {
-                    alert('수정이 실패하였습니다.');
+                    Swal.fire({
+                        icon: 'error',
+                        title: '수정에 실패하였습니다.',
+                    });
                     console.error('마이페이지 수정 에러: ', error);
-
                 })
         },
         // 비밀번호 변경
@@ -137,11 +144,17 @@ new Vue({
             })
 
                 .then(response => {
-                    alert('비밀번호가 변경되었습니다.');
+                    Swal.fire({
+                        icon: 'success',
+                        title: '비밀번호가 변경되었습니다.',
+                    });
                     console.log(response.data);
                 })
                 .catch(error => {
-                    alert('수정이 실패하였습니다.');
+                    Swal.fire({
+                        icon: 'error',
+                        title: '수정에 실패하였습니다.',
+                    });
                     console.error('비밀번호 변경 에러: ', error);
 
                 })
@@ -151,30 +164,48 @@ new Vue({
             // 롤 계정 연동 시작 시 로딩 상태 활성화
             this.linkingLolAccount = true;
 
-            // 계정 연동 요청
-            token = await isValidateToken()
+            try {
+                // 계정 연동 요청
+                token = await isValidateToken();
 
-            alert('롤 계정 연동하는 데 최대 1분의 시간이 소요될 수 있습니다. \n' +
-                '확인을 누른 후, 연동하는 동안 다른 작업을 수행하지 마십시오.');
-            await axios.post('/lol/save', null, {
-                params: {
-                    lolNickname: this.lolNickname.replaceAll(" ", "")
-                },
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                }
-            })
-                .then(response => {
-                    alert('계정 연동이 완료되었습니다.');
+                const loadingModal = Swal.fire({
+                    title: '로딩 중',
+                    text: '계정 연동 중입니다...',
+                    allowOutsideClick: false,
+                    showConfirmButton: false,
+                    onBeforeOpen: () => {
+                        Swal.showLoading();
+                    },
+                });
+
+                await axios.post('/lol/save', null, {
+                    params: {
+                        lolNickname: this.lolNickname.replaceAll(" ", "")
+                    },
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                }).then(response => {
+                    loadingModal.close();
+                    Swal.fire({
+                        icon: 'success',
+                        title: '계정 연동 완료',
+                        text: '계정이 성공적으로 연동되었습니다.',
+                    });
                 })
-                .catch(error => {
-                    alert('계정 연동이 실패하였습니다.');
-                    console.error('계정 연동 실패: ', error);
-                })
-                .finally(() => {
-                    // 롤 계정 연동 종료 시 로딩 상태 비활성화
-                    this.linkingLolAccount = false;
-                })
+                    .catch(error => {
+                    loadingModal.close();
+                    Swal.fire({
+                        icon: 'error',
+                        title: '계정 연동 실패',
+                        text: error.response.data.message,
+                    });
+                });
+            }
+            finally {
+                // 롤 계정 연동 종료 시 로딩 상태 비활성화
+                this.linkingLolAccount = false;
+            }
         },
         async selectImage(event) {
             this.profileImage = event.target.files[0];
@@ -195,34 +226,67 @@ new Vue({
                 },
             })
                 .then(response => {
-                    alert('프로필 이미지가 업로드되었습니다.')
+                    Swal.fire({
+                        icon: 'success',
+                        title: '프로필 이미지가 업로드되었습니다.'
+                    });
                     localStorage.setItem('profileImage', response.data);
-                    // 프로필 이미지 등록시 마이페이지 재로드해서 변경사항 확인
-                    location.href = '/mypage';
+
+                    setTimeout(() => {
+                        location.href = '/mypage';
+                    }, 2000);
                 })
                 .catch(error => {
-                    alert('프로필 이미지 업로드 실패 ' + error.message);
+                    // alert('프로필 이미지 업로드 실패 ' + error.message);
+                    Swal.fire({
+                        icon: 'error',
+                        title: '프로필 이미지 업로드 실패',
+                        text: error.message
+                    });
                     console.error('프로필 이미지 업로드 실패 ', error);
                 })
         },
         // 회원 탈퇴 기능
         async deleteAccount() {
-            if (confirm('정말로 회원을 탈퇴하시겠습니까?')) {
+            const result = await Swal.fire({
+                title: '회원 탈퇴',
+                text: '정말로 회원을 탈퇴하시겠습니까?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: '네, 탈퇴하겠습니다.',
+                cancelButtonText: '아니요',
+            });
+
+            if (result.isConfirmed) {
                 // 탈퇴 요청
-                token = await isValidateToken()
-                await axios.delete('/users/mypage', {
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    }
-                })
-                    .then(() => {
-                        alert('회원 탈퇴가 완료되었습니다.');
-                        localStorage.clear();
+                token = await isValidateToken();
+
+                try {
+                    await axios.delete('/users/mypage', {
+                        headers: {
+                            'Authorization': `Bearer ${token}`
+                        }
+                    });
+
+                    Swal.fire({
+                        icon: 'success',
+                        title: '회원 탈퇴 완료',
+                        text: '회원 탈퇴가 성공적으로 완료되었습니다.',
+                    });
+                    localStorage.clear();
+                    setTimeout(() => {
                         location.href = '/main';
-                    })
-                    .catch(error => {
-                        alert('회원 탈퇴 실패: ' + error);
-                    })
+                    }, 2000);
+
+                } catch (error) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: '회원 탈퇴 실패',
+                        text: '회원 탈퇴 중 오류가 발생했습니다: ' + error,
+                    });
+                }
             }
         },
         // 모든 입력 필드가 유효한지 확인하는 메서드
@@ -232,6 +296,13 @@ new Vue({
                 this.nickname.length > 0 &&
                 this.emailErrorMessage === '' &&
                 this.nicknameErrorMessage === '';
+        },
+        // 롤 계정 연동부분에서 롤 닉네임이 입력되었는지 확인하는 메서드
+        isEmptyLolNickname(){
+            if(this.lolNickname == '' || this.lolNickname == null){
+                this.emptyLolNickname = true
+            }
+            else this.emptyLolNickname = false
         }
     }
 });

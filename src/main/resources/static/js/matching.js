@@ -2,14 +2,16 @@ import {isValidateToken} from "./keep-access-token.js";
 
 let token = localStorage.getItem('token');
 let webSocket;
+let time = 120;
 let timeoutId;
+let intervalId;
 
 new Vue({
     el: '#matching-app',
     data: {
-        mode: '',
-        myLine: '',
-        duoLine: '',
+        mode: 'SOLO',
+        myLine: 'TOP',
+        duoLine: 'TOP',
         nickname:'',
         profileImg:'',
         lolNickname: '',
@@ -34,9 +36,8 @@ new Vue({
                 confirmButtonText: '확인'
             }).then((result) => {
                 if (result.isConfirmed) {
-                    Swal.fire('Saved!', '', 'success')
+                    location.href = '/login';
                 }
-                location.href = '/login';
             });
             return;
         }
@@ -91,6 +92,11 @@ new Vue({
                         timeoutId = setTimeout(function(){
                             webSocket.send("reject")
                         }, 120000)
+
+                        document.getElementById("time").innerText = time
+                        intervalId = setInterval(  function(){
+                            document.getElementById("time").innerText = --time;
+                        }, 1000);
                     } else {
                         localStorage.setItem('roomId', data.roomId);
                         localStorage.setItem('discordUrl', data.discordUrl)
@@ -98,6 +104,7 @@ new Vue({
                         const other = rName.replace(localStorage.getItem('nickname'), "").replace("-","");
                         console.log('other: '+ other);
                         localStorage.setItem('other', other);
+                        clearInterval(intervalId);
                         window.open('/chat/room/enter','_blank', 'scrollbars=yes, resizable=yes, location=no, width=800,height=800');
                         setTimeout(function () {
                             location.href = "/matching"
@@ -109,6 +116,9 @@ new Vue({
                         location.href = "/matching"
                     }
                     else if(data == 'continue'){
+                        clearTimeout(timeoutId);
+                        clearInterval(intervalId);
+                        time = 120;
                         document.getElementById("btn-matching-stop").style.display = ""
                         document.getElementById("div-info").style.display = "none"
                         document.getElementById("div-loading").style.display = ""
@@ -117,7 +127,10 @@ new Vue({
             }
         },
         async stopMatching(){
-          webSocket.close();
+            await clearTimeout(timeoutId);
+            await clearInterval(intervalId);
+            time = 120;
+            webSocket.close();
             document.getElementById("div-loading").style.display = "none"
             document.getElementById("btn-matching-start").style.display = ""
             document.getElementById("btn-matching-stop").style.display = "none"
@@ -128,6 +141,8 @@ new Vue({
         },
         async matchingReject(){
             await clearTimeout(timeoutId);
+            await clearInterval(intervalId);
+            time = 120;
             webSocket.send("reject")
         }
     }

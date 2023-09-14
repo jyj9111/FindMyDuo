@@ -1,20 +1,22 @@
 package com.idle.fmd.domain.user.service;
 
 
-import com.idle.fmd.domain.board.dto.BoardAllResponseDto;
+import com.idle.fmd.domain.board.dto.res.BoardAllResponseDto;
 import com.idle.fmd.domain.board.entity.BoardEntity;
 import com.idle.fmd.domain.board.entity.BookmarkEntity;
 import com.idle.fmd.domain.board.repo.BoardRepository;
 import com.idle.fmd.domain.board.repo.BookmarkRepository;
 import com.idle.fmd.domain.board.service.BoardService;
-import com.idle.fmd.domain.user.dto.*;
+import com.idle.fmd.domain.user.dto.req.*;
+import com.idle.fmd.domain.user.dto.res.UserLoginResponseDto;
+import com.idle.fmd.domain.user.dto.res.UserMyPageResponseDto;
 import com.idle.fmd.domain.user.entity.UserEntity;
 import com.idle.fmd.domain.user.repo.UserRepository;
 import com.idle.fmd.global.auth.jwt.JwtTokenUtils;
 import com.idle.fmd.global.utils.FileHandler;
 import com.idle.fmd.global.utils.RedisUtil;
-import com.idle.fmd.global.error.exception.BusinessException;
-import com.idle.fmd.global.error.exception.BusinessExceptionCode;
+import com.idle.fmd.global.exception.BusinessException;
+import com.idle.fmd.global.exception.BusinessExceptionCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;

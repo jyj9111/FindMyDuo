@@ -1,11 +1,57 @@
-<!-- 사이드바 시작 -->
-<nav class="col-sm-3 sidenav" id="navbar-app">
-    <div class="sidebar-block"></div>
-    <ul class="nav nav-pills nav-stacked">
-        <li><a href="/main">Home</a></li>
-        <li><a href="/matching">매칭</a></li>
-        <li><a href="/board/view">자유게시판</a></li>
-    </ul>
-</nav>
-<!-- 사이드바 끝 -->
-<script src="/static/js/navbar.js" type ="module"></script>
+<div id="navbar-app">
+    <!-- 헤더 네브바 시작 -->
+    <nav class="navbar navbar-inverse navbar-fixed-top">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <a class="navbar-brand" href="/main"
+                   style="font-family: 'Jua', sans-serif; font-size: 35px; color: #94ACC4; margin-left: 5px">
+                    구해DUO
+                </a>
+            </div>
+            <ul class="nav navbar-nav">
+                <li class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown">League of Legends</a>
+                    <ul class="dropdown-menu">
+                        <li><a href="/matchincg">매칭</a></li>
+                        <li><a href="/board/view">자유게시판</a></li>
+                    </ul>
+                </li>
+            </ul>
+            <ul class="nav navbar-nav navbar-right" style="cursor: pointer;">
+                <!-- 로그인 여부에 따라 보여지는 메뉴가 다르도록 설정-->
+                <li><a v-show="!loggedIn" href="/signup"><span class="glyphicon glyphicon-user"></span> Sign Up</a></li>
+                <li><a v-show="!loggedIn" href="/login"><span class="glyphicon glyphicon-log-in"></span> Login</a></li>
+                <li><a v-show="loggedIn" @click="logout"><span class="glyphicon glyphicon-log-out"></span> Logout</a></li>
+            </ul>
+        </div>
+    </nav>
+    <!-- 헤더 끝 -->
+    <div class="container-fluid">
+        <!-- 사이드바 시작 -->
+        <nav class="col-sm-3 sidenav">
+            <a class="btn btn-login-custom col-sm-12 profile-block" v-show="!loggedIn" href="/login">로그인 후 이용해주세요.</a>
+            <div class="profile-container col-sm-12" v-show="loggedIn">
+                <div class="profile-block">
+                    <img class="img-circle" v-bind:src="navbarProfileImage" width="50" height="50">
+                    <a href="/mypage" style="color: black; margin-left: 10px"> <strong> {{ nickname }}</strong> 님</a>
+                </div>
+                <a class="btn btn-default col-sm-12 profile-btn" href="/mypage">마이페이지</a>
+                <a class="btn btn-default col-sm-6 profile-btn" href="/board/form/write">글 쓰기</a>
+                <a class="btn btn-default col-sm-6 profile-btn" href="/board/bookmark"><i class="fa-solid fa-splotch" style="color: #ffc800;"></i>북마크</a>
+            </div>
+            <div class="profile-container col-sm-12" style="margin-top: 20px; padding: 10px">
+                <ul class="nav nav-pills nav-stacked text-center"
+                    style="font-size: 15px;">
+                    <li><a href="/main">홈</a></li>
+                    <hr>
+                    <li><a href="/matching">매칭</a></li>
+                    <hr>
+                    <li><a href="/board/view">자유게시판</a></li>
+                </ul>
+            </div>
+            <a class="fa-brands fa-github fa-2xl" style="color: #8f8f8f; margin-top: 40px;" href="https://github.com/Likelion-backend-IDLE/FindMyDuo"></a>
+            <div class="col-sm-12 text-center" style="margin-top: 30px; padding: 10px;">
+                <a style="color: gray" href="https://www.flaticon.com/kr/free-icons/" title="사용자 아이콘">사용자 아이콘  제작자: Smashicons - Flaticon</a>
+            </div>
+        </nav>
+        <!-- 사이드바 끝 -->
+        <script src="/static/js/navbar.js" type="module"></script>
